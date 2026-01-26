@@ -876,7 +876,7 @@ a:not(.btn):not(.nav-link):hover {
     left: -100%;
     width: 100%;
     height: calc(100vh - 70px);
-    background: rgba(10, 14, 39, 0.98);
+    background: var(--color-bg-secondary);
     backdrop-filter: blur(10px);
     flex-direction: column;
     justify-content: flex-start;
