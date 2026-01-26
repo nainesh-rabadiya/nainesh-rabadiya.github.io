@@ -71,20 +71,38 @@ window.addEventListener('scroll', () => {
 const sections = document.querySelectorAll('.section');
 
 const highlightNavigation = () => {
-    const scrollPosition = window.pageYOffset + 100;
+    const scrollPosition = window.pageYOffset;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
 
+    // Check if we've reached the bottom of the page
+    if (Math.ceil(scrollPosition + windowHeight) >= documentHeight - 50) {
+        // Find the last section (usually Contact)
+        const lastSection = sections[sections.length - 1];
+        if (lastSection) {
+            const lastSectionId = lastSection.getAttribute('id');
+            updateActiveLink(lastSectionId);
+            return;
+        }
+    }
+
+    // Normal section detection
     sections.forEach(section => {
-        const sectionTop = section.offsetTop;
+        const sectionTop = section.offsetTop - 150; // Offset for navbar + breathing room
         const sectionHeight = section.offsetHeight;
         const sectionId = section.getAttribute('id');
 
         if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${sectionId}`) {
-                    link.classList.add('active');
-                }
-            });
+            updateActiveLink(sectionId);
+        }
+    });
+};
+
+const updateActiveLink = (id) => {
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('active');
         }
     });
 };
