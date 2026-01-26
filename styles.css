@@ -867,9 +867,22 @@ a:not(.btn):not(.nav-link):hover {
   margin: 0 auto;
 }
 
+.education-card {
+  position: relative;
+}
+
+.education-card:hover .project-icon {
+  transform: rotate(15deg) scale(1.1);
+  background: rgba(255, 45, 32, 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 15px rgba(255, 45, 32, 0.3);
+}
+
 .education-card h3 {
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-sm);
+  padding-right: 60px;
+  /* Space for the floating icon */
 }
 
 .education-degree {
