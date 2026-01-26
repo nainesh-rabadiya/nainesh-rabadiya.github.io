@@ -134,6 +134,8 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
@@ -145,8 +147,17 @@ body {
   background: var(--gradient-bg);
   background-attachment: fixed;
   overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* ============================================
@@ -162,6 +173,7 @@ h6 {
   line-height: 1.2;
   margin-bottom: var(--spacing-md);
   color: var(--color-text-primary);
+  text-wrap: balance;
 }
 
 h1 {
@@ -807,19 +819,25 @@ a:not(.btn):not(.nav-link):hover {
 .contact-links {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   flex-wrap: wrap;
   margin-top: var(--spacing-2xl);
+}
+
+.link-text {
+  display: none;
 }
 
 .contact-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-xl);
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: 50%;
   color: var(--color-text-primary);
   transition: all var(--transition-base);
 }
@@ -831,8 +849,8 @@ a:not(.btn):not(.nav-link):hover {
 }
 
 .contact-link svg {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   fill: var(--color-primary);
 }
 
@@ -866,6 +884,20 @@ a:not(.btn):not(.nav-link):hover {
   }
 }
 
+@keyframes pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0px rgba(255, 45, 32, 0.4), 0 0 0 4px var(--color-bg-primary);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 45, 32, 0), 0 0 0 4px var(--color-bg-primary);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0px rgba(255, 45, 32, 0), 0 0 0 4px var(--color-bg-primary);
+  }
+}
+
 .fade-in-up {
   opacity: 0;
   animation: fadeInUp 0.6s ease-out forwards;
@@ -887,9 +919,15 @@ a:not(.btn):not(.nav-link):hover {
    ============================================ */
 @media (max-width: 768px) {
   :root {
-    --font-size-6xl: 2.5rem;
-    --font-size-5xl: 2rem;
-    --font-size-4xl: 1.75rem;
+    --font-size-6xl: clamp(2.5rem, 8vw, 3.5rem);
+    --font-size-5xl: clamp(2rem, 6vw, 2.5rem);
+    --font-size-4xl: clamp(1.5rem, 5vw, 2rem);
+    --spacing-4xl: 4rem;
+    --spacing-3xl: 3rem;
+  }
+
+  body {
+    background-attachment: scroll;
   }
 
   .nav-menu {
@@ -897,7 +935,9 @@ a:not(.btn):not(.nav-link):hover {
     top: 70px;
     left: -100%;
     width: 100%;
-    height: calc(100vh - 70px);
+    height: 100vh;
+    height: 100dvh;
+    padding-top: 80px;
     background: var(--color-bg-secondary);
     backdrop-filter: blur(10px);
     flex-direction: column;
@@ -965,7 +1005,46 @@ a:not(.btn):not(.nav-link):hover {
   }
 
   .section {
-    padding: var(--spacing-2xl) 0;
+    padding: var(--spacing-3xl) 0;
+  }
+
+  /* Improved Mobile Timeline */
+  .experience-timeline {
+    padding-left: var(--spacing-xs);
+  }
+
+  .timeline-item {
+    padding-left: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .timeline-item::before {
+    left: 0;
+  }
+
+  .timeline-dot {
+    left: -9px;
+    width: 20px;
+    height: 20px;
+    top: 0;
+    /* Interactive Pulse Effect */
+    box-shadow: 0 0 0 4px var(--color-bg-primary), 0 0 0 4px var(--color-primary);
+    animation: pulse-dot 2s infinite;
+  }
+
+  /* Make card touch interactive */
+  .timeline-content.card:active,
+  .timeline-content.card:focus {
+    transform: scale(0.98);
+    border-color: var(--color-primary);
+  }
+
+  /* Connect interaction: When card is touched/hovered, highlight the dot */
+  .timeline-item:hover .timeline-dot,
+  .timeline-item:focus-within .timeline-dot {
+    background: #FFFFFF;
+    box-shadow: 0 0 0 4px var(--color-bg-primary), 0 0 10px var(--color-primary);
+    transform: scale(1.2);
   }
 }
 
@@ -975,13 +1054,6 @@ a:not(.btn):not(.nav-link):hover {
   }
 
   .contact-links {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .contact-link {
-    width: 100%;
-    max-width: 300px;
-    justify-content: center;
+    gap: var(--spacing-sm);
   }
 }
