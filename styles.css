@@ -191,7 +191,8 @@ a {
   transition: color var(--transition-fast);
 }
 
-a:hover {
+/* Only apply hover color to content links, not buttons or navigation */
+a:not(.btn):not(.nav-link):hover {
   color: var(--color-primary-light);
 }
 
@@ -425,37 +426,20 @@ a:hover {
 .btn-primary {
   background: var(--gradient-primary);
   color: #FFFFFF;
-  box-shadow: 0 4px 15px rgba(255, 45, 32, 0.3);
-}
-
-/* Smooth gradient transition using pseudo-element */
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #FF5545 0%, #FF6B5E 100%);
-  opacity: 0;
-  transition: opacity var(--transition-base);
-  z-index: -1;
-  border-radius: var(--radius-lg);
-}
-
-.btn-primary:hover::before {
-  opacity: 1;
+  box-shadow: 0 4px 15px rgba(255, 45, 32, 0.2);
 }
 
 .btn-primary:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(255, 45, 32, 0.6);
+  box-shadow: 0 8px 20px rgba(255, 45, 32, 0.3);
 }
 
 .btn-primary:active {
   transform: translateY(-1px) scale(1);
-  box-shadow: 0 4px 15px rgba(255, 45, 32, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 45, 32, 0.2);
 }
+
+
 
 .btn-secondary {
   background: transparent;
@@ -466,7 +450,7 @@ a:hover {
   z-index: 1;
 }
 
-/* Smooth gradient transition using pseudo-element - matches primary button */
+/* Smooth gradient transition using pseudo-element */
 .btn-secondary::before {
   content: '';
   position: absolute;
@@ -474,7 +458,7 @@ a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #FF5545 0%, #FF6B5E 100%);
+  background: linear-gradient(135deg, #FF2D20 0%, #E02817 100%);
   opacity: 0;
   transition: opacity var(--transition-base);
   z-index: -1;
@@ -485,7 +469,7 @@ a:hover {
   color: #FFFFFF;
   border-color: transparent;
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(255, 45, 32, 0.6);
+  box-shadow: 0 8px 20px rgba(255, 45, 32, 0.3);
 }
 
 .btn-secondary:hover::before {
@@ -494,8 +478,9 @@ a:hover {
 
 .btn-secondary:active {
   transform: translateY(-1px) scale(1);
-  box-shadow: 0 4px 15px rgba(255, 45, 32, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 45, 32, 0.2);
 }
+
 
 /* ============================================
    CARDS
