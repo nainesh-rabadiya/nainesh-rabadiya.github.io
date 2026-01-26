@@ -1,46 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- SEO Meta Tags -->
   <title>Nainesh Rabadiya - Technical Lead & Senior Laravel Developer</title>
-  <meta name="description" content="Technical Lead and Senior Laravel Developer specializing in high-traffic application optimization, enterprise architecture, and team leadership. Speaker at LaravelLive Ahmedabad 2024.">
-  <meta name="keywords" content="Laravel Developer, Technical Lead, PHP Developer, Software Architect, WebOccult Technologies, High-Traffic Optimization">
+  <meta name="description"
+    content="Technical Lead and Senior Laravel Developer specializing in high-traffic application optimization, enterprise architecture, and team leadership. Speaker at LaravelLive Ahmedabad 2024.">
+  <meta name="keywords"
+    content="Laravel Developer, Technical Lead, PHP Developer, Software Architect, WebOccult Technologies, High-Traffic Optimization">
   <meta name="author" content="Nainesh Rabadiya">
-  
+
   <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="Nainesh Rabadiya - Technical Lead & Senior Laravel Developer">
-  <meta property="og:description" content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
+  <meta property="og:description"
+    content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://nainesh-rabadiya.github.io">
-  
+
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nainesh Rabadiya - Technical Lead & Senior Laravel Developer">
-  <meta name="twitter:description" content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
-  
+  <meta name="twitter:description"
+    content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
+
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
-  
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+
   <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="theme-toggle.css">
 </head>
+
 <body>
-  
+
   <!-- Navigation -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="#home" class="nav-logo">
         <span>&lt;</span>NR<span>/&gt;</span>
       </a>
-      
+
       <ul class="nav-menu" id="nav-menu">
         <li><a href="#home" class="nav-link active">Home</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
@@ -50,7 +60,17 @@
         <li><a href="#education" class="nav-link">Education</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
-      
+
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z" />
+        </svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+        </svg>
+      </button>
+
       <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
         <span></span>
         <span></span>
@@ -58,17 +78,20 @@
       </button>
     </div>
   </nav>
-  
+
   <!-- Hero Section -->
   <section class="hero section" id="home">
     <div class="container">
       <div class="hero-content">
         <p class="hero-subtitle">Technical Lead & Laravel Expert</p>
         <h1 class="hero-title">
-          Hi, I'm <span style="background: linear-gradient(135deg, #FF2D20 0%, #FF4436 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Nainesh Rabadiya</span>
+          Hi, I'm <span
+            style="background: linear-gradient(135deg, #FF2D20 0%, #FF4436 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Nainesh
+            Rabadiya</span>
         </h1>
         <p class="hero-description">
-          I architect and optimize high-traffic enterprise applications, lead engineering teams, and share knowledge as a tech speaker. Specializing in Laravel ecosystem and performance engineering.
+          I architect and optimize high-traffic enterprise applications, lead engineering teams, and share knowledge as
+          a tech speaker. Specializing in Laravel ecosystem and performance engineering.
         </p>
         <div class="hero-cta">
           <a href="#projects" class="btn btn-primary">View My Work</a>
@@ -77,31 +100,39 @@
       </div>
     </div>
   </section>
-  
+
   <!-- About Section -->
   <section class="section" id="about">
     <div class="container">
       <div class="section-title">
         <h2>About Me</h2>
       </div>
-      
+
       <div class="about-content">
         <div class="about-text">
           <h3>Building Scalable Solutions & Leading Teams</h3>
           <p>
-            As a Technical Lead at WebOccult Technologies, I specialize in transforming complex business requirements into robust, high-performance applications. My expertise lies in optimizing high-traffic Laravel applications, designing scalable architectures, and mentoring engineering teams to deliver exceptional results.
+            As a Technical Lead at WebOccult Technologies, I specialize in transforming complex business requirements
+            into robust, high-performance applications. My expertise lies in optimizing high-traffic Laravel
+            applications, designing scalable architectures, and mentoring engineering teams to deliver exceptional
+            results.
           </p>
           <p>
-            With deep knowledge of the Laravel ecosystem and enterprise software development, I've successfully led multiple large-scale projects from conception to deployment. I'm passionate about clean code, performance optimization, and sharing knowledge with the developer community.
+            With deep knowledge of the Laravel ecosystem and enterprise software development, I've successfully led
+            multiple large-scale projects from conception to deployment. I'm passionate about clean code, performance
+            optimization, and sharing knowledge with the developer community.
           </p>
           <p>
-            Beyond coding, I actively contribute to the tech community as a speaker at industry events, including LaravelLive Ahmedabad 2024, where I presented on optimizing high-traffic Laravel applications.
+            Beyond coding, I actively contribute to the tech community as a speaker at Laravel Ahmedabad meetups. I've
+            delivered talks on topics including "Laravel Queues on Steroids" (Dec 2024), "Speeding Up Large-Scale
+            Laravel Applications" (Feb 2024 & Jul 2023), and "Working with Laravel Observers" (Dec 2022), sharing
+            practical insights on performance optimization and best practices.
           </p>
         </div>
-        
+
         <div class="about-stats">
           <div class="stat-card card">
-            <span class="stat-number">8+</span>
+            <span class="stat-number">12+</span>
             <span class="stat-label">Years Experience</span>
           </div>
           <div class="stat-card card">
@@ -109,25 +140,25 @@
             <span class="stat-label">Projects Delivered</span>
           </div>
           <div class="stat-card card">
-            <span class="stat-number">15+</span>
+            <span class="stat-number">25+</span>
             <span class="stat-label">Team Members Led</span>
           </div>
           <div class="stat-card card">
-            <span class="stat-number">1</span>
-            <span class="stat-label">Conference Speaker</span>
+            <span class="stat-number">4</span>
+            <span class="stat-label">Community Talks</span>
           </div>
         </div>
       </div>
     </div>
   </section>
-  
+
   <!-- Skills Section -->
   <section class="section" id="skills">
     <div class="container">
       <div class="section-title">
         <h2>Skills & Technologies</h2>
       </div>
-      
+
       <div class="skills-grid">
         <div class="skill-category card scroll-reveal">
           <h3>🚀 Backend Development</h3>
@@ -143,7 +174,7 @@
             <span class="skill-tag">Microservices</span>
           </div>
         </div>
-        
+
         <div class="skill-category card scroll-reveal">
           <h3>💻 Frontend Development</h3>
           <div class="skill-list">
@@ -157,7 +188,7 @@
             <span class="skill-tag">Bootstrap</span>
           </div>
         </div>
-        
+
         <div class="skill-category card scroll-reveal">
           <h3>🏗️ Architecture & Leadership</h3>
           <div class="skill-list">
@@ -171,7 +202,7 @@
             <span class="skill-tag">Project Management</span>
           </div>
         </div>
-        
+
         <div class="skill-category card scroll-reveal">
           <h3>🛠️ Tools & DevOps</h3>
           <div class="skill-list">
@@ -188,27 +219,29 @@
       </div>
     </div>
   </section>
-  
+
   <!-- Experience Section -->
   <section class="section" id="experience">
     <div class="container">
       <div class="section-title">
         <h2>Professional Experience</h2>
       </div>
-      
+
       <div class="experience-timeline">
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
             <h3>Technical Lead</h3>
             <p class="timeline-company">WebOccult Technologies Pvt. Ltd.</p>
-            <p class="timeline-date">2021 - Present</p>
+            <p class="timeline-date">Jul 2021 - Present · 4 yrs 7 mos</p>
             <div class="timeline-description">
-              <p>Leading engineering teams in developing enterprise-grade applications and driving technical excellence across the organization.</p>
+              <p>Leading engineering teams in developing enterprise-grade applications and driving technical excellence
+                across the organization.</p>
               <ul>
                 <li>Architected and optimized high-traffic Laravel applications serving millions of requests daily</li>
-                <li>Led cross-functional teams of 15+ developers in delivering complex enterprise solutions</li>
-                <li>Established coding standards, best practices, and development workflows improving team productivity by 40%</li>
+                <li>Led cross-functional teams of 25+ developers in delivering complex enterprise solutions</li>
+                <li>Established coding standards, best practices, and development workflows improving team productivity
+                  by 40%</li>
                 <li>Mentored senior and junior developers in advanced Laravel concepts and software architecture</li>
                 <li>Implemented database optimization strategies reducing query execution time by 60%</li>
                 <li>Collaborated with stakeholders to translate business requirements into technical solutions</li>
@@ -216,39 +249,94 @@
             </div>
           </div>
         </div>
-        
+
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
             <h3>Senior Software Engineer</h3>
-            <p class="timeline-company">WebOccult Technologies Pvt. Ltd.</p>
-            <p class="timeline-date">2018 - 2021</p>
+            <p class="timeline-company">Pro Start Me Technology Private Limited</p>
+            <p class="timeline-date">Feb 2020 - Jun 2021 · 1 yr 5 mos</p>
             <div class="timeline-description">
-              <p>Developed and maintained mission-critical applications while mentoring team members and contributing to architectural decisions.</p>
+              <p>Developed and maintained mission-critical applications using Laravel and CodeIgniter frameworks.</p>
               <ul>
                 <li>Designed and implemented scalable RESTful APIs serving multiple client applications</li>
                 <li>Optimized application performance through caching strategies and query optimization</li>
                 <li>Conducted code reviews and provided technical guidance to team members</li>
                 <li>Integrated third-party services and payment gateways for e-commerce platforms</li>
-                <li>Implemented automated testing strategies improving code quality and reducing bugs by 35%</li>
+                <li>Implemented automated testing strategies improving code quality and reducing bugs</li>
               </ul>
             </div>
           </div>
         </div>
-        
+
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
-            <h3>Senior Developer</h3>
-            <p class="timeline-company">WebOccult Technologies Pvt. Ltd.</p>
-            <p class="timeline-date">2015 - 2018</p>
+            <h3>Technical Lead</h3>
+            <p class="timeline-company">EXCEL OVERSEAS PVT.LTD.</p>
+            <p class="timeline-date">Mar 2017 - Feb 2020 · 3 yrs</p>
             <div class="timeline-description">
-              <p>Built robust web applications using PHP and Laravel framework while expanding technical expertise.</p>
+              <p>Led technical initiatives and development teams in building enterprise web applications.</p>
               <ul>
-                <li>Developed custom CMS and e-commerce solutions for diverse clients</li>
-                <li>Implemented responsive front-end interfaces using modern JavaScript frameworks</li>
-                <li>Collaborated with designers and project managers to deliver pixel-perfect implementations</li>
-                <li>Participated in requirement gathering and technical planning sessions</li>
+                <li>Architected and developed web applications using PHP frameworks and .NET Core</li>
+                <li>Managed technical architecture and system design for multiple projects</li>
+                <li>Implemented coding standards and best practices across development teams</li>
+                <li>Conducted requirements analysis and translated business needs into technical solutions</li>
+                <li>Mentored developers in OOP principles and MVC architecture</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item scroll-reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content card">
+            <h3>Senior Software Engineer</h3>
+            <p class="timeline-company">Munjani Brothers</p>
+            <p class="timeline-date">Nov 2015 - Feb 2017 · 1 yr 4 mos</p>
+            <div class="timeline-description">
+              <p>Developed robust backend systems using .NET Core and managed relational databases.</p>
+              <ul>
+                <li>Built scalable backend applications using C# and .NET Core</li>
+                <li>Designed and optimized relational database schemas and queries</li>
+                <li>Implemented object-oriented programming principles for maintainable code</li>
+                <li>Collaborated with cross-functional teams on system requirements and data management</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item scroll-reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content card">
+            <h3>Software Engineer</h3>
+            <p class="timeline-company">D&K Group</p>
+            <p class="timeline-date">Aug 2013 - Oct 2015 · 2 yrs 3 mos</p>
+            <div class="timeline-description">
+              <p>Developed backend web applications and managed database systems using .NET technologies.</p>
+              <ul>
+                <li>Built web applications using C# and .NET Core framework</li>
+                <li>Designed and implemented relational database solutions</li>
+                <li>Applied OOP principles and design patterns in application development</li>
+                <li>Managed version control using Git and followed coding standards</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item scroll-reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content card">
+            <h3>Intern</h3>
+            <p class="timeline-company">Aisomex Consultancy Services Pvt. Ltd.</p>
+            <p class="timeline-date">Feb 2013 - Aug 2013 · 7 mos</p>
+            <div class="timeline-description">
+              <p>Gained hands-on experience in backend development and REST API implementation.</p>
+              <ul>
+                <li>Developed backend components using C# and .NET Core</li>
+                <li>Implemented REST APIs for web applications</li>
+                <li>Learned OOP principles and software development best practices</li>
+                <li>Worked with Git for version control and SQL for database operations</li>
               </ul>
             </div>
           </div>
@@ -256,38 +344,96 @@
       </div>
     </div>
   </section>
-  
+
   <!-- Projects Section -->
   <section class="section" id="projects">
     <div class="container">
       <div class="section-title">
         <h2>Featured Projects & Achievements</h2>
       </div>
-      
+
       <div class="projects-grid">
         <div class="project-card card scroll-reveal">
           <div class="project-header">
             <div class="project-icon">🎤</div>
           </div>
-          <h3 class="project-title">LaravelLive Ahmedabad 2024 Speaker</h3>
+          <h3 class="project-title">Laravel Queues on Steroids</h3>
           <p class="project-description">
-            Presented a technical talk on "Optimizing High-Traffic Laravel Applications" at LaravelLive Ahmedabad 2024. Shared insights on performance optimization, caching strategies, database indexing, and scaling techniques for enterprise Laravel applications.
+            Delivered an electrifying session at Laravel Ahmedabad Meetup (Dec 22, 2024) on high-speed performance and
+            optimization techniques for Laravel Queues. Covered advanced queue management strategies for handling
+            large-scale background processing.
+          </p>
+          <div class="project-tech">
+            <span class="tech-tag">Laravel Queues</span>
+            <span class="tech-tag">Performance</span>
+            <span class="tech-tag">Optimization</span>
+            <span class="tech-tag">Community Speaker</span>
+          </div>
+        </div>
+
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon">🎤</div>
+          </div>
+          <h3 class="project-title">Speeding Up Large-Scale Laravel App Part-2</h3>
+          <p class="project-description">
+            Presented at LaravelLive Ahmedabad (Feb 25, 2024) continuing the deep dive into performance optimization for
+            large-scale applications. Shared advanced techniques for database optimization, caching strategies, and
+            application profiling.
           </p>
           <div class="project-tech">
             <span class="tech-tag">Laravel</span>
             <span class="tech-tag">Performance</span>
-            <span class="tech-tag">Optimization</span>
-            <span class="tech-tag">Public Speaking</span>
+            <span class="tech-tag">Scaling</span>
+            <span class="tech-tag">Database Optimization</span>
           </div>
         </div>
-        
+
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon">🎤</div>
+          </div>
+          <h3 class="project-title">Speeding Up Large-Scale Laravel App</h3>
+          <p class="project-description">
+            Featured speaker at LaravelLive Ahmedabad (Jul 30, 2023) sharing foundational strategies for scaling Laravel
+            applications. Covered query optimization, eager loading, caching mechanisms, and performance monitoring for
+            high-traffic applications.
+          </p>
+          <div class="project-tech">
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">Performance</span>
+            <span class="tech-tag">High-Traffic</span>
+            <span class="tech-tag">Best Practices</span>
+          </div>
+        </div>
+
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon">🎤</div>
+          </div>
+          <h3 class="project-title">Working with Laravel Observers</h3>
+          <p class="project-description">
+            Presented at Laravel Ahmedabad Meetup (Dec 16, 2022) covering practical implementation and benefits of using
+            Laravel Observers. Demonstrated how to handle model events elegantly and maintain clean, maintainable code
+            architecture.
+          </p>
+          <div class="project-tech">
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">Observers</span>
+            <span class="tech-tag">Design Patterns</span>
+            <span class="tech-tag">Best Practices</span>
+          </div>
+        </div>
+
         <div class="project-card card scroll-reveal">
           <div class="project-header">
             <div class="project-icon">⚡</div>
           </div>
           <h3 class="project-title">High-Traffic E-Commerce Platform</h3>
           <p class="project-description">
-            Architected and led development of a scalable e-commerce platform handling 100K+ daily active users. Implemented advanced caching, queue management, and database optimization strategies to ensure sub-second response times during peak traffic.
+            Architected and led development of a scalable e-commerce platform handling 100K+ daily active users.
+            Implemented advanced caching, queue management, and database optimization strategies to ensure sub-second
+            response times during peak traffic.
           </p>
           <div class="project-tech">
             <span class="tech-tag">Laravel</span>
@@ -297,14 +443,16 @@
             <span class="tech-tag">AWS</span>
           </div>
         </div>
-        
+
         <div class="project-card card scroll-reveal">
           <div class="project-header">
             <div class="project-icon">🏢</div>
           </div>
           <h3 class="project-title">Enterprise Resource Planning System</h3>
           <p class="project-description">
-            Led development of a comprehensive ERP solution for manufacturing industry, integrating inventory management, production planning, HR, and financial modules. Designed microservices architecture for scalability and maintainability.
+            Led development of a comprehensive ERP solution for manufacturing industry, integrating inventory
+            management, production planning, HR, and financial modules. Designed microservices architecture for
+            scalability and maintainability.
           </p>
           <div class="project-tech">
             <span class="tech-tag">Laravel</span>
@@ -314,14 +462,16 @@
             <span class="tech-tag">REST API</span>
           </div>
         </div>
-        
+
         <div class="project-card card scroll-reveal">
           <div class="project-header">
             <div class="project-icon">📊</div>
           </div>
           <h3 class="project-title">Real-Time Analytics Dashboard</h3>
           <p class="project-description">
-            Built a real-time analytics and reporting platform processing millions of events daily. Implemented efficient data aggregation, visualization, and export capabilities with advanced filtering and customization options.
+            Built a real-time analytics and reporting platform processing millions of events daily. Implemented
+            efficient data aggregation, visualization, and export capabilities with advanced filtering and customization
+            options.
           </p>
           <div class="project-tech">
             <span class="tech-tag">Laravel</span>
@@ -331,14 +481,15 @@
             <span class="tech-tag">Queue Jobs</span>
           </div>
         </div>
-        
+
         <div class="project-card card scroll-reveal">
           <div class="project-header">
             <div class="project-icon">🔐</div>
           </div>
           <h3 class="project-title">Multi-Tenant SaaS Application</h3>
           <p class="project-description">
-            Designed and developed a multi-tenant SaaS platform with role-based access control, subscription management, and white-labeling capabilities. Ensured data isolation and security across tenant boundaries.
+            Designed and developed a multi-tenant SaaS platform with role-based access control, subscription management,
+            and white-labeling capabilities. Ensured data isolation and security across tenant boundaries.
           </p>
           <div class="project-tech">
             <span class="tech-tag">Laravel</span>
@@ -348,14 +499,16 @@
             <span class="tech-tag">MySQL</span>
           </div>
         </div>
-        
+
         <div class="project-card card scroll-reveal">
           <div class="project-header">
             <div class="project-icon">🎓</div>
           </div>
           <h3 class="project-title">Technical Mentorship & Knowledge Sharing</h3>
           <p class="project-description">
-            Actively mentor developers through code reviews, technical discussions, and knowledge-sharing sessions. Created internal documentation and best practice guides that improved team efficiency and code quality across the organization.
+            Actively mentor developers through code reviews, technical discussions, and knowledge-sharing sessions.
+            Created internal documentation and best practice guides that improved team efficiency and code quality
+            across the organization.
           </p>
           <div class="project-tech">
             <span class="tech-tag">Leadership</span>
@@ -367,67 +520,82 @@
       </div>
     </div>
   </section>
-  
+
   <!-- Education Section -->
   <section class="section" id="education">
     <div class="container">
       <div class="section-title">
         <h2>Education & Certifications</h2>
       </div>
-      
+
       <div class="education-grid">
         <div class="education-card card scroll-reveal">
           <h3>RK University</h3>
           <p class="education-degree">Bachelor of Engineering in Information Technology</p>
           <p class="education-date">2009 - 2013</p>
         </div>
-        
+
         <div class="education-card card scroll-reveal">
           <h3>Laravel Expertise</h3>
           <p class="education-degree">Advanced Laravel Development & Architecture</p>
           <p class="education-date">Professional Experience & Continuous Learning</p>
         </div>
-        
+
         <div class="education-card card scroll-reveal">
-          <h3>Conference Speaker</h3>
-          <p class="education-degree">LaravelLive Ahmedabad 2024</p>
-          <p class="education-date">December 2024</p>
+          <h3>Community Speaker</h3>
+          <p class="education-degree">Laravel Ahmedabad Meetups</p>
+          <p class="education-date">2022 - 2024 · 4 Technical Talks</p>
         </div>
       </div>
     </div>
   </section>
-  
+
   <!-- Contact Section -->
   <section class="section" id="contact">
     <div class="container">
       <div class="section-title">
         <h2>Let's Connect</h2>
       </div>
-      
+
       <div class="contact-content">
         <h3>Ready to collaborate on your next project?</h3>
         <p>
-          I'm always interested in discussing new opportunities, technical challenges, or speaking engagements. Whether you need a technical lead for your project or want to chat about Laravel optimization, feel free to reach out.
+          I'm always interested in discussing new opportunities, technical challenges, or speaking engagements. Whether
+          you need a technical lead for your project or want to chat about Laravel optimization, feel free to reach out.
         </p>
-        
+
         <div class="contact-links">
-          <a href="https://www.linkedin.com/in/naineshrabadiya/" target="_blank" rel="noopener noreferrer" class="contact-link" id="linkedin-link">
+          <a href="https://www.linkedin.com/in/naineshrabadiya/" target="_blank" rel="noopener noreferrer"
+            class="contact-link" id="linkedin-link">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              <path
+                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
             </svg>
             LinkedIn
           </a>
-          
-          <a href="mailto:nainesh@example.com" class="contact-link" id="email-link">
+
+          <a href="https://x.com/nainesh_9x" target="_blank" rel="noopener noreferrer" class="contact-link"
+            id="twitter-link">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M0 3v18h24v-18h-24zm6.623 7.929l-4.623 5.712v-9.458l4.623 3.746zm-4.141-5.929h19.035l-9.517 7.713-9.518-7.713zm5.694 7.188l3.824 3.099 3.83-3.104 5.612 6.817h-18.779l5.513-6.812zm9.208-1.264l4.616-3.741v9.348l-4.616-5.607z"/>
+              <path
+                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            Twitter
+          </a>
+
+          <a href="mailto:nkrabadiya@gmail.com" class="contact-link" id="email-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path
+                d="M0 3v18h24v-18h-24zm6.623 7.929l-4.623 5.712v-9.458l4.623 3.746zm-4.141-5.929h19.035l-9.517 7.713-9.518-7.713zm5.694 7.188l3.824 3.099 3.83-3.104 5.612 6.817h-18.779l5.513-6.812zm9.208-1.264l4.616-3.741v9.348l-4.616-5.607z" />
             </svg>
             Email
           </a>
-          
-          <a href="https://github.com/nainesh-rabadiya" target="_blank" rel="noopener noreferrer" class="contact-link" id="github-link">
+
+          <a href="https://github.com/nainesh-rabadiya" target="_blank" rel="noopener noreferrer" class="contact-link"
+            id="github-link">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
             </svg>
             GitHub
           </a>
@@ -435,16 +603,17 @@
       </div>
     </div>
   </section>
-  
+
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
       <p>&copy; 2026 Nainesh Rabadiya. Built with passion for clean code and performance.</p>
     </div>
   </footer>
-  
+
   <!-- JavaScript -->
   <script src="script.js"></script>
-  
+
 </body>
+
 </html>
