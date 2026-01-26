@@ -640,74 +640,108 @@ a:not(.btn):not(.nav-link):hover {
 /* ============================================
    EXPERIENCE SECTION
    ============================================ */
+/* ============================================
+   EXPERIENCE SECTION (Standard Left Layout)
+   ============================================ */
 .experience-timeline {
   position: relative;
   max-width: 900px;
   margin: 0 auto;
 }
 
-.timeline-item {
-  position: relative;
-  padding-left: var(--spacing-3xl);
-  margin-bottom: var(--spacing-3xl);
-}
-
-.timeline-item::before {
+/* Vertical Line on Left */
+.experience-timeline::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: 20px;
   top: 0;
-  bottom: -var(--spacing-3xl);
+  bottom: 0;
   width: 2px;
-  background: linear-gradient(180deg, var(--color-primary) 0%, transparent 100%);
+  background: linear-gradient(180deg, var(--color-primary) 0%, rgba(255, 45, 32, 0.1) 100%);
 }
 
-.timeline-item:last-child::before {
+.timeline-item {
+  width: 100%;
+  padding-left: 80px;
+  /* Space for line and connectors */
+  padding-bottom: var(--spacing-3xl);
+  position: relative;
+}
+
+/* Reset any alternating logic */
+.timeline-item:nth-child(odd),
+.timeline-item:nth-child(even) {
+  left: 0;
+  text-align: left;
+  padding-right: 0;
+}
+
+/* Hide default left border logic */
+.timeline-item::before {
   display: none;
 }
 
+/* The Dot */
 .timeline-dot {
   position: absolute;
-  left: -8px;
-  top: 8px;
-  width: 18px;
-  height: 18px;
+  left: 11px;
+  /* Centered on the 2px line at left:20px */
+  top: 0;
+  width: 20px;
+  height: 20px;
   background: var(--gradient-primary);
   border-radius: 50%;
-  box-shadow: 0 0 0 4px var(--color-bg-primary), 0 0 0 6px var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-bg-primary), 0 0 0 4px var(--color-primary);
+  z-index: 2;
+  transition: all 0.3s ease;
+  animation: pulse-dot 2s infinite;
 }
 
-.timeline-content h3 {
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-xs);
+/* Card Styling Enhancements */
+.timeline-content {
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timeline-item:hover .timeline-dot {
+  transform: scale(1.3);
+  box-shadow: 0 0 0 6px var(--color-bg-primary), 0 0 15px var(--color-primary);
 }
 
 .timeline-company {
   color: var(--color-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
   margin-bottom: var(--spacing-xs);
+  display: inline-block;
+  border-bottom: 2px solid rgba(255, 45, 32, 0.2);
+  padding-bottom: 2px;
 }
 
 .timeline-date {
+  font-family: var(--font-mono);
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   margin-bottom: var(--spacing-md);
+  display: block;
 }
 
-.timeline-description {
-  color: var(--color-text-secondary);
-  line-height: 1.8;
+/* Connector Line */
+.timeline-content::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: -60px;
+  /* Stretch to the dot */
+  width: 60px;
+  height: 2px;
+  background: rgba(255, 45, 32, 0.3);
+  transition: width 0.3s ease;
+  transform-origin: left center;
 }
 
-.timeline-description ul {
-  list-style: none;
-  margin-top: var(--spacing-md);
-}
-
-.timeline-description li {
-  position: relative;
-  padding-left: var(--spacing-lg);
-  margin-bottom: var(--spacing-sm);
+.timeline-item:hover .timeline-content::after {
+  transform: scaleX(1.1);
 }
 
 .timeline-description li::before {
@@ -716,6 +750,13 @@ a:not(.btn):not(.nav-link):hover {
   left: 0;
   color: var(--color-primary);
   font-weight: bold;
+}
+
+.timeline-description li {
+  text-align: left;
+  position: relative;
+  padding-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
 }
 
 /* ============================================
@@ -732,21 +773,38 @@ a:not(.btn):not(.nav-link):hover {
 }
 
 .project-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0;
 }
 
 .project-icon {
-  font-size: var(--font-size-3xl);
-  color: var(--color-primary);
+  position: absolute;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 45, 32, 0.1);
+  border-radius: 50%;
+  font-size: 1.5rem;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(255, 45, 32, 0.2);
+}
+
+.project-card:hover .project-icon {
+  transform: rotate(15deg) scale(1.1);
+  background: rgba(255, 45, 32, 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 15px rgba(255, 45, 32, 0.3);
 }
 
 .project-title {
   font-size: var(--font-size-xl);
   margin-bottom: var(--spacing-sm);
   color: var(--color-text-primary);
+  padding-right: 60px;
+  /* Space for the floating icon */
 }
 
 .project-description {
@@ -1008,27 +1066,56 @@ a:not(.btn):not(.nav-link):hover {
     padding: var(--spacing-3xl) 0;
   }
 
-  /* Improved Mobile Timeline */
+  /* Improved Mobile Timeline - Reset Center Spine to Left */
   .experience-timeline {
-    padding-left: var(--spacing-xs);
+    padding-left: 0;
+    max-width: 100%;
+  }
+
+  /* Reset Central Line to Left */
+  .experience-timeline::before {
+    left: 19px;
+    /* Align with dots */
+    transform: none;
   }
 
   .timeline-item {
-    padding-left: var(--spacing-xl);
-    margin-bottom: var(--spacing-xl);
+    width: 100%;
+    padding-left: 50px;
+    padding-right: 0;
+    padding-bottom: var(--spacing-xl);
+    left: 0 !important;
+    text-align: left !important;
+    margin-bottom: 0;
   }
 
-  .timeline-item::before {
+  /* Reset odd/even positioning for mobile */
+  .timeline-item:nth-child(odd),
+  .timeline-item:nth-child(even) {
     left: 0;
+    text-align: left;
+    padding-right: 0;
+    padding-left: 50px;
   }
 
-  .timeline-dot {
-    left: -9px;
-    width: 20px;
-    height: 20px;
+  /* Reset Dots for Mobile (Left aligned) */
+  .timeline-item .timeline-dot,
+  .timeline-item:nth-child(odd) .timeline-dot,
+  .timeline-item:nth-child(even) .timeline-dot {
+    left: 10px !important;
+    right: auto !important;
     top: 0;
-    /* Interactive Pulse Effect */
-    box-shadow: 0 0 0 4px var(--color-bg-primary), 0 0 0 4px var(--color-primary);
+  }
+
+  /* Hide connector lines on mobile */
+  .timeline-content::after,
+  .timeline-item:nth-child(odd) .timeline-content::after,
+  .timeline-item:nth-child(even) .timeline-content::after {
+    display: none !important;
+  }
+
+  /* Interactive Pulse Effect */
+  .timeline-dot {
     animation: pulse-dot 2s infinite;
   }
 
