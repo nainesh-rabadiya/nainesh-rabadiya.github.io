@@ -574,7 +574,7 @@ a:not(.btn):not(.nav-link):hover {
 
 .about-stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-lg);
   margin-top: var(--spacing-xl);
 }
@@ -595,6 +595,14 @@ a:not(.btn):not(.nav-link):hover {
 .stat-label {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+}
+
+.stat-subtext {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
 }
 
 /* ============================================
