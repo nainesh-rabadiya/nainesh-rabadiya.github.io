@@ -12,8 +12,10 @@ htmlElement.setAttribute('data-theme', currentTheme);
 themeToggle.addEventListener('click', () => {
     const t = htmlElement.getAttribute('data-theme');
     const next = t === 'dark' ? 'light' : 'dark';
+    document.body.classList.add('theme-transitioning');
     htmlElement.setAttribute('data-theme', next);
     try { localStorage.setItem('theme', next); } catch (e) { /* unavailable */ }
+    setTimeout(() => document.body.classList.remove('theme-transitioning'), 320);
 });
 
 // ============================================
@@ -463,26 +465,31 @@ function initHeroTyping() {
         'Open Source Contributor'
     ];
 
+    const cursor = document.querySelector('.typing-cursor');
     let ri = 0, ci = 0, deleting = false;
     const WRITE = 70, DELETE = 35, PAUSE = 2200, GAP = 500;
 
     function tick() {
         const role = roles[ri];
         if (deleting) {
+            if (cursor) cursor.classList.add('is-typing');
             ci--;
             el.textContent = role.slice(0, ci);
             if (ci === 0) {
                 deleting = false;
                 ri = (ri + 1) % roles.length;
+                if (cursor) cursor.classList.remove('is-typing');
                 setTimeout(tick, GAP);
                 return;
             }
             setTimeout(tick, DELETE);
         } else {
+            if (cursor) cursor.classList.add('is-typing');
             ci++;
             el.textContent = role.slice(0, ci);
             if (ci === role.length) {
                 deleting = true;
+                if (cursor) cursor.classList.remove('is-typing');
                 setTimeout(tick, PAUSE);
                 return;
             }
@@ -499,17 +506,23 @@ function initHeroTyping() {
 window.addEventListener('load', () => {
     document.body.classList.add('loaded');
 
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // Dismiss page loader
     const loader = document.getElementById('page-loader');
-    if (loader) setTimeout(() => loader.classList.add('out'), 480);
+    if (loader) setTimeout(() => loader.classList.add('out'), reducedMotion ? 0 : 480);
 
     initHeroCanvas();
     initHeroTyping();
-    initCardTilt();
-    initMagneticBtns();
-    initCursorTrail();
+    initHeroSpotlight();
+    initSectionUnderlines();
+    if (!reducedMotion) {
+        initCardTilt();
+        initMagneticBtns();
+        initCursorTrail();
+        initNameGlitch();
+    }
     initSectionGlow();
-    initNameGlitch();
     initSkillTooltips();
 });
 
@@ -706,6 +719,72 @@ function initNameGlitch() {
     if (!nameEl) return;
     // hero-in finishes at ~0.52s delay + 0.65s = 1.17s; wait a bit after
     setTimeout(() => nameEl.classList.add('name-glitching'), 1500);
+}
+
+// ============================================
+// COPY EMAIL TO CLIPBOARD
+// ============================================
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+const emailLink = document.getElementById('email-link');
+if (emailLink) {
+    emailLink.addEventListener('click', function (e) {
+        e.preventDefault();
+        const email = 'nkrabadiya@gmail.com';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(email).then(() => showToast('✓ Email copied to clipboard'));
+        } else {
+            // Fallback for older browsers / iOS
+            const ta = document.createElement('textarea');
+            ta.value = email;
+            ta.style.cssText = 'position:fixed;opacity:0;';
+            document.body.appendChild(ta);
+            ta.focus(); ta.select();
+            try { document.execCommand('copy'); showToast('✓ Email copied to clipboard'); } catch (_) {}
+            document.body.removeChild(ta);
+        }
+    });
+}
+
+// ============================================
+// HERO CURSOR SPOTLIGHT
+// ============================================
+function initHeroSpotlight() {
+    if (window.matchMedia('(hover: none)').matches) return;
+    const hero = document.querySelector('.hero');
+    const spotlight = document.getElementById('hero-spotlight');
+    if (!hero || !spotlight) return;
+    hero.addEventListener('mousemove', e => {
+        const r = hero.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width  * 100).toFixed(1) + '%';
+        const y = ((e.clientY - r.top)  / r.height * 100).toFixed(1) + '%';
+        spotlight.style.setProperty('--hx', x);
+        spotlight.style.setProperty('--hy', y);
+    }, { passive: true });
+}
+
+// ============================================
+// SECTION TITLE UNDERLINE
+// ============================================
+function initSectionUnderlines() {
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const title = entry.target.querySelector('.section-title');
+            if (title && !title.dataset.underlined) {
+                title.dataset.underlined = '1';
+                setTimeout(() => title.classList.add('underlined'), 200);
+            }
+            obs.unobserve(entry.target);
+        });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.section').forEach(s => obs.observe(s));
 }
 
 // ============================================

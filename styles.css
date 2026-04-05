@@ -207,6 +207,7 @@ body.cursor-hover #cursor-dot {
   color: var(--text-1);
   line-height: 1.15;
   letter-spacing: -0.03em;
+  position: relative;
 }
 
 /* ============================================
@@ -1717,4 +1718,92 @@ body.loaded .side-social {
 
 @media (max-width: 768px) {
   #leadership .projects-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================
+   SMOOTH THEME TRANSITION
+   ============================================ */
+body.theme-transitioning,
+body.theme-transitioning *,
+body.theme-transitioning *::before,
+body.theme-transitioning *::after {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease !important;
+}
+
+/* ============================================
+   HERO CURSOR SPOTLIGHT
+   ============================================ */
+.hero-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle 500px at var(--hx, 50%) var(--hy, 50%), rgba(255, 45, 32, 0.07), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+.hero:hover .hero-spotlight {
+  opacity: 1;
+}
+@media (hover: none) {
+  .hero-spotlight { display: none; }
+}
+
+/* ============================================
+   SECTION TITLE UNDERLINE — draws on scroll-in
+   ============================================ */
+.section-title {
+  padding-bottom: 0.6rem;
+}
+.section-title::after {
+  content: '';
+  display: block;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+  border-radius: 2px;
+  margin-top: 0.4rem;
+  transition: width 0.7s var(--ease);
+}
+.section-title.underlined::after {
+  width: 56px;
+}
+
+/* ============================================
+   TYPING CURSOR — solid while typing, blink when idle
+   ============================================ */
+.typing-cursor.is-typing {
+  animation: none;
+  opacity: 1;
+}
+
+/* ============================================
+   TOAST NOTIFICATION
+   ============================================ */
+.toast {
+  position: fixed;
+  bottom: 5.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hover);
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 0.55rem 1.2rem;
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s var(--spring);
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
