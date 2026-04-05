@@ -268,91 +268,72 @@ navToggle.addEventListener('click', () => {
 });
 
 // ============================================
-// HERO CANVAS — floating code symbols
+// HERO CANVAS — binary rain (Matrix style)
 // ============================================
 function initHeroCanvas() {
     const canvas = document.getElementById('hero-canvas');
     if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx    = canvas.getContext('2d');
     const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
 
-    const symbols = [
-        // Name
-        'Nainesh', 'NR',
-        // Laravel / PHP core
-        'Laravel', 'PHP', 'Eloquent', 'Artisan', 'Blade',
-        'Route::', 'Cache::', 'Queue::push()', 'Redis::', 'Middleware',
-        'php artisan', '<?php', '@inject', 'composer',
-        // Syntax
-        '$this->', '=>', '::', '->', '{}', 'fn()',
-        'return', 'public', 'static', 'class', 'use', 'new',
-        // Stack
-        'MySQL', 'PostgreSQL', 'Redis', 'Docker', 'AWS',
-        'Vue.js', 'REST API', 'GraphQL', 'Microservices',
-        'nginx', '.env', 'CI/CD', 'git push', 'ssh',
-        // Experience
-        '13+ years', 'Tech Lead', 'WebOccult',
-        'Performance', 'Scalable', 'Architecture'
-    ];
-
-    let W, H, particles;
+    const FONT_SIZE = 13;
+    let W, H, cols, drops;
 
     function resize() {
-        W = canvas.width  = canvas.offsetWidth;
-        H = canvas.height = canvas.offsetHeight;
-    }
-
-    class Sym {
-        constructor(init) {
-            this.reset(init);
+        W    = canvas.width  = canvas.offsetWidth;
+        H    = canvas.height = canvas.offsetHeight;
+        cols = Math.floor(W / FONT_SIZE);
+        // spread drops randomly across the full height on init
+        if (!drops) drops = Array.from({ length: cols }, () => Math.random() * (H / FONT_SIZE));
+        // keep existing drop positions but clamp to new col count
+        else {
+            while (drops.length < cols) drops.push(Math.random() * (H / FONT_SIZE));
+            drops.length = cols;
         }
-        reset(init) {
-            this.x    = Math.random() * W;
-            this.y    = init ? Math.random() * H : H + 16;
-            this.text = symbols[Math.floor(Math.random() * symbols.length)];
-            this.spd  = 0.18 + Math.random() * 0.32;
-            this.opa  = 0.08 + Math.random() * 0.10;
-            this.size = 10 + Math.floor(Math.random() * 5);
-            this.dx   = (Math.random() - 0.5) * 0.12;
-        }
-        tick() {
-            this.y -= this.spd;
-            this.x += this.dx;
-            if (this.y < -24) this.reset(false);
-        }
-        draw() {
-            ctx.save();
-            ctx.globalAlpha = this.opa;
-            ctx.fillStyle   = isDark() ? '#FF2D20' : '#7A1510';
-            ctx.font        = `${this.size}px "Fira Code", monospace`;
-            ctx.fillText(this.text, this.x, this.y);
-            ctx.restore();
-        }
-    }
-
-    function init() {
-        resize();
-        particles = Array.from({ length: 45 }, () => new Sym(true));
     }
 
     let raf;
-    function loop() {
-        ctx.clearRect(0, 0, W, H);
-        particles.forEach(p => { p.tick(); p.draw(); });
-        raf = requestAnimationFrame(loop);
+
+    function draw() {
+        // semi-transparent overlay creates the fading trail
+        ctx.fillStyle = isDark()
+            ? 'rgba(9, 9, 11, 0.055)'
+            : 'rgba(250, 250, 250, 0.055)';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.font = `${FONT_SIZE}px "Fira Code", monospace`;
+
+        for (let i = 0; i < cols; i++) {
+            const char = Math.random() > 0.5 ? '1' : '0';
+            const x    = i * FONT_SIZE;
+            const y    = drops[i] * FONT_SIZE;
+
+            // occasional bright "head" character
+            const isHead = Math.random() > 0.92;
+            ctx.fillStyle = isDark()
+                ? (isHead ? 'rgba(255,100,80,0.85)' : 'rgba(255,45,32,0.18)')
+                : (isHead ? 'rgba(150,20,10,0.75)'  : 'rgba(120,20,10,0.14)');
+
+            ctx.fillText(char, x, y);
+
+            // reset column to top randomly after passing bottom
+            if (y > H && Math.random() > 0.975) drops[i] = 0;
+            else drops[i] += 0.45; // slow fall speed
+        }
     }
 
-    // Pause when tab hidden (save CPU)
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) cancelAnimationFrame(raf);
-        else loop();
+        else raf = requestAnimationFrame(loop);
     });
 
     const ro = new ResizeObserver(() => resize());
     ro.observe(canvas.parentElement);
 
-    init();
+    function loop() { draw(); raf = requestAnimationFrame(loop); }
+
+    resize();
     loop();
 }
 
