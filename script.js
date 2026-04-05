@@ -235,6 +235,72 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 backToTop.addEventListener('click', () => {
+    if (backToTop.dataset.flying === '1') return;
+    backToTop.dataset.flying = '1';
+
+    const rect  = backToTop.getBoundingClientRect();
+    const startX = rect.left + rect.width  / 2;
+    const startY = rect.top  + rect.height / 2;
+
+    // Spawn flying rocket
+    const fly = document.createElement('div');
+    fly.className = 'rocket-flying';
+    fly.textContent = '🚀';
+    fly.style.left = startX + 'px';
+    fly.style.top  = startY + 'px';
+    document.body.appendChild(fly);
+
+    // Hide the button while rocket is in flight
+    backToTop.style.opacity = '0';
+    backToTop.style.transform = 'scale(0.7)';
+
+    const duration  = 750;
+    const endY      = -60;
+    let   lastTrail = 0;
+
+    function spawnExhaust(x, y) {
+        const p = document.createElement('div');
+        p.className = 'rocket-exhaust';
+        const spread = (Math.random() - 0.5) * 14;
+        p.style.left = (x + spread - 3) + 'px';
+        p.style.top  = (y + 10)         + 'px';
+        p.style.width  = (4 + Math.random() * 5) + 'px';
+        p.style.height = p.style.width;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 520);
+    }
+
+    const t0 = performance.now();
+    function frame(now) {
+        const elapsed  = now - t0;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease-in so it accelerates like a real launch
+        const eased    = progress * progress;
+        const curY     = startY + (endY - startY) * eased;
+
+        fly.style.top     = curY + 'px';
+        fly.style.opacity = progress > 0.75 ? String(1 - (progress - 0.75) / 0.25) : '1';
+
+        // Drop exhaust particle every ~35ms
+        if (now - lastTrail > 35) {
+            spawnExhaust(startX, curY);
+            lastTrail = now;
+        }
+
+        if (progress < 1) {
+            requestAnimationFrame(frame);
+        } else {
+            fly.remove();
+            backToTop.style.opacity  = '';
+            backToTop.style.transform = '';
+            backToTop.dataset.flying = '0';
+            // Landing re-entry animation
+            backToTop.classList.add('landing');
+            setTimeout(() => backToTop.classList.remove('landing'), 450);
+        }
+    }
+
+    requestAnimationFrame(frame);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
@@ -432,6 +498,11 @@ function initHeroTyping() {
 // ============================================
 window.addEventListener('load', () => {
     document.body.classList.add('loaded');
+
+    // Dismiss page loader
+    const loader = document.getElementById('page-loader');
+    if (loader) setTimeout(() => loader.classList.add('out'), 480);
+
     initHeroCanvas();
     initHeroTyping();
     initCardTilt();

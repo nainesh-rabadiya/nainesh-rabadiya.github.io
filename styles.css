@@ -1165,31 +1165,146 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
 }
 
 /* ============================================
-   BACK TO TOP
+   PAGE LOADER
+   ============================================ */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.55s ease, visibility 0.55s ease;
+}
+.page-loader.out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.loader-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+.loader-logo {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #FF2D20 0%, #FF6B61 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: loader-pulse 0.7s ease-in-out infinite alternate;
+}
+@keyframes loader-pulse {
+  from { opacity: 0.5; transform: scale(0.96); }
+  to   { opacity: 1;   transform: scale(1); }
+}
+.loader-bar {
+  width: 100px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loader-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #FF2D20, #FF6B61);
+  border-radius: 2px;
+  animation: loader-fill 0.85s ease-out forwards;
+}
+@keyframes loader-fill {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* ============================================
+   FIXED SIDE SOCIAL STRIP
+   ============================================ */
+.side-social {
+  position: fixed;
+  left: 1.5rem;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  z-index: 500;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease 1.2s, transform 0.6s var(--spring) 1.2s;
+}
+body.loaded .side-social {
+  opacity: 1;
+  transform: none;
+}
+.side-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  transition: color var(--dur) var(--ease), transform var(--dur) var(--spring);
+}
+.side-social a svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+.side-social a:hover {
+  color: var(--accent);
+  transform: translateY(-3px);
+}
+.side-social-line {
+  display: block;
+  width: 1px;
+  height: 72px;
+  background: var(--text-3);
+  opacity: 0.35;
+}
+@media (max-width: 1024px) {
+  .side-social { display: none; }
+}
+
+/* ============================================
+   BACK TO TOP — ROCKET
    ============================================ */
 .back-to-top {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius-full);
-  background: var(--accent);
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 700;
+  background: var(--bg-surface);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  box-shadow: 0 4px 20px rgba(255,45,32,0.35);
+  box-shadow: 0 4px 20px rgba(255,45,32,0.25);
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(20px);
   pointer-events: none;
   transition: opacity var(--dur) var(--ease),
               transform var(--dur) var(--spring),
-              box-shadow var(--dur) var(--ease);
+              box-shadow var(--dur) var(--ease),
+              border-color var(--dur) var(--ease);
   z-index: 900;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.back-to-top .rocket-icon {
+  display: inline-block;
+  transform: rotate(-45deg);
+  transition: transform 0.4s var(--spring);
+  line-height: 1;
 }
 
 .back-to-top.visible {
@@ -1199,8 +1314,91 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
 }
 
 .back-to-top:hover {
-  box-shadow: 0 8px 30px rgba(255,45,32,0.5);
-  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(255,45,32,0.5);
+  transform: translateY(-5px);
+  border-color: var(--accent);
+  background: rgba(255,45,32,0.08);
+}
+
+.back-to-top:hover .rocket-icon {
+  transform: rotate(-45deg) scale(1.25);
+}
+
+/* Flying rocket element (spawned by JS, travels up the screen) */
+.rocket-flying {
+  position: fixed;
+  font-size: 1.8rem;
+  line-height: 1;
+  transform: rotate(-45deg);
+  pointer-events: none;
+  z-index: 99998;
+  margin-left: -14px;
+  margin-top: -14px;
+  filter: drop-shadow(0 0 10px rgba(255, 45, 32, 0.7));
+}
+
+/* Exhaust trail particles */
+.rocket-exhaust {
+  position: fixed;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,120,40,0.9) 0%, rgba(255,45,32,0.4) 60%, transparent 100%);
+  pointer-events: none;
+  z-index: 99997;
+  animation: exhaust-fade 0.5s ease-out forwards;
+}
+@keyframes exhaust-fade {
+  from { transform: scale(1);   opacity: 0.85; }
+  to   { transform: scale(0.1); opacity: 0; }
+}
+
+/* Re-entry: rocket comes back from bottom */
+.back-to-top.landing .rocket-icon {
+  animation: rocket-land 0.4s var(--spring) forwards;
+}
+
+@keyframes rocket-land {
+  0%   { transform: rotate(-45deg) translateY(30px); opacity: 0; }
+  100% { transform: rotate(-45deg); opacity: 1; }
+}
+
+/* ============================================
+   BORDER DRAW — cards get animated border on hover
+   ============================================ */
+.card {
+  position: relative;
+}
+.card::before,
+.card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  width: 0;
+  height: 0;
+  transition: width 0.4s ease, height 0.4s ease;
+  border: 2px solid transparent;
+  pointer-events: none;
+  z-index: 1;
+}
+.card::before {
+  top: -1px;
+  left: -1px;
+}
+.card::after {
+  bottom: -1px;
+  right: -1px;
+}
+.card:hover::before {
+  width: 100%;
+  height: 100%;
+  border-top-color: var(--accent);
+  border-left-color: var(--accent);
+}
+.card:hover::after {
+  width: 100%;
+  height: 100%;
+  border-bottom-color: var(--accent);
+  border-right-color: var(--accent);
 }
 
 /* ============================================
