@@ -278,12 +278,22 @@ function initHeroCanvas() {
     const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
 
     const symbols = [
-        '$var', '->', '=>', '::', 'fn()', 'return', 'class', 'use',
-        '{}', '()', '[]', 'null', 'true', 'public', 'static',
-        '&&', '||', '===', 'new', 'const', 'async', 'await',
-        'artisan', 'composer', 'git push', 'docker', '@inject',
-        '<?php', 'Route::', 'Eloquent', 'Queue::push()', 'Cache::',
-        '#!', 'ssh', 'nginx', '.env', 'Redis::'
+        // Name
+        'Nainesh', 'NR',
+        // Laravel / PHP core
+        'Laravel', 'PHP', 'Eloquent', 'Artisan', 'Blade',
+        'Route::', 'Cache::', 'Queue::push()', 'Redis::', 'Middleware',
+        'php artisan', '<?php', '@inject', 'composer',
+        // Syntax
+        '$this->', '=>', '::', '->', '{}', 'fn()',
+        'return', 'public', 'static', 'class', 'use', 'new',
+        // Stack
+        'MySQL', 'PostgreSQL', 'Redis', 'Docker', 'AWS',
+        'Vue.js', 'REST API', 'GraphQL', 'Microservices',
+        'nginx', '.env', 'CI/CD', 'git push', 'ssh',
+        // Experience
+        '13+ years', 'Tech Lead', 'WebOccult',
+        'Performance', 'Scalable', 'Architecture'
     ];
 
     let W, H, particles;
@@ -302,7 +312,7 @@ function initHeroCanvas() {
             this.y    = init ? Math.random() * H : H + 16;
             this.text = symbols[Math.floor(Math.random() * symbols.length)];
             this.spd  = 0.18 + Math.random() * 0.32;
-            this.opa  = 0.025 + Math.random() * 0.065;
+            this.opa  = 0.012 + Math.random() * 0.038;
             this.size = 10 + Math.floor(Math.random() * 5);
             this.dx   = (Math.random() - 0.5) * 0.12;
         }
