@@ -1399,6 +1399,69 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
 }
 
 /* ============================================
+   3. GLITCH FLASH — hero name (CSS-only, fires every ~8s)
+   ============================================ */
+.hero-title .name {
+  animation: name-glitch 8s ease-in-out infinite;
+}
+
+@keyframes name-glitch {
+  0%, 86%, 100% { filter: none; transform: none; }
+  87%  { filter: hue-rotate(80deg)  brightness(1.4) saturate(3); transform: translate(-2px, 0) skewX(-4deg); }
+  88%  { filter: hue-rotate(-70deg) brightness(1.5); transform: translate(3px, 0) skewX(2deg); }
+  89%  { filter: none; transform: none; }
+  90%  { filter: hue-rotate(160deg) brightness(1.3); transform: translate(-1px, 0); }
+  91%  { filter: none; transform: none; }
+}
+
+/* ============================================
+   4. SECTION AMBIENT GLOW — fires once on scroll in
+   ============================================ */
+.section-title.section-glow {
+  animation: section-glow-anim 1.8s ease-out forwards;
+}
+
+@keyframes section-glow-anim {
+  0%   { filter: none; }
+  25%  { filter: drop-shadow(0 0 18px rgba(255,45,32,0.55)) drop-shadow(0 0 40px rgba(255,45,32,0.20)); }
+  100% { filter: none; }
+}
+
+/* ============================================
+   5. SKILL TAG CODE TOOLTIP
+   ============================================ */
+.skill-code-tip {
+  position: fixed;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  pointer-events: none;
+  z-index: 9995;
+  white-space: nowrap;
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+
+.skill-code-tip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   CARD — allow 3D perspective for tilt effect
+   ============================================ */
+.card { transform-style: preserve-3d; will-change: transform; }
+
+/* ============================================
    LARGE SCREENS (≥ 1440px — MacBook Pro / iMac)
    ============================================ */
 @media (min-width: 1440px) {
