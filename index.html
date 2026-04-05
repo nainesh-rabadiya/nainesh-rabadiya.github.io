@@ -19,12 +19,19 @@
     content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://nainesh.dev">
+  <meta property="og:image" content="https://nainesh.dev/og-image.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Nainesh Rabadiya — Technical Lead & Senior Laravel Developer">
+  <meta property="og:site_name" content="Nainesh Rabadiya">
 
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nainesh Rabadiya - Technical Lead & Senior Laravel Developer">
   <meta name="twitter:description"
     content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
+  <meta name="twitter:image" content="https://nainesh.dev/og-image.svg">
+  <meta name="twitter:creator" content="@nainesh_9x">
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://nainesh.dev">
@@ -33,12 +40,18 @@
   <link rel="icon" type="image/svg+xml"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
 
-  <!-- Google Fonts -->
+  <!-- Performance: DNS prefetch + preconnect -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Google Fonts — preload then apply -->
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap">
   <link
     href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
-    rel="stylesheet">
+    rel="stylesheet" fetchpriority="high">
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css">
