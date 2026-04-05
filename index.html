@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
     rel="stylesheet">
 
   <!-- Stylesheet -->
@@ -74,6 +74,14 @@
 
 <body>
 
+  <!-- Scroll Progress -->
+  <div class="scroll-progress-bar" id="scroll-progress"></div>
+
+  <!-- Custom Cursor -->
+  <div id="cursor-glow" aria-hidden="true"></div>
+  <div id="cursor-dot"  aria-hidden="true"></div>
+  <div id="cursor-ring" aria-hidden="true"></div>
+
   <!-- Navigation -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
@@ -91,6 +99,7 @@
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
 
+      <div class="nav-actions">
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
         <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
           <path
@@ -108,6 +117,7 @@
         <span></span>
         <span></span>
       </button>
+      </div><!-- /nav-actions -->
     </div>
   </nav>
 
@@ -115,11 +125,10 @@
   <section class="hero section" id="home">
     <div class="container">
       <div class="hero-content">
-        <p class="hero-subtitle">💻 Technical Lead & Laravel Expert</p>
+        <span class="hero-eyebrow">Technical Lead &amp; Laravel Expert</span>
         <h1 class="hero-title">
-          Hi, I'm <span
-            style="background: linear-gradient(135deg, #FF2D20 0%, #FF4436 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Nainesh
-            Rabadiya</span>
+          <span class="greeting">Hi, I'm</span>
+          <span class="name">Nainesh Rabadiya</span>
         </h1>
         <p class="hero-description">
           I build high-performance Laravel applications that handle millions of users. Leading teams, optimizing
@@ -131,21 +140,23 @@
         </div>
       </div>
     </div>
+    <div class="hero-scroll" aria-hidden="true">scroll</div>
   </section>
 
   <!-- About Section -->
   <section class="section" id="about">
     <div class="container">
-      <div class="section-title">
-        <h2>👋 About Me</h2>
+      <div class="section-header">
+        <span class="section-label">01 — About</span>
+        <h2 class="section-title">About Me</h2>
       </div>
 
-      <div class="about-content">
-        <div class="about-image">
+      <div class="about-layout">
+        <div class="about-image-wrap">
           <img src="profile.png" alt="Nainesh Rabadiya - Technical Lead" class="profile-photo" loading="lazy">
         </div>
 
-        <div class="about-text">
+        <div class="about-body">
           <h3>What I Do</h3>
           <p>
             I am a Technical Lead at WebOccult Technologies, focused on building reliable, high-traffic enterprise
@@ -163,30 +174,30 @@
         </div>
       </div>
 
-      <div class="about-stats">
-        <div class="stat-card card">
+      <div class="bento-grid">
+        <div class="bento-item">
           <span class="stat-number">⏱️ 12+</span>
           <span class="stat-label">Years Experience</span>
         </div>
-        <div class="stat-card card">
+        <div class="bento-item">
           <span class="stat-number">🚀 50+</span>
           <span class="stat-label">Projects Delivered</span>
         </div>
-        <div class="stat-card card">
+        <div class="bento-item">
           <span class="stat-number">⚡ 5+</span>
           <span class="stat-label">Large Scale Apps</span>
         </div>
-        <div class="stat-card card">
+        <div class="bento-item">
           <span class="stat-number">🎤 4</span>
           <span class="stat-label">Speaker</span>
           <span class="stat-subtext">LaravelLive Ahmedabad</span>
         </div>
-        <div class="stat-card card">
+        <div class="bento-item">
           <span class="stat-number">🎫 65+</span>
           <span class="stat-label">Tech Meetups</span>
           <span class="stat-subtext">Active Attendee</span>
         </div>
-        <div class="stat-card card">
+        <div class="bento-item">
           <span class="stat-number">🐘 4</span>
           <span class="stat-label">Laracons Attended</span>
           <span class="stat-subtext">Global Conferences</span>
@@ -198,12 +209,22 @@
   <!-- Skills Section -->
   <section class="section" id="skills">
     <div class="container">
-      <div class="section-title">
-        <h2>🛠️ Skills & Technologies</h2>
+      <div class="section-header">
+        <span class="section-label">02 — Skills</span>
+        <h2 class="section-title">Skills &amp; Technologies</h2>
+      </div>
+
+      <div class="skills-tabs">
+        <button class="skill-tab active" data-tab="all">All</button>
+        <button class="skill-tab" data-tab="backend">Backend</button>
+        <button class="skill-tab" data-tab="frontend">Frontend</button>
+        <button class="skill-tab" data-tab="architecture">Architecture</button>
+        <button class="skill-tab" data-tab="tools">Tools &amp; DevOps</button>
+        <button class="skill-tab" data-tab="ai">AI &amp; CV</button>
       </div>
 
       <div class="skills-grid">
-        <div class="skill-category card scroll-reveal">
+        <div class="skill-category card scroll-reveal" data-category="backend">
           <h3>🚀 Backend Development</h3>
           <div class="skill-list">
             <span class="skill-tag">PHP</span>
@@ -219,7 +240,7 @@
           </div>
         </div>
 
-        <div class="skill-category card scroll-reveal">
+        <div class="skill-category card scroll-reveal" data-category="frontend">
           <h3>💻 Frontend Development</h3>
           <div class="skill-list">
             <span class="skill-tag">JavaScript</span>
@@ -233,8 +254,8 @@
           </div>
         </div>
 
-        <div class="skill-category card scroll-reveal">
-          <h3>🏗️ Architecture & Leadership</h3>
+        <div class="skill-category card scroll-reveal" data-category="architecture">
+          <h3>🏗️ Architecture &amp; Leadership</h3>
           <div class="skill-list">
             <span class="skill-tag">System Design</span>
             <span class="skill-tag">Software Architecture</span>
@@ -247,8 +268,8 @@
           </div>
         </div>
 
-        <div class="skill-category card scroll-reveal">
-          <h3>🛠️ Tools & DevOps</h3>
+        <div class="skill-category card scroll-reveal" data-category="tools">
+          <h3>🛠️ Tools &amp; DevOps</h3>
           <div class="skill-list">
             <span class="skill-tag">Git</span>
             <span class="skill-tag">Docker</span>
@@ -266,8 +287,8 @@
           </div>
         </div>
 
-        <div class="skill-category card scroll-reveal">
-          <h3>🤖 AI & Computer Vision</h3>
+        <div class="skill-category card scroll-reveal" data-category="ai">
+          <h3>🤖 AI &amp; Computer Vision</h3>
           <div class="skill-list">
             <span class="skill-tag">Machine Learning</span>
             <span class="skill-tag">Computer Vision</span>
@@ -286,8 +307,9 @@
   <!-- Experience Section -->
   <section class="section" id="experience">
     <div class="container">
-      <div class="section-title">
-        <h2>💼 Professional Experience</h2>
+      <div class="section-header">
+        <span class="section-label">03 — Experience</span>
+        <h2 class="section-title">Professional Experience</h2>
       </div>
 
       <div class="experience-timeline">
@@ -411,8 +433,9 @@
   <!-- Projects Section -->
   <section class="section" id="projects">
     <div class="container">
-      <div class="section-title">
-        <h2>✨ Featured Projects & Achievements</h2>
+      <div class="section-header">
+        <span class="section-label">04 — Projects</span>
+        <h2 class="section-title">Featured Projects &amp; Achievements</h2>
       </div>
 
       <div class="projects-grid">
@@ -589,8 +612,9 @@
   <!-- Leadership Section -->
   <section class="section" id="leadership">
     <div class="container">
-      <div class="section-title">
-        <h2>🏆 Leadership & Community</h2>
+      <div class="section-header">
+        <span class="section-label">05 — Leadership</span>
+        <h2 class="section-title">Leadership &amp; Community</h2>
       </div>
 
       <div class="projects-grid">
@@ -651,8 +675,9 @@
   <!-- Education Section -->
   <section class="section" id="education">
     <div class="container">
-      <div class="section-title">
-        <h2>🎓 Education & Certifications</h2>
+      <div class="section-header">
+        <span class="section-label">06 — Education</span>
+        <h2 class="section-title">Education &amp; Certifications</h2>
       </div>
 
       <div class="education-grid">
@@ -689,11 +714,12 @@
   <!-- Contact Section -->
   <section class="section" id="contact">
     <div class="container">
-      <div class="section-title">
-        <h2>📬 Let's Connect</h2>
+      <div class="section-header">
+        <span class="section-label">07 — Contact</span>
+        <h2 class="section-title" style="display:none">Let's Connect</h2>
       </div>
 
-      <div class="contact-content">
+      <div class="contact-wrapper">
         <h3>Let's Collaborate</h3>
         <p>
           Passionate about open source contributions and solving complex engineering problems. I enjoy building
@@ -747,6 +773,9 @@
       <p>&copy; 2026 Nainesh Rabadiya. Built with passion for clean code and performance.</p>
     </div>
   </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">↑</button>
 
   <!-- JavaScript -->
   <script src="script.js"></script>
