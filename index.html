@@ -873,16 +873,23 @@
         el.appendChild(baseDiv);  // dim layer (behind)
         el.appendChild(glowDiv);  // spotlight layer (on top)
 
+        // Set mask directly on the element (works on Safari/Mac, Chrome, Firefox)
+        function setMask(pct) {
+          var grad = 'radial-gradient(ellipse 28% 120% at ' + pct + '% 50%, black 5%, transparent 68%)';
+          glowDiv.style.webkitMaskImage = grad;
+          glowDiv.style.maskImage       = grad;
+        }
+
         // Always-running sweep — spotlight bounces left↔right via rAF
-        var sweepX = -15, sweepDir = 1, hovering = false, sweepRAF;
+        var sweepX = -15, sweepDir = 1, hovering = false;
         function sweep() {
           if (!hovering) {
             sweepX += sweepDir * 0.38;
             if (sweepX >= 115) sweepDir = -1;
             if (sweepX <= -15) sweepDir =  1;
-            glowDiv.style.setProperty('--fs-x', sweepX.toFixed(1) + '%');
+            setMask(sweepX.toFixed(1));
           }
-          sweepRAF = requestAnimationFrame(sweep);
+          requestAnimationFrame(sweep);
         }
         sweep();
 
@@ -891,16 +898,17 @@
         el.addEventListener('mouseenter', function () { hovering = true; });
         el.addEventListener('mousemove', function (e) {
           var r = el.getBoundingClientRect();
-          glowDiv.style.setProperty('--fs-x', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+          setMask(((e.clientX - r.left) / r.width * 100).toFixed(1));
         });
         el.addEventListener('mouseleave', function () { hovering = false; });
       }
 
-      // Wait for Nunito font so clipPath text renders at correct dimensions
+      // Wait for fonts then defer one more frame so Safari has painted them
+      function safeInit() { requestAnimationFrame(function() { requestAnimationFrame(init); }); }
       if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(init);
+        document.fonts.ready.then(safeInit);
       } else {
-        window.addEventListener('load', init);
+        window.addEventListener('load', safeInit);
       }
     })();
   </script>
