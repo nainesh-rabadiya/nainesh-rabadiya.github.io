@@ -4,8 +4,14 @@
 const themeToggle = document.getElementById('theme-toggle');
 const htmlElement = document.documentElement;
 
-// Check for saved theme preference or default to 'light'
-const currentTheme = localStorage.getItem('theme') || 'light';
+// Check for saved theme preference, fall back to OS preference, then 'light'
+let savedTheme;
+try {
+    savedTheme = localStorage.getItem('theme');
+} catch (e) {
+    savedTheme = null;
+}
+const currentTheme = savedTheme ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 htmlElement.setAttribute('data-theme', currentTheme);
 
 // Theme toggle event listener
@@ -14,7 +20,11 @@ themeToggle.addEventListener('click', () => {
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
     htmlElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+    try {
+        localStorage.setItem('theme', newTheme);
+    } catch (e) {
+        // localStorage unavailable, continue without persisting
+    }
 });
 
 // ============================================
@@ -51,7 +61,7 @@ navLinks.forEach(link => {
 let lastScroll = 0;
 
 window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
+    const currentScroll = window.scrollY;
 
     // Add scrolled class for styling
     if (currentScroll > 50) {
@@ -71,7 +81,7 @@ window.addEventListener('scroll', () => {
 const sections = document.querySelectorAll('.section');
 
 const highlightNavigation = () => {
-    const scrollPosition = window.pageYOffset;
+    const scrollPosition = window.scrollY;
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
 
@@ -162,72 +172,26 @@ revealElements.forEach(element => {
 });
 
 // ============================================
-// TYPING EFFECT (Optional Enhancement)
-// ============================================
-
-// Dynamic typing effect for hero subtitle (optional)
-const heroSubtitle = document.querySelector('.hero-subtitle');
-if (heroSubtitle) {
-    const originalText = heroSubtitle.textContent;
-    const typingSpeed = 100;
-    const deletingSpeed = 50;
-    const pauseDuration = 2000;
-
-    const roles = [
-        'Technical Lead & Laravel Expert',
-        'Senior Software Architect',
-        'Conference Speaker',
-        'Performance Optimization Specialist'
-    ];
-
-    let roleIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
-
-    function typeEffect() {
-        const currentRole = roles[roleIndex];
-
-        if (isDeleting) {
-            heroSubtitle.textContent = currentRole.substring(0, charIndex - 1);
-            charIndex--;
-        } else {
-            heroSubtitle.textContent = currentRole.substring(0, charIndex + 1);
-            charIndex++;
-        }
-
-        let typeSpeed = isDeleting ? deletingSpeed : typingSpeed;
-
-        if (!isDeleting && charIndex === currentRole.length) {
-            typeSpeed = pauseDuration;
-            isDeleting = true;
-        } else if (isDeleting && charIndex === 0) {
-            isDeleting = false;
-            roleIndex = (roleIndex + 1) % roles.length;
-            typeSpeed = 500;
-        }
-
-        setTimeout(typeEffect, typeSpeed);
-    }
-
-    // Uncomment to enable typing effect
-    // setTimeout(typeEffect, 1000);
-}
-
-// ============================================
 // STATS COUNTER ANIMATION
 // ============================================
 
 // Animate numbers in stats section
 const animateCounter = (element, target, duration = 2000) => {
+    // Extract numeric value, handling emoji prefixes like "⏱️ 12+"
+    const numMatch = target.match(/(\d+)/);
+    if (!numMatch) return;
+
+    const numericTarget = parseInt(numMatch[1]);
+    const hasPlus = target.includes('+');
+    const prefix = target.substring(0, target.indexOf(numMatch[0]));
+
     let current = 0;
-    const increment = target / (duration / 16);
-    const isPlus = target.toString().includes('+');
-    const numericTarget = parseInt(target);
+    const increment = numericTarget / (duration / 16);
 
     const updateCounter = () => {
         current += increment;
         if (current < numericTarget) {
-            element.textContent = Math.floor(current) + (isPlus ? '+' : '');
+            element.textContent = prefix + Math.floor(current) + (hasPlus ? '+' : '');
             requestAnimationFrame(updateCounter);
         } else {
             element.textContent = target;
@@ -284,7 +248,6 @@ const skillTags = document.querySelectorAll('.skill-tag');
 skillTags.forEach(tag => {
     tag.addEventListener('click', function () {
         // Optional: Add functionality like filtering projects by skill
-        console.log(`Skill clicked: ${this.textContent}`);
     });
 });
 
@@ -296,10 +259,14 @@ skillTags.forEach(tag => {
 const contactLinks = document.querySelectorAll('.contact-link');
 
 contactLinks.forEach(link => {
-    link.addEventListener('click', function (e) {
+    link.addEventListener('click', function () {
         const linkType = this.id.replace('-link', '');
-        console.log(`Contact link clicked: ${linkType}`);
-        // Add analytics tracking here if needed
+        if (typeof gtag === 'function') {
+            gtag('event', 'contact_click', {
+                event_category: 'engagement',
+                event_label: linkType
+            });
+        }
     });
 });
 
