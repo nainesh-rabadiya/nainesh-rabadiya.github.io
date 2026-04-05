@@ -199,25 +199,6 @@ body.cursor-hover #cursor-dot {
   margin-bottom: 4rem;
 }
 
-.section-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--accent);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 0.75rem;
-}
-
-.section-label::before {
-  content: '';
-  display: block;
-  width: 24px;
-  height: 1px;
-  background: var(--accent);
-}
 
 .section-title {
   font-family: var(--font-display);
@@ -409,77 +390,113 @@ body.cursor-hover #cursor-dot {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+  background-image: radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 20%, transparent 100%);
   pointer-events: none;
 }
 
 [data-theme="light"] .hero::before {
-  background-image: radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(0,0,0,0.065) 1px, transparent 1px);
 }
 
-/* Radial accent glow top-right */
+/* Radial accent glow */
 .hero::after {
   content: '';
   position: absolute;
-  top: -20%;
-  right: -10%;
-  width: 600px;
-  height: 600px;
+  top: -15%;
+  right: -5%;
+  width: 700px;
+  height: 700px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,45,32,0.08) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(255,45,32,0.07) 0%, transparent 65%);
   pointer-events: none;
 }
 
+/* Canvas for floating code symbols */
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Hero content — children animate individually */
 .hero-content {
   position: relative;
   z-index: 1;
-  max-width: 760px;
+  max-width: 780px;
+}
+
+/* Per-element entrance animations, triggered when body gets .loaded */
+.hero-eyebrow,
+.hero-title .greeting,
+.hero-title .name,
+.hero-description,
+.hero-cta {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  transform: translateY(22px);
 }
 
-.hero-content.loaded {
-  opacity: 1;
-  transform: none;
+body.loaded .hero-eyebrow      { animation: hero-in 0.55s var(--spring) 0.15s forwards; }
+body.loaded .hero-title .greeting { animation: hero-in 0.6s  var(--spring) 0.35s forwards; }
+body.loaded .hero-title .name     { animation: hero-in 0.65s var(--spring) 0.52s forwards; }
+body.loaded .hero-description     { animation: hero-in 0.55s var(--spring) 0.68s forwards; }
+body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s forwards; }
+
+@keyframes hero-in {
+  to { opacity: 1; transform: none; }
 }
 
+/* Terminal eyebrow */
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  color: var(--text-2);
+  margin-bottom: 1.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 1rem;
+  gap: 0;
+}
+
+.eyebrow-prompt {
   color: var(--accent);
-  letter-spacing: 0.1em;
-  margin-bottom: 1.5rem;
-  padding: 0.35rem 0.9rem;
-  background: var(--accent-soft);
-  border: 1px solid rgba(255,45,32,0.2);
-  border-radius: var(--radius-full);
+  font-weight: 500;
 }
 
-.hero-eyebrow::before {
-  content: '';
-  width: 6px; height: 6px;
-  border-radius: 50%;
+#typing-text {
+  color: var(--text-1);
+  min-width: 1px;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 9px;
+  height: 1.1em;
   background: var(--accent);
-  animation: pulse-dot 2s infinite;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  animation: blink 1s step-end infinite;
 }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.5; transform: scale(0.7); }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
 }
 
 .hero-title {
   font-family: var(--font-display);
-  font-size: clamp(2.8rem, 6.5vw, 5.25rem);
+  font-size: clamp(2.8rem, 6.5vw, 5.5rem);
   font-weight: 800;
-  line-height: 1.08;
+  line-height: 1.07;
   letter-spacing: -0.04em;
   color: var(--text-1);
   margin-bottom: 1.5rem;
@@ -488,13 +505,14 @@ body.cursor-hover #cursor-dot {
 .hero-title .greeting {
   display: block;
   color: var(--text-2);
-  font-size: 0.55em;
+  font-size: 0.52em;
   font-weight: 600;
   letter-spacing: -0.02em;
-  margin-bottom: 0.2em;
+  margin-bottom: 0.15em;
 }
 
 .hero-title .name {
+  display: block;
   background: linear-gradient(135deg, #FF2D20 0%, #FF6B61 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -502,10 +520,10 @@ body.cursor-hover #cursor-dot {
 }
 
 .hero-description {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--text-2);
   max-width: 560px;
-  line-height: 1.75;
+  line-height: 1.8;
   margin-bottom: 2.5rem;
 }
 
@@ -526,23 +544,23 @@ body.cursor-hover #cursor-dot {
   align-items: center;
   gap: 0.5rem;
   color: var(--text-3);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-family: var(--font-mono);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  animation: scroll-hint 2.5s infinite;
+  animation: scroll-hint 2.8s ease-in-out infinite;
 }
 
 .hero-scroll::after {
   content: '';
   width: 1px;
-  height: 40px;
+  height: 36px;
   background: linear-gradient(to bottom, var(--text-3), transparent);
 }
 
 @keyframes scroll-hint {
-  0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
-  50%       { opacity: 0.9; transform: translateX(-50%) translateY(6px); }
+  0%, 100% { opacity: 0.35; transform: translateX(-50%) translateY(0); }
+  50%       { opacity: 0.8;  transform: translateX(-50%) translateY(7px); }
 }
 
 /* ============================================

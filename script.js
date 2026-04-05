@@ -268,11 +268,136 @@ navToggle.addEventListener('click', () => {
 });
 
 // ============================================
+// HERO CANVAS — floating code symbols
+// ============================================
+function initHeroCanvas() {
+    const canvas = document.getElementById('hero-canvas');
+    if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const ctx = canvas.getContext('2d');
+    const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
+
+    const symbols = [
+        '$var', '->', '=>', '::', 'fn()', 'return', 'class', 'use',
+        '{}', '()', '[]', 'null', 'true', 'public', 'static',
+        '&&', '||', '===', 'new', 'const', 'async', 'await',
+        'artisan', 'composer', 'git push', 'docker', '@inject',
+        '<?php', 'Route::', 'Eloquent', 'Queue::push()', 'Cache::',
+        '#!', 'ssh', 'nginx', '.env', 'Redis::'
+    ];
+
+    let W, H, particles;
+
+    function resize() {
+        W = canvas.width  = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+    }
+
+    class Sym {
+        constructor(init) {
+            this.reset(init);
+        }
+        reset(init) {
+            this.x    = Math.random() * W;
+            this.y    = init ? Math.random() * H : H + 16;
+            this.text = symbols[Math.floor(Math.random() * symbols.length)];
+            this.spd  = 0.18 + Math.random() * 0.32;
+            this.opa  = 0.025 + Math.random() * 0.065;
+            this.size = 10 + Math.floor(Math.random() * 5);
+            this.dx   = (Math.random() - 0.5) * 0.12;
+        }
+        tick() {
+            this.y -= this.spd;
+            this.x += this.dx;
+            if (this.y < -24) this.reset(false);
+        }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.opa;
+            ctx.fillStyle   = isDark() ? '#FF2D20' : '#CC2010';
+            ctx.font        = `${this.size}px "Fira Code", monospace`;
+            ctx.fillText(this.text, this.x, this.y);
+            ctx.restore();
+        }
+    }
+
+    function init() {
+        resize();
+        particles = Array.from({ length: 45 }, () => new Sym(true));
+    }
+
+    let raf;
+    function loop() {
+        ctx.clearRect(0, 0, W, H);
+        particles.forEach(p => { p.tick(); p.draw(); });
+        raf = requestAnimationFrame(loop);
+    }
+
+    // Pause when tab hidden (save CPU)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelAnimationFrame(raf);
+        else loop();
+    });
+
+    const ro = new ResizeObserver(() => resize());
+    ro.observe(canvas.parentElement);
+
+    init();
+    loop();
+}
+
+// ============================================
+// HERO TYPING — cycles through roles
+// ============================================
+function initHeroTyping() {
+    const el = document.getElementById('typing-text');
+    if (!el) return;
+
+    const roles = [
+        'Technical Lead & Laravel Expert',
+        '13+ Years Engineering Experience',
+        'Conference Speaker & Mentor',
+        'Performance Optimization Specialist',
+        'Open Source Contributor'
+    ];
+
+    let ri = 0, ci = 0, deleting = false;
+    const WRITE = 70, DELETE = 35, PAUSE = 2200, GAP = 500;
+
+    function tick() {
+        const role = roles[ri];
+        if (deleting) {
+            ci--;
+            el.textContent = role.slice(0, ci);
+            if (ci === 0) {
+                deleting = false;
+                ri = (ri + 1) % roles.length;
+                setTimeout(tick, GAP);
+                return;
+            }
+            setTimeout(tick, DELETE);
+        } else {
+            ci++;
+            el.textContent = role.slice(0, ci);
+            if (ci === role.length) {
+                deleting = true;
+                setTimeout(tick, PAUSE);
+                return;
+            }
+            setTimeout(tick, WRITE);
+        }
+    }
+
+    setTimeout(tick, 900);
+}
+
+// ============================================
 // PAGE LOAD
 // ============================================
 window.addEventListener('load', () => {
     document.body.classList.add('loaded');
-    document.querySelector('.hero-content')?.classList.add('loaded');
+    initHeroCanvas();
+    initHeroTyping();
 });
 
 // ============================================
