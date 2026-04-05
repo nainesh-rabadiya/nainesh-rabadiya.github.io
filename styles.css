@@ -1096,41 +1096,10 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
    ============================================ */
 .footer {
   border-top: 1px solid var(--border);
-  padding: 2rem 0 1.5rem;
+  padding: 2rem 0 0;
   text-align: center;
   position: relative;
   overflow: hidden;
-}
-
-.footer-brand {
-  font-family: var(--font-display);
-  font-size: clamp(5rem, 22vw, 18rem);
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 0.85;
-  text-align: center;
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 45, 32, 0.18);
-  text-stroke: 1.5px rgba(255, 45, 32, 0.18);
-  user-select: none;
-  pointer-events: none;
-  padding: 1rem 0 0;
-  transition: -webkit-text-stroke var(--dur) var(--ease);
-}
-
-.footer:hover .footer-brand {
-  -webkit-text-stroke: 1.5px rgba(255, 45, 32, 0.32);
-  text-stroke: 1.5px rgba(255, 45, 32, 0.32);
-}
-
-[data-theme="light"] .footer-brand {
-  -webkit-text-stroke: 1.5px rgba(180, 30, 15, 0.15);
-  text-stroke: 1.5px rgba(180, 30, 15, 0.15);
-}
-
-[data-theme="light"] .footer:hover .footer-brand {
-  -webkit-text-stroke: 1.5px rgba(180, 30, 15, 0.28);
-  text-stroke: 1.5px rgba(180, 30, 15, 0.28);
 }
 
 .footer p {
@@ -1140,6 +1109,44 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
   position: relative;
   z-index: 1;
   padding-bottom: 1rem;
+}
+
+/* ---- Decorative binary "Nainesh" — Nightwatch-style ---- */
+.footer-brand {
+  position: relative;
+  width: 100%;
+  user-select: none;
+  pointer-events: none;
+  line-height: 0;
+}
+
+.footer-brand-base,
+.footer-brand-glow {
+  display: block;
+  width: 100%;
+  line-height: 0;
+}
+
+/* Base: dark but readable — binary digits clearly visible */
+.footer-brand-base {
+  color: rgba(255, 45, 32, 0.28);
+}
+
+/* Glow: bright spotlight reveal on hover */
+.footer-brand-glow {
+  position: absolute;
+  inset: 0;
+  color: rgba(255, 45, 32, 0.80);
+  -webkit-mask-image: radial-gradient(circle 220px at var(--mx, -9999px) var(--my, -9999px), black 0%, transparent 100%);
+  mask-image: radial-gradient(circle 220px at var(--mx, -9999px) var(--my, -9999px), black 0%, transparent 100%);
+}
+
+[data-theme="light"] .footer-brand-base {
+  color: rgba(180, 30, 15, 0.22);
+}
+
+[data-theme="light"] .footer-brand-glow {
+  color: rgba(180, 30, 15, 0.65);
 }
 
 /* ============================================
