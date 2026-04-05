@@ -846,17 +846,27 @@
         el.appendChild(baseDiv);  // dim layer (behind)
         el.appendChild(glowDiv);  // spotlight layer (on top)
 
-        // Spotlight mouse tracking
+        // Always-running sweep — spotlight bounces left↔right via rAF
+        var sweepX = -15, sweepDir = 1, hovering = false, sweepRAF;
+        function sweep() {
+          if (!hovering) {
+            sweepX += sweepDir * 0.38;
+            if (sweepX >= 115) sweepDir = -1;
+            if (sweepX <= -15) sweepDir =  1;
+            glowDiv.style.setProperty('--fs-x', sweepX.toFixed(1) + '%');
+          }
+          sweepRAF = requestAnimationFrame(sweep);
+        }
+        sweep();
+
+        // On desktop hover, mouse position overrides the sweep
         el.style.pointerEvents = 'auto';
+        el.addEventListener('mouseenter', function () { hovering = true; });
         el.addEventListener('mousemove', function (e) {
-          var r = glowDiv.getBoundingClientRect();
-          glowDiv.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-          glowDiv.style.setProperty('--my', (e.clientY - r.top) + 'px');
+          var r = el.getBoundingClientRect();
+          glowDiv.style.setProperty('--fs-x', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
         });
-        el.addEventListener('mouseleave', function () {
-          glowDiv.style.setProperty('--mx', '-999px');
-          glowDiv.style.setProperty('--my', '-999px');
-        });
+        el.addEventListener('mouseleave', function () { hovering = false; });
       }
 
       // Wait for Syne font so clipPath text renders at correct dimensions

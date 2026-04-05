@@ -342,7 +342,7 @@ function initHeroCanvas() {
             const group = Math.floor(Math.random() * 4);
             this.text = symbols[(this.strip + group * Math.ceil(symbols.length / 4)) % symbols.length];
             this.spd  = 0.14 + Math.random() * 0.20;
-            this.opa  = 0.14 + Math.random() * 0.12; // 0.14–0.26 base
+            this.opa  = 0.22 + Math.random() * 0.18; // 0.22–0.40 base — readable in dark mode
             this.size = 9 + Math.floor(Math.random() * 5);
         }
         tick() {
@@ -352,7 +352,7 @@ function initHeroCanvas() {
         draw() {
             const dark = isDark();
             ctx.save();
-            ctx.globalAlpha = dark ? this.opa : this.opa * 2.2;
+            ctx.globalAlpha = dark ? this.opa : this.opa * 1.5; // dark 0.22–0.40, light 0.33–0.60
             ctx.fillStyle   = dark ? '#FF2D20' : '#8B1A0E';
             ctx.font        = `${this.size}px "Fira Code", monospace`;
             ctx.fillText(this.text, this.x, this.y);
