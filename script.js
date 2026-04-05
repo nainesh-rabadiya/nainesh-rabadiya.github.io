@@ -312,7 +312,7 @@ function initHeroCanvas() {
             this.y    = init ? Math.random() * H : H + 16;
             this.text = symbols[Math.floor(Math.random() * symbols.length)];
             this.spd  = 0.18 + Math.random() * 0.32;
-            this.opa  = 0.012 + Math.random() * 0.038;
+            this.opa  = 0.08 + Math.random() * 0.10;
             this.size = 10 + Math.floor(Math.random() * 5);
             this.dx   = (Math.random() - 0.5) * 0.12;
         }
@@ -324,7 +324,7 @@ function initHeroCanvas() {
         draw() {
             ctx.save();
             ctx.globalAlpha = this.opa;
-            ctx.fillStyle   = isDark() ? '#FF2D20' : '#CC2010';
+            ctx.fillStyle   = isDark() ? '#FF2D20' : '#7A1510';
             ctx.font        = `${this.size}px "Fira Code", monospace`;
             ctx.fillText(this.text, this.x, this.y);
             ctx.restore();
