@@ -145,6 +145,14 @@ const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('revealed');
+            // pop any emoji-icon inside the revealed card
+            const emojis = entry.target.querySelectorAll('.emoji-icon');
+            emojis.forEach((e, i) => {
+                setTimeout(() => {
+                    e.classList.add('pop');
+                    setTimeout(() => e.classList.remove('pop'), 600);
+                }, i * 80);
+            });
             revealObserver.unobserve(entry.target);
         }
     });
@@ -183,6 +191,9 @@ const statsObserver = new IntersectionObserver(entries => {
             if (num && !num.classList.contains('animated')) {
                 num.classList.add('animated');
                 animateCounter(num, num.textContent.trim(), 2000);
+                // pop the stat-number emoji on entry
+                num.classList.add('emoji-pop');
+                setTimeout(() => num.classList.remove('emoji-pop'), 600);
             }
             statsObserver.unobserve(entry.target);
         }
@@ -278,17 +289,34 @@ function initHeroCanvas() {
     const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
 
     const symbols = [
-        'Nainesh', 'NR',
-        'Laravel', 'PHP', 'Eloquent', 'Artisan', 'Blade',
+        // Identity
+        'Nainesh', 'NR', 'nainesh.dev',
+        // Company & locations
+        'WebOccult', 'Gotilo', 'Ahmedabad', 'India', 'Gujarat',
+        'USA', 'Australia', 'Japan', 'Netherlands',
+        // Laravel ecosystem
+        'Laravel', 'Eloquent', 'Artisan', 'Blade', 'Livewire',
         'Route::', 'Cache::', 'Queue::push()', 'Redis::', 'Middleware',
-        'php artisan', '<?php', '@inject', 'composer',
-        '$this->', '=>', '::', '->', '{}', 'fn()',
-        'return', 'public', 'static', 'class', 'use', 'new',
-        'MySQL', 'PostgreSQL', 'Redis', 'Docker', 'AWS',
-        'Vue.js', 'REST API', 'GraphQL', 'Microservices',
-        'nginx', '.env', 'CI/CD', 'git push', 'ssh',
-        '13+ years', 'Tech Lead', 'WebOccult',
-        'Performance', 'Scalable', 'Architecture'
+        'php artisan', '<?php', '@inject', 'composer require',
+        '$this->', '=>', '::', '->where()', 'fn()', '|>',
+        // PHP syntax
+        'return', 'public', 'static', 'abstract', 'interface',
+        // Databases & caching
+        'MySQL', 'PostgreSQL', 'Redis', 'RabbitMQ', 'Elasticsearch',
+        // Frontend
+        'Vue.js', 'jQuery', 'Vite', 'Alpine.js',
+        // APIs & patterns
+        'REST API', 'GraphQL', 'Microservices', 'WebSockets',
+        'Multi-Tenant', 'SaaS', 'OAuth', 'Stripe',
+        // DevOps & infra
+        'Docker', 'AWS', 'Azure', 'n8n', 'nginx', 'CI/CD',
+        '.env', 'git push', 'Forge', 'Vapor',
+        // AI / CV work
+        'TensorFlow', 'OpenCV', 'CV Pipeline',
+        // Role & impact
+        'Tech Lead', '12+ Years', '50+ Projects', '25+ Devs',
+        'Performance', 'Scalable', 'Architecture', 'ERP',
+        'LaravelLive', 'Speaker', 'Mentor',
     ];
 
     let W, H, particles;
@@ -298,26 +326,34 @@ function initHeroCanvas() {
         H = canvas.height = canvas.offsetHeight;
     }
 
+    // Strip-based: canvas divided into vertical lanes so symbols never overlap
     class Sym {
-        constructor(init) { this.reset(init); }
+        constructor(strip, total, init) {
+            this.strip = strip;
+            this.total = total;
+            this.reset(init);
+        }
         reset(init) {
-            this.x    = Math.random() * W;
-            this.y    = init ? Math.random() * H : H + 16;
-            this.text = symbols[Math.floor(Math.random() * symbols.length)];
-            this.spd  = 0.18 + Math.random() * 0.32;
-            this.opa  = 0.08 + Math.random() * 0.10;
-            this.size = 10 + Math.floor(Math.random() * 5);
-            this.dx   = (Math.random() - 0.5) * 0.12;
+            const laneW = W / this.total;
+            // Stay within own lane, small random offset for organic feel
+            this.x    = this.strip * laneW + laneW * 0.15 + Math.random() * laneW * 0.55;
+            this.y    = init ? Math.random() * H : H + 20;
+            // Rotate through symbol list by lane so adjacent lanes show different text
+            const group = Math.floor(Math.random() * 4);
+            this.text = symbols[(this.strip + group * Math.ceil(symbols.length / 4)) % symbols.length];
+            this.spd  = 0.14 + Math.random() * 0.20;
+            this.opa  = 0.14 + Math.random() * 0.12; // 0.14–0.26 base
+            this.size = 9 + Math.floor(Math.random() * 5);
         }
         tick() {
             this.y -= this.spd;
-            this.x += this.dx;
             if (this.y < -24) this.reset(false);
         }
         draw() {
+            const dark = isDark();
             ctx.save();
-            ctx.globalAlpha = this.opa;
-            ctx.fillStyle   = isDark() ? '#FF2D20' : '#7A1510';
+            ctx.globalAlpha = dark ? this.opa : this.opa * 2.2;
+            ctx.fillStyle   = dark ? '#FF2D20' : '#8B1A0E';
             ctx.font        = `${this.size}px "Fira Code", monospace`;
             ctx.fillText(this.text, this.x, this.y);
             ctx.restore();
@@ -326,7 +362,9 @@ function initHeroCanvas() {
 
     function init() {
         resize();
-        particles = Array.from({ length: 45 }, () => new Sym(true));
+        // Responsive count: ~1 symbol per 60px of width, capped for perf
+        const count = Math.max(10, Math.min(26, Math.floor(W / 60)));
+        particles = Array.from({ length: count }, (_, i) => new Sym(i, count, true));
     }
 
     let raf;
@@ -337,7 +375,7 @@ function initHeroCanvas() {
         else loop();
     });
 
-    const ro = new ResizeObserver(() => resize());
+    const ro = new ResizeObserver(() => init()); // reinit so lane widths recalculate
     ro.observe(canvas.parentElement);
 
     init();

@@ -1324,8 +1324,9 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
   .contact-links { gap: 0.75rem; }
   .contact-link .link-text { display: inline; }
 
-  /* Timeline */
+  /* Timeline — realign dot to the line on mobile */
   .experience-timeline { padding-left: 1.5rem; }
+  .timeline-dot { left: -1.5rem; }
 
   /* Back to top */
   .back-to-top { bottom: 1.25rem; right: 1.25rem; }
@@ -1338,6 +1339,84 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
   .bento-grid { grid-template-columns: 1fr; }
   .bento-item { grid-column: span 1 !important; min-height: 100px; }
   .contact-link .link-text { display: none; }
+
+  /* Hero — tighter on small screens */
+  .hero-title { font-size: clamp(2.4rem, 11vw, 3rem); letter-spacing: -0.025em; }
+  .hero-description { font-size: 0.95rem; }
+  .hero-eyebrow { font-size: 0.7rem; }
+
+  /* Timeline — extra tight on very small screens */
+  .experience-timeline { padding-left: 1.25rem; }
+  .timeline-dot { left: -1.25rem; }
+  .timeline-content { padding: 1.1rem 1.25rem; }
+
+  /* Cards */
+  .card { padding: 1.25rem; }
+  .project-icon { font-size: 2rem; }
+
+  /* Section headings */
+  .section-title { font-size: clamp(1.6rem, 7vw, 2rem); }
+}
+
+/* ============================================
+   EMOJI ANIMATIONS — gentle rotation tilt only
+   ============================================ */
+.emoji-icon {
+  display: inline-block;
+  transition: transform 0.3s var(--spring);
+  cursor: default;
+  transform-origin: center bottom;
+}
+
+.emoji-icon:hover {
+  animation: emoji-tilt 0.55s var(--spring);
+}
+
+@keyframes emoji-tilt {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(-14deg); }
+  55%  { transform: rotate(9deg); }
+  80%  { transform: rotate(-4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Scroll-reveal trigger — same gentle tilt */
+.emoji-icon.pop,
+.stat-number.emoji-pop {
+  animation: emoji-tilt 0.6s var(--spring);
+}
+
+/* Project icon */
+.project-card:hover .project-icon {
+  animation: emoji-tilt 0.55s var(--spring);
+}
+
+/* ============================================
+   FOOTER — MOBILE TOUCH ANIMATION
+   (no cursor on mobile — auto-pulse the glow)
+   ============================================ */
+@media (hover: none), (pointer: coarse) {
+  .footer-brand-glow {
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    animation: footer-binary-pulse 3s ease-in-out infinite;
+  }
+}
+
+@keyframes footer-binary-pulse {
+  0%, 100% { opacity: 0.22; }
+  50%       { opacity: 0.68; }
+}
+
+/* ============================================
+   TABLET — iPad / iPad Pro (769px – 1024px)
+   ============================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container { padding: 0 2rem; }
+  .hero-title { font-size: clamp(3rem, 5.5vw, 4.5rem); }
+  .about-layout { grid-template-columns: 220px 1fr; gap: 2.5rem; }
+  .projects-grid { grid-template-columns: repeat(2, 1fr); }
+  .bento-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ============================================
