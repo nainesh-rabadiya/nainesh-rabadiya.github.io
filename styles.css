@@ -24,7 +24,7 @@
   --text-3: #52525B;
 
   /* Fonts */
-  --font-display: 'Syne', 'Inter', system-ui, sans-serif;
+  --font-display: 'Nunito', 'Inter', system-ui, sans-serif;
   --font-body:    'Inter', system-ui, sans-serif;
   --font-mono:    'Fira Code', monospace;
 
@@ -1356,8 +1356,9 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
   .contact-link .link-text { display: none; }
 
   /* Hero — tighter on small screens */
-  .hero-title { font-size: clamp(2.4rem, 11vw, 3rem); letter-spacing: -0.025em; }
-  .hero-description { font-size: 0.95rem; }
+  .hero-title { font-size: clamp(2.2rem, 10vw, 3rem); letter-spacing: -0.01em; line-height: 1.12; }
+  .hero-title .greeting { letter-spacing: 0em; }
+  .hero-description { font-size: 0.97rem; line-height: 1.75; }
   /* Eyebrow terminal bar: clamp width, smaller font, hide overflow */
   .hero-eyebrow { font-size: 0.68rem; max-width: 100%; overflow: hidden; white-space: nowrap; }
   #typing-text  { max-width: 48vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: bottom; }
@@ -1372,7 +1373,7 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
   .project-icon { font-size: 2rem; }
 
   /* Section headings */
-  .section-title { font-size: clamp(1.6rem, 7vw, 2rem); }
+  .section-title { font-size: clamp(1.6rem, 7vw, 2rem); letter-spacing: -0.01em; }
 }
 
 /* ============================================
