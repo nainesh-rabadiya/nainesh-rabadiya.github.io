@@ -438,6 +438,7 @@ window.addEventListener('load', () => {
     initMagneticBtns();
     initCursorTrail();
     initSectionGlow();
+    initNameGlitch();
     initSkillTooltips();
 });
 
@@ -448,47 +449,71 @@ const footer = document.querySelector('.footer p');
 if (footer) footer.textContent = footer.textContent.replace(/\d{4}/, new Date().getFullYear());
 
 // ============================================
-// 1. 3D CARD TILT
+// 1. 3D CARD TILT (desktop) / TOUCH SHIMMER (mobile)
 // ============================================
 function initCardTilt() {
-    if (window.matchMedia('(hover: none)').matches) return;
+    const isTouch = window.matchMedia('(hover: none)').matches;
     document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('mousemove', e => {
-            const r  = card.getBoundingClientRect();
-            const rx = ((e.clientY - r.top)  / r.height - 0.5) * -12;
-            const ry = ((e.clientX - r.left) / r.width  - 0.5) *  12;
-            card.style.transition = 'transform 0.06s ease, box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease)';
-            card.style.transform  = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-5px)`;
-        });
-        card.addEventListener('mouseleave', () => {
-            card.style.transition = 'transform 0.55s var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease)';
-            card.style.transform  = '';
-        });
+        if (isTouch) {
+            card.addEventListener('touchstart', () => {
+                card.style.transition = 'box-shadow 0.25s ease, border-color 0.25s ease';
+                card.style.boxShadow  = '0 0 28px rgba(255,45,32,0.28)';
+                card.style.borderColor = 'rgba(255,45,32,0.55)';
+                setTimeout(() => { card.style.boxShadow = ''; card.style.borderColor = ''; }, 550);
+            }, { passive: true });
+        } else {
+            card.addEventListener('mousemove', e => {
+                const r  = card.getBoundingClientRect();
+                const rx = ((e.clientY - r.top)  / r.height - 0.5) * -12;
+                const ry = ((e.clientX - r.left) / r.width  - 0.5) *  12;
+                card.style.transition = 'transform 0.06s ease, box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease)';
+                card.style.transform  = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-5px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transition = 'transform 0.55s var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease)';
+                card.style.transform  = '';
+            });
+        }
     });
 }
 
 // ============================================
-// 2. MAGNETIC BUTTONS
+// 2. MAGNETIC BUTTONS (desktop) / TAP RIPPLE (mobile)
 // ============================================
 function initMagneticBtns() {
-    if (window.matchMedia('(hover: none)').matches) return;
+    const isTouch = window.matchMedia('(hover: none)').matches;
     document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('mousemove', e => {
-            const r = btn.getBoundingClientRect();
-            const x = ((e.clientX - r.left) - r.width  / 2) * 0.28;
-            const y = ((e.clientY - r.top)  - r.height / 2) * 0.36;
-            btn.style.transition = 'transform 0.12s ease';
-            btn.style.transform  = `translate(${x}px, ${y}px)`;
-        });
-        btn.addEventListener('mouseleave', () => {
-            btn.style.transition = 'transform 0.5s var(--spring)';
-            btn.style.transform  = '';
-        });
+        if (isTouch) {
+            btn.addEventListener('touchstart', e => {
+                const touch = e.touches[0];
+                const r = btn.getBoundingClientRect();
+                const x = touch.clientX - r.left;
+                const y = touch.clientY - r.top;
+                const ripple = document.createElement('span');
+                ripple.className = 'btn-ripple';
+                ripple.style.left = x + 'px';
+                ripple.style.top  = y + 'px';
+                btn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 650);
+            }, { passive: true });
+        } else {
+            btn.addEventListener('mousemove', e => {
+                const r = btn.getBoundingClientRect();
+                const x = ((e.clientX - r.left) - r.width  / 2) * 0.28;
+                const y = ((e.clientY - r.top)  - r.height / 2) * 0.36;
+                btn.style.transition = 'transform 0.12s ease';
+                btn.style.transform  = `translate(${x}px, ${y}px)`;
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transition = 'transform 0.5s var(--spring)';
+                btn.style.transform  = '';
+            });
+        }
     });
 }
 
 // ============================================
-// 3. CURSOR PARTICLE TRAIL (canvas-based)
+// 3. CURSOR PARTICLE TRAIL (desktop only)
 // ============================================
 function initCursorTrail() {
     if (window.matchMedia('(hover: none)').matches) return;
@@ -536,7 +561,7 @@ function initSectionGlow() {
             title.classList.add('section-glow');
             setTimeout(() => title.classList.remove('section-glow'), 1800);
         });
-    }, { threshold: 0.3 });
+    }, { threshold: 0.15 });
     document.querySelectorAll('.section').forEach(s => obs.observe(s));
 }
 
@@ -544,7 +569,7 @@ function initSectionGlow() {
 // 5. SKILL TAG CODE SNIPPET TOOLTIP
 // ============================================
 function initSkillTooltips() {
-    if (window.matchMedia('(hover: none)').matches) return;
+    const isTouch = window.matchMedia('(hover: none)').matches;
     const map = {
         'Laravel':       "Route::get('/users', [UserController::class, 'index']);",
         'PHP':           "fn($x): bool => match(true) { $x > 0 => true, default => false };",
@@ -571,19 +596,45 @@ function initSkillTooltips() {
     tip.className = 'skill-code-tip';
     document.body.appendChild(tip);
 
+    let tipTimeout;
     document.querySelectorAll('.skill-tag').forEach(tag => {
         const code = map[tag.textContent.trim()];
         if (!code) return;
-        const move = e => {
-            const tw = tip.offsetWidth;
-            const x  = Math.max(8, Math.min(window.innerWidth - tw - 8, e.clientX - tw / 2));
-            tip.style.left = x + 'px';
-            tip.style.top  = (e.clientY - 56) + 'px';
-        };
-        tag.addEventListener('mouseenter', e => { tip.textContent = code; tip.classList.add('visible'); move(e); });
-        tag.addEventListener('mousemove', move);
-        tag.addEventListener('mouseleave', () => tip.classList.remove('visible'));
+        if (isTouch) {
+            tag.addEventListener('touchstart', e => {
+                const touch = e.touches[0];
+                tip.textContent = code;
+                const tw = Math.min(window.innerWidth - 16, 320);
+                tip.style.maxWidth = tw + 'px';
+                const x = Math.max(8, Math.min(window.innerWidth - tw - 8, touch.clientX - tw / 2));
+                tip.style.left = x + 'px';
+                tip.style.top  = (touch.clientY - 68) + 'px';
+                tip.classList.add('visible');
+                clearTimeout(tipTimeout);
+                tipTimeout = setTimeout(() => tip.classList.remove('visible'), 2200);
+            }, { passive: true });
+        } else {
+            const move = e => {
+                const tw = tip.offsetWidth;
+                const x  = Math.max(8, Math.min(window.innerWidth - tw - 8, e.clientX - tw / 2));
+                tip.style.left = x + 'px';
+                tip.style.top  = (e.clientY - 56) + 'px';
+            };
+            tag.addEventListener('mouseenter', e => { tip.textContent = code; tip.classList.add('visible'); move(e); });
+            tag.addEventListener('mousemove', move);
+            tag.addEventListener('mouseleave', () => tip.classList.remove('visible'));
+        }
     });
+}
+
+// ============================================
+// 6. NAME GLITCH (JS-driven, avoids CSS specificity conflict)
+// ============================================
+function initNameGlitch() {
+    const nameEl = document.querySelector('.hero-title .name');
+    if (!nameEl) return;
+    // hero-in finishes at ~0.52s delay + 0.65s = 1.17s; wait a bit after
+    setTimeout(() => nameEl.classList.add('name-glitching'), 1500);
 }
 
 // ============================================
