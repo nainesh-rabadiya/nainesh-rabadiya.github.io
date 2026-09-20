@@ -1295,15 +1295,54 @@ document.querySelectorAll('.projects-grid').forEach(grid => {
 })();
 
 // ============================================
-// QUEUE BELT (Queues talk card): animate only while it is on screen
+// QUEUE DEMO (Queues talk card): a checkout returns in 120ms; the email, invoice and inventory jobs run
+// afterwards on two workers, and the email fails once and is retried. Loops slowly while on screen.
 // ============================================
-(function initQueueBelt() {
-    const belt = document.querySelector('.queue-belt');
-    if (!belt || !motionOK()) return;
-    const size = () => belt.style.setProperty('--belt', (belt.offsetWidth + 16) + 'px');
-    size();
-    window.addEventListener('resize', size, { passive: true });
-    new IntersectionObserver(([entry]) => { size(); belt.classList.toggle('running', entry.isIntersecting); }).observe(belt);
+(function initQueueDemo() {
+    const demo = document.getElementById('queue-demo');
+    if (!demo) return;
+    const note = document.getElementById('qd-note');
+    const jobs = [...demo.querySelectorAll('.qd-jobs li')].map(li => ({ li, state: li.querySelector('.qd-state') }));
+    const [email, invoice, inventory] = jobs;
+    let timers = [], visible = false;
+    const stop = () => { timers.forEach(clearTimeout); timers = []; };
+    const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+    const set = (job, cls, label) => { job.li.className = 'in ' + cls; job.state.textContent = label; };
+    const say = text => { note.textContent = text; };
+
+    const finalState = () => {
+        demo.className = 'queue-demo s-res';
+        jobs.forEach(j => set(j, 'done', '✓ done'));
+        say('Customer saw success in 120 ms. The slow work ran after.');
+    };
+
+    function play() {
+        stop();
+        if (!motionOK()) { finalState(); return; }
+        demo.className = 'queue-demo s-req';
+        jobs.forEach(j => { j.li.className = ''; j.state.textContent = ''; });
+        say('customer clicks “Place order”…');
+
+        at(1300,  () => { demo.classList.add('s-res'); say('Response sent. The customer is already done.'); });
+        at(3000,  () => { say('Meanwhile, 3 jobs were pushed to the queue:'); set(email, 'queued', 'queued'); });
+        at(3450,  () => set(invoice, 'queued', 'queued'));
+        at(3900,  () => set(inventory, 'queued', 'queued'));
+        // two workers: the first two jobs start together, the third waits for a free worker
+        at(5400,  () => { say('Two workers pick up the first two jobs.'); set(email, 'processing', 'processing'); set(invoice, 'processing', 'processing'); });
+        at(7900,  () => { set(invoice, 'done', '✓ done'); set(email, 'failed', '✗ SMTP timeout'); say('The email fails. No customer ever sees this error.'); });
+        at(8500,  () => set(inventory, 'processing', 'processing'));
+        at(10300, () => { set(email, 'retry', 'retry 2/3'); say('It is retried automatically, with backoff.'); });
+        at(11000, () => set(inventory, 'done', '✓ done'));
+        at(12000, () => set(email, 'processing', 'processing'));
+        at(14500, () => { set(email, 'done', '✓ done'); say('All done. Response time stayed 120 ms throughout.'); });
+        at(19500, () => { if (visible) play(); });
+    }
+
+    new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) play();
+        else { stop(); finalState(); }
+    }, { threshold: 0.5 }).observe(demo);
 })();
 
 // ============================================

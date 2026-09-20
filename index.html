@@ -713,11 +713,18 @@
             <h3 class="project-title">Laravel Queues on Steroids</h3>
             <p class="talk-meta">LaravelLive Ahmedabad · Dec 22, 2024 · York IE APAC</p>
             <p class="project-description">Performance and optimization techniques for Laravel Queues, including queue management strategies for large-scale background processing.</p>
-            <div class="queue-belt" aria-hidden="true">
-              <span class="qb-worker" style="left:40%">worker</span><span class="qb-worker" style="left:65%">worker</span>
-              <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i class="qb-fail" style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i>
+            <div class="queue-demo" id="queue-demo" role="img"
+              aria-label="Illustration of why queues matter: a checkout request returns 200 OK in 120 milliseconds because sending the order email, generating the invoice PDF and updating inventory are pushed onto a queue and processed by two background workers. The email job fails with an SMTP timeout and succeeds on retry.">
+              <div class="qd-req" aria-hidden="true">
+                <code>POST /checkout</code><span class="qd-arrow">→</span><span class="qd-res">200 OK · 120 ms</span>
+              </div>
+              <p class="qd-note" aria-hidden="true"><span id="qd-note">dispatching 3 jobs to the queue…</span><span class="qd-workers">2 workers</span></p>
+              <ul class="qd-jobs" aria-hidden="true">
+                <li><span class="qd-name">SendOrderEmail</span><span class="qd-state"></span><span class="qd-bar"><i></i></span></li>
+                <li><span class="qd-name">GenerateInvoicePdf</span><span class="qd-state"></span><span class="qd-bar"><i></i></span></li>
+                <li><span class="qd-name">UpdateInventory</span><span class="qd-state"></span><span class="qd-bar"><i></i></span></li>
+              </ul>
             </div>
-            <p class="qb-legend" aria-hidden="true">jobs → workers → done · one fails and is retried</p>
             <p class="card-links">
               <a class="card-link" href="https://x.com/LaravelAhm/status/1867277929610457578" target="_blank" rel="noopener noreferrer">Announcement on X ↗</a>
             </p>
