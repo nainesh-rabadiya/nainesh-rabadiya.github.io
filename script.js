@@ -12,10 +12,32 @@ htmlElement.setAttribute('data-theme', currentTheme);
 themeToggle.addEventListener('click', () => {
     const t = htmlElement.getAttribute('data-theme');
     const next = t === 'dark' ? 'light' : 'dark';
-    document.body.classList.add('theme-transitioning');
-    htmlElement.setAttribute('data-theme', next);
-    try { localStorage.setItem('theme', next); } catch (e) { /* unavailable */ }
-    setTimeout(() => document.body.classList.remove('theme-transitioning'), 320);
+    const apply = () => {
+        htmlElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('theme', next); } catch (e) { /* unavailable */ }
+    };
+
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || still) {
+        document.body.classList.add('theme-transitioning');
+        apply();
+        setTimeout(() => document.body.classList.remove('theme-transitioning'), 320);
+        return;
+    }
+
+    // The new theme spreads out from the button like a light being switched on
+    const r = themeToggle.getBoundingClientRect();
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    htmlElement.classList.add('theme-reveal');
+    const vt = document.startViewTransition(apply);
+    vt.ready.then(() => {
+        htmlElement.animate(
+            { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+            { duration: 520, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' }
+        );
+    }).catch(() => {});
+    vt.finished.finally(() => htmlElement.classList.remove('theme-reveal'));
 });
 
 // ============================================
@@ -267,25 +289,17 @@ if (footerEl && 'IntersectionObserver' in window) {
     new IntersectionObserver(([entry]) => backToTop.classList.toggle('at-footer', entry.isIntersecting)).observe(footerEl);
 }
 
-backToTop.addEventListener('click', () => {
-    if (backToTop.dataset.flying === '1') return;
-    backToTop.dataset.flying = '1';
+const motionOK = () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const rect  = backToTop.getBoundingClientRect();
-    const startX = rect.left + rect.width  / 2;
-    const startY = rect.top  + rect.height / 2;
-
-    // Spawn flying rocket
+// One rocket flight from (startX, startY) off the top of the screen. Used by the back-to-top
+// button and by the terminal's `deploy` command.
+function flyRocket(startX, startY, onDone) {
     const fly = document.createElement('div');
     fly.className = 'rocket-flying';
     fly.textContent = '🚀';
     fly.style.left = startX + 'px';
     fly.style.top  = startY + 'px';
     document.body.appendChild(fly);
-
-    // Hide the button while rocket is in flight
-    backToTop.style.opacity = '0';
-    backToTop.style.transform = 'scale(0.7)';
 
     const duration  = 750;
     const endY      = -60;
@@ -305,11 +319,9 @@ backToTop.addEventListener('click', () => {
 
     const t0 = performance.now();
     function frame(now) {
-        const elapsed  = now - t0;
-        const progress = Math.min(elapsed / duration, 1);
+        const progress = Math.min((now - t0) / duration, 1);
         // Ease-in so it accelerates like a real launch
-        const eased    = progress * progress;
-        const curY     = startY + (endY - startY) * eased;
+        const curY = startY + (endY - startY) * progress * progress;
 
         fly.style.top     = curY + 'px';
         fly.style.opacity = progress > 0.75 ? String(1 - (progress - 0.75) / 0.25) : '1';
@@ -324,16 +336,30 @@ backToTop.addEventListener('click', () => {
             requestAnimationFrame(frame);
         } else {
             fly.remove();
-            backToTop.style.opacity  = '';
-            backToTop.style.transform = '';
-            backToTop.dataset.flying = '0';
-            // Landing re-entry animation
-            backToTop.classList.add('landing');
-            setTimeout(() => backToTop.classList.remove('landing'), 450);
+            if (onDone) onDone();
         }
     }
-
     requestAnimationFrame(frame);
+}
+
+backToTop.addEventListener('click', () => {
+    if (backToTop.dataset.flying === '1') return;
+    backToTop.dataset.flying = '1';
+
+    const rect = backToTop.getBoundingClientRect();
+
+    // Hide the button while rocket is in flight
+    backToTop.style.opacity = '0';
+    backToTop.style.transform = 'scale(0.7)';
+
+    flyRocket(rect.left + rect.width / 2, rect.top + rect.height / 2, () => {
+        backToTop.style.opacity  = '';
+        backToTop.style.transform = '';
+        backToTop.dataset.flying = '0';
+        // Landing re-entry animation
+        backToTop.classList.add('landing');
+        setTimeout(() => backToTop.classList.remove('landing'), 450);
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
@@ -713,21 +739,49 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
+// A paper plane leaves the clicked element, loops up and away — "message sent"
+function launchPaperPlane(fromEl) {
+    if (!motionOK() || !fromEl.animate) return;
+    const r = fromEl.getBoundingClientRect();
+    const plane = document.createElement('div');
+    plane.className = 'paper-plane';
+    plane.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 11.2 21 3l-5.6 18-3.7-7.3L2.5 11.2Zm9.2 2.5 2.9 5.7L19 5.6l-7.3 8.1Z"/></svg>';
+    plane.style.left = (r.left + r.width / 2) + 'px';
+    plane.style.top  = (r.top + r.height / 2) + 'px';
+    document.body.appendChild(plane);
+
+    const dx = Math.min(innerWidth - r.left - 40, 260), dy = -Math.min(r.top + 60, 340);
+    plane.animate([
+        { transform: 'translate(-50%, -50%) rotate(0deg) scale(0.6)', opacity: 0 },
+        { transform: `translate(calc(-50% + ${dx * 0.25}px), calc(-50% + 18px)) rotate(12deg) scale(1)`, opacity: 1, offset: 0.18 },
+        { transform: `translate(calc(-50% + ${dx * 0.6}px), calc(-50% + ${dy * 0.45}px)) rotate(-28deg) scale(1)`, opacity: 1, offset: 0.6 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) rotate(-40deg) scale(0.5)`, opacity: 0 },
+    ], { duration: 900, easing: 'cubic-bezier(0.45, 0, 0.25, 1)' }).onfinish = () => plane.remove();
+}
+
 const emailLink = document.getElementById('email-link');
 if (emailLink) {
+    // Older browsers / iOS, and the path taken if the async clipboard is refused
+    const legacyCopy = text => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;opacity:0;';
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (_) {}
+        document.body.removeChild(ta);
+        return ok;
+    };
+
     emailLink.addEventListener('click', function () {
+        launchPaperPlane(this);
         const email = 'nkrabadiya@gmail.com';
+        const copied = () => showToast('✓ Email copied to clipboard');
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(email).then(() => showToast('✓ Email copied to clipboard'));
-        } else {
-            // Fallback for older browsers / iOS
-            const ta = document.createElement('textarea');
-            ta.value = email;
-            ta.style.cssText = 'position:fixed;opacity:0;';
-            document.body.appendChild(ta);
-            ta.focus(); ta.select();
-            try { document.execCommand('copy'); showToast('✓ Email copied to clipboard'); } catch (_) {}
-            document.body.removeChild(ta);
+            navigator.clipboard.writeText(email).then(copied, () => { if (legacyCopy(email)) copied(); });
+        } else if (legacyCopy(email)) {
+            copied();
         }
     });
 }
@@ -805,6 +859,7 @@ function initSectionUnderlines() {
             kv('contact', 'how to reach me'),
             kv('theme', 'toggle dark / light'),
             kv('clear', 'clear the terminal'),
+            line(el('span', 't-dim', 'also: deploy · php artisan inspire · php artisan down')),
         ],
         whoami: () => [
             line(el('span', 't-cmd-name', 'Nainesh Rabadiya')),
@@ -841,6 +896,32 @@ function initSectionUnderlines() {
             kv('github', link('nainesh-rabadiya', 'https://github.com/nainesh-rabadiya')),
             kv('x', link('@nainesh_9x', 'https://x.com/nainesh_9x')),
         ],
+        deploy: () => {
+            if (motionOK()) {
+                const r = form.getBoundingClientRect();
+                flyRocket(r.left + 28, r.top + r.height / 2);
+            }
+            return [line(el('span', 't-dim', 'Building… running tests… ')), line(el('span', 't-key', '✓ '), 'Deployed to production. 0 downtime.')];
+        },
+        inspire: () => {
+            const quotes = [
+                ['Simplicity is the ultimate sophistication.', 'Leonardo da Vinci'],
+                ['Well begun is half done.', 'Aristotle'],
+                ['It is not the man who has too little, but the man who craves more, that is poor.', 'Seneca'],
+                ['Very little is needed to make a happy life.', 'Marcus Aurelius'],
+            ];
+            const [q, who] = quotes[Math.floor(Math.random() * quotes.length)];
+            return [line('“' + q + '”'), line(el('span', 't-dim', '— ' + who))];
+        },
+        down: () => {
+            const overlay = document.createElement('div');
+            overlay.className = 'maintenance-mode';
+            overlay.setAttribute('role', 'status');
+            overlay.innerHTML = '<div><span>503</span><span>Service Unavailable</span></div><p>php artisan up in 2s…</p>';
+            document.body.appendChild(overlay);
+            setTimeout(() => { overlay.classList.add('out'); setTimeout(() => overlay.remove(), 400); }, 2200);
+            return [line(el('span', 't-dim', 'Application is now in maintenance mode.')), line(el('span', 't-key', '✓ '), 'Application is now live.')];
+        },
         theme: () => { themeToggle.click(); return [line(el('span', 't-dim', 'APP_THEME=' + htmlElement.getAttribute('data-theme')))]; },
         sudo: () => [line('Permission denied. (contact works without sudo.)')],
     };
@@ -853,6 +934,9 @@ function initSectionUnderlines() {
         let [name, ...rest] = text.split(' ');
         let arg = rest.join(' ');
         if (/^php artisan about$/i.test(text) || /^artisan about$/i.test(text)) { name = 'about'; arg = ''; }
+        const artisan = text.match(/^(?:php )?artisan (inspire|down)$/i);
+        if (artisan) { name = artisan[1]; arg = ''; }
+        if (/^git push( .*)?$/i.test(text)) { name = 'deploy'; arg = ''; }
         name = name.toLowerCase();
 
         const block = el('div', 't-block');
@@ -925,10 +1009,50 @@ document.querySelectorAll('.projects-grid').forEach(grid => {
 });
 
 // ============================================
+// EXPERIENCE: the git line draws downward as you scroll; each role's dot "commits" when reached
+// ============================================
+(function initTimelineProgress() {
+    const timeline = document.querySelector('.experience-timeline');
+    if (!timeline) return;
+    const items = [...timeline.querySelectorAll('.timeline-item')];
+    if (!motionOK()) { items.forEach(i => i.classList.add('reached')); return; } // CSS shows the full line
+    timeline.classList.add('is-tracking');
+
+    let ticking = false, active = false;
+    function update() {
+        ticking = false;
+        const r = timeline.getBoundingClientRect();
+        const mark = innerHeight * 0.6;                       // the "playhead" sits 60% down the screen
+        const p = Math.max(0, Math.min(1, (mark - r.top) / r.height));
+        timeline.style.setProperty('--progress', p.toFixed(4));
+        items.forEach(i => i.classList.toggle('reached', i.getBoundingClientRect().top + 12 < mark));
+    }
+    const onScroll = () => { if (active && !ticking) { ticking = true; requestAnimationFrame(update); } };
+    new IntersectionObserver(([e]) => { active = e.isIntersecting; if (active) update(); }, { rootMargin: '200px 0px' }).observe(timeline);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+})();
+
+// ============================================
 // PRINT AS RÉSUMÉ
 // ============================================
 const printBtn = document.getElementById('print-cv');
-if (printBtn) printBtn.addEventListener('click', () => window.print());
+if (printBtn) printBtn.addEventListener('click', () => {
+    if (!motionOK() || printBtn.dataset.printing === '1') { window.print(); return; }
+    printBtn.dataset.printing = '1';
+    const r = printBtn.getBoundingClientRect();
+    const sheet = document.createElement('div');
+    sheet.className = 'print-sheet';
+    sheet.innerHTML = '<i></i><i></i><i></i><i></i><i></i>';
+    sheet.style.left = (r.left + r.width / 2) + 'px';
+    sheet.style.top  = (r.bottom - 8) + 'px';   // feeds downward, into the empty space under the button
+    document.body.appendChild(sheet);
+    setTimeout(() => {
+        sheet.remove();
+        printBtn.dataset.printing = '0';
+        window.print();
+    }, 1050);
+});
 
 // ============================================
 // CONSOLE

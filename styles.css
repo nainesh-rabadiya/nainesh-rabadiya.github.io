@@ -2123,6 +2123,108 @@ body.theme-transitioning *::after {
 @media (hover: none) { .card-links .card-link { padding: 0.7rem 0; } }   /* 40px+ tap height */
 
 /* ============================================
+   ACTION ANIMATIONS — each one is feedback for something the visitor just did
+   ============================================ */
+/* email → paper plane */
+.paper-plane {
+  position: fixed;
+  z-index: 9995;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 4px 10px var(--accent-glow));
+}
+.paper-plane svg { width: 100%; height: 100%; fill: var(--accent); }
+
+/* theme switch → the new theme spreads from the button (script.js animates the clip-path) */
+.theme-reveal::view-transition-old(root),
+.theme-reveal::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+.theme-reveal::view-transition-old(root) { z-index: 1; }
+.theme-reveal::view-transition-new(root) { z-index: 2; }
+
+/* save as PDF → a sheet feeds out of the button */
+.print-sheet {
+  position: fixed;
+  z-index: 9995;
+  width: 54px;
+  padding: 8px 7px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+  pointer-events: none;
+  transform: translate(-50%, 0);
+  animation: sheet-feed 1.05s var(--ease) forwards;
+}
+.print-sheet i { display: block; height: 3px; border-radius: 2px; background: #c9c9cf; transform-origin: 0 50%; transform: scaleX(0); animation: sheet-line 0.22s ease-out forwards; }
+.print-sheet i:nth-child(1) { width: 60%; background: var(--accent); animation-delay: 0.22s; }
+.print-sheet i:nth-child(2) { animation-delay: 0.36s; }
+.print-sheet i:nth-child(3) { width: 85%; animation-delay: 0.50s; }
+.print-sheet i:nth-child(4) { animation-delay: 0.64s; }
+.print-sheet i:nth-child(5) { width: 45%; animation-delay: 0.78s; }
+@keyframes sheet-feed {
+  0%   { clip-path: inset(0 0 100% 0); opacity: 1; }
+  80%  { clip-path: inset(0 0 0 0); opacity: 1; transform: translate(-50%, 0); }
+  100% { clip-path: inset(0 0 0 0); opacity: 0; transform: translate(-50%, 35%); }
+}
+@keyframes sheet-line { to { transform: scaleX(1); } }
+
+/* terminal `php artisan down` → Laravel-style maintenance page, for two seconds */
+.maintenance-mode {
+  position: fixed;
+  inset: 0;
+  z-index: 99990;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  background: var(--bg-base);
+  color: var(--text-2);
+  font-family: var(--font-body);
+  animation: maintenance-in 0.25s ease-out;
+  transition: opacity 0.4s ease;
+}
+.maintenance-mode.out { opacity: 0; }
+.maintenance-mode div { display: flex; align-items: center; font-size: 1.15rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.maintenance-mode div span:first-child { padding-right: 1rem; margin-right: 1rem; border-right: 1px solid var(--text-3); font-size: 1.5rem; color: var(--text-1); }
+.maintenance-mode p { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-3); }
+@keyframes maintenance-in { from { opacity: 0; } }
+
+/* experience: the line draws downward with scroll; a role's dot fills once it is reached */
+.experience-timeline.is-tracking::before { background: var(--border); }
+.experience-timeline.is-tracking::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent));
+  box-shadow: 0 0 8px var(--accent-glow);
+  transform-origin: 50% 0;
+  transform: scaleY(var(--progress, 0));
+  will-change: transform;
+}
+.is-tracking .timeline-dot {
+  background: var(--bg-base);
+  border-color: var(--text-3);
+  box-shadow: none;
+  transition: background 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease), transform 0.35s var(--spring);
+}
+.is-tracking .timeline-item.reached .timeline-dot {
+  background: var(--accent);
+  border-color: var(--bg-base);
+  box-shadow: 0 0 0 3px var(--accent-med);
+  transform: translateX(-4px) scale(1.25);
+}
+.is-tracking .commit-hash { transition: color 0.3s var(--ease); }
+.is-tracking .timeline-item.reached > .timeline-content > .commit-meta .commit-hash { color: var(--text-2); }
+
+/* ============================================
    PRINT — the page doubles as a résumé (Ctrl+P / "Save as PDF")
    ============================================ */
 @media print {
@@ -2140,7 +2242,7 @@ body.theme-transitioning *::after {
   .navbar, .page-loader, .scroll-progress-bar, #cursor-glow, #cursor-dot, #cursor-ring,
   #hero-canvas, .hero-spotlight, .hero-scroll, .hero-cta, .term-chips, .term-output, .term-input,
   .skills-tabs, .side-social, .back-to-top, .footer-brand, .perf-badge, .print-cv, .toast,
-  .carousel-dots, .git-cmd, .commit-meta, .skill-code-tip, .about-image-wrap,
+  .carousel-dots, .git-cmd, .commit-meta, .skill-code-tip, .about-image-wrap, .paper-plane, .print-sheet, .maintenance-mode,
   .hero::before, .hero::after { display: none !important; }
 
   .js .hero-terminal, .js .hero-title .greeting, .js .hero-title .name,
