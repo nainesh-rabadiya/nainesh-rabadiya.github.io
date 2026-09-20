@@ -98,7 +98,7 @@ const elephpant = document.getElementById('elephpant');
 const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const isTouch = window.matchMedia('(hover: none)').matches;
 const ele = { w: 0, track: 0, maxScroll: 1, vw: 0, blocked: [], target: 0, cur: null, dist: 0, t: 0, lastY: window.scrollY,
-              turn: 0, turnEvents: 0, facingLeft: false, raf: 0, lastP: 0, greeted: false, lastCheer: 0, summonedUntil: 0 };
+              ticks: [], lastCenter: null, turn: 0, turnEvents: 0, facingLeft: false, raf: 0, lastP: 0, greeted: false, lastCheer: 0, summonedUntil: 0 };
 try { ele.greeted = sessionStorage.getItem('elephpant-greeted') === '1'; } catch (e) { /* unavailable */ }
 
 function measureElephpant() {
@@ -111,6 +111,16 @@ function measureElephpant() {
     ele.blocked = !isTouch ? [] : [...document.querySelectorAll('.nav-logo, .theme-toggle, .nav-toggle')]
         .filter(node => node.offsetParent)
         .map(node => { const r = node.getBoundingClientRect(); return [r.left - ele.w - 10, r.right + 10]; });
+
+    // one tick on the line per section in the nav, at the x where the elephant will be when you reach it
+    const holder = document.getElementById('progress-ticks');
+    if (!holder) return;
+    const navH = document.getElementById('navbar').offsetHeight;
+    const xs = [...document.querySelectorAll('.nav-link')].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean)
+        .map(sec => Math.max(0, Math.min(1, (sec.offsetTop - navH) / ele.maxScroll)) * ele.track + ele.w / 2);
+    while (holder.children.length < xs.length) holder.appendChild(document.createElement('i'));
+    while (holder.children.length > xs.length) holder.lastChild.remove();
+    ele.ticks = xs.map((x, i) => { const node = holder.children[i]; node.style.left = (x - 1).toFixed(1) + 'px'; return { x, node }; });
 }
 
 function renderElephpant() {
@@ -122,6 +132,17 @@ function renderElephpant() {
     elephpant.style.setProperty('--leg', (swing * 15).toFixed(2) + 'deg');
     elephpant.style.setProperty('--bob', (-Math.abs(swing) * 1.1).toFixed(2) + 'px');
     elephpant.style.pointerEvents = ele.blocked.some(([a, b]) => x > a && x < b) ? 'none' : '';
+
+    // ticks behind it turn red; crossing one makes it hop
+    const center = x + ele.w / 2;
+    for (const tick of ele.ticks) {
+        tick.node.classList.toggle('passed', center >= tick.x);
+        if (ele.lastCenter !== null && (ele.lastCenter < tick.x) !== (center < tick.x) && !reducedMotionQuery.matches && !elephpant.classList.contains('hop')) {
+            elephpant.classList.add('hop');
+            setTimeout(() => elephpant.classList.remove('hop'), 360);
+        }
+    }
+    ele.lastCenter = center;
 }
 
 function elephpantFrame(t) {
@@ -148,6 +169,8 @@ function updateProgress() {
     const visible = y > 40 || performance.now() < ele.summonedUntil;
     elephpant.classList.toggle('show', visible);
     progressBar.style.opacity = visible ? '1' : '0';
+    const tickHolder = document.getElementById('progress-ticks');
+    if (tickHolder) tickHolder.classList.toggle('show', visible);
 
     // direction, with hysteresis
     const dy = y - ele.lastY;
@@ -1113,11 +1136,15 @@ window.addEventListener('load', () => setTimeout(() => {
 
     const b = text => { const n = document.createElement('b'); n.textContent = text; return n; };
     const bytes = [nav, ...performance.getEntriesByType('resource')].reduce((sum, e) => sum + (e.transferSize || 0), 0);
-    badge.append('⚡ Loaded in ', b((nav.loadEventEnd / 1000).toFixed(2) + 's'));
+    badge.append('Loaded in ', b((nav.loadEventEnd / 1000).toFixed(2) + 's'));   // the gauge replaces the ⚡
     const fresh = bytes > 8 * 1024; // a revisit only transfers a few hundred bytes of 304 headers
     badge.append(' · ', b(fresh ? Math.round(bytes / 1024) + ' KB' : 'cached'));
     badge.append(' · ', b('0'), ' frameworks');
     badge.hidden = false;
+    // needle: 0s = far left (green), 3s+ = far right (red); it sweeps when the footer scrolls into view
+    const seconds = nav.loadEventEnd / 1000;
+    badge.style.setProperty('--needle', (-84 + Math.min(1, seconds / 3) * 168).toFixed(1) + 'deg');
+    new IntersectionObserver(([entry], io) => { if (entry.isIntersecting) { badge.classList.add('measured'); io.disconnect(); } }, { threshold: 0.6 }).observe(badge);
 }, 0));
 
 // ============================================
@@ -1170,6 +1197,82 @@ document.querySelectorAll('.projects-grid').forEach(grid => {
     new IntersectionObserver(([e]) => { active = e.isIntersecting; if (active) update(); }, { rootMargin: '200px 0px' }).observe(timeline);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
+})();
+
+// ============================================
+// N+1 → EAGER LOADING (Projects): 101 queries fire one by one, then collapse into 2
+// ============================================
+(function initNPlusOne() {
+    const panel = document.getElementById('nplus1');
+    if (!panel) return;
+    const dotsEl = document.getElementById('np-dots'), count = document.getElementById('np-count'), code = document.getElementById('np-code');
+    const DOTS = 44, QUERIES = 101;
+    const before = code.innerHTML;
+    for (let i = 0; i < DOTS; i++) { const d = document.createElement('span'); if (i < 2) d.className = 'keep'; dotsEl.appendChild(d); }
+    const dots = [...dotsEl.children];
+    let timers = [];
+
+    const showFixed = () => {
+        panel.classList.add('fixed');
+        dots.forEach(d => d.classList.add('on'));
+        code.textContent = "$posts = Post::with('author')->get();";
+        count.textContent = '2 queries';
+    };
+    function play() {
+        timers.forEach(clearTimeout); timers = [];
+        panel.classList.remove('fixed');
+        dots.forEach(d => d.classList.remove('on'));
+        code.innerHTML = before;
+        count.textContent = '0 queries';
+        if (!motionOK()) { showFixed(); return; }
+        dots.forEach((d, i) => timers.push(setTimeout(() => {
+            d.classList.add('on');
+            count.textContent = Math.round((i + 1) / DOTS * QUERIES) + ' queries';
+        }, 250 + i * 36)));
+        timers.push(setTimeout(showFixed, 250 + DOTS * 36 + 650));
+    }
+    new IntersectionObserver(([entry], io) => { if (entry.isIntersecting) { play(); io.disconnect(); } }, { threshold: 0.6 }).observe(panel);
+    document.getElementById('np-replay').addEventListener('click', play);
+})();
+
+// ============================================
+// `php artisan migrate` (Skills): each category card appears as its migration line ticks DONE
+// ============================================
+(function initMigrateLog() {
+    const log = document.getElementById('migrate-log');
+    const cards = [...document.querySelectorAll('.skill-category')];
+    if (!log || !cards.length) return;
+    const row = html => { const d = document.createElement('div'); d.innerHTML = html; log.appendChild(d); return d; };
+    const rows = [row('<span class="ml-cmd"><b>$</b> php artisan migrate</span>')];
+    cards.forEach(card => {
+        revealObserver.unobserve(card);                       // this sequence reveals them instead
+        const name = 'create_' + card.dataset.category.replace(/[^a-z0-9]+/g, '_') + '_skills';
+        rows.push(row(`<span class="ml-pre">Migrating:</span><span class="ml-name">${name}</span><span class="ml-dots"></span><span class="ml-done">DONE</span>`));
+    });
+    const total = document.querySelectorAll('.skill-tag').length;
+    rows.push(row(`<span class="ml-pre">Migrated:</span><span class="ml-name">${cards.length} tables, ${total} skills</span>`));
+
+    new IntersectionObserver(([entry], io) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        const gap = motionOK() ? 240 : 0;
+        rows.forEach((r, i) => setTimeout(() => {
+            r.classList.add('in');
+            if (i >= 1 && i <= cards.length) cards[i - 1].classList.add('revealed');
+        }, i * gap));
+    }, { threshold: 0.4 }).observe(log);
+})();
+
+// ============================================
+// QUEUE BELT (Queues talk card): animate only while it is on screen
+// ============================================
+(function initQueueBelt() {
+    const belt = document.querySelector('.queue-belt');
+    if (!belt || !motionOK()) return;
+    const size = () => belt.style.setProperty('--belt', (belt.offsetWidth + 16) + 'px');
+    size();
+    window.addEventListener('resize', size, { passive: true });
+    new IntersectionObserver(([entry]) => { size(); belt.classList.toggle('running', entry.isIntersecting); }).observe(belt);
 })();
 
 // ============================================

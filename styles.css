@@ -2285,6 +2285,73 @@ path.ele-dark { fill: none; }
 @media (prefers-reduced-motion: reduce) { .elephpant { transition: opacity 0.01s; } }
 
 /* ============================================
+   N+1 → EAGER LOADING (Projects) — the thing I teach, shown instead of told
+   ============================================ */
+.nplus1 { margin-bottom: 2rem; padding: 1.1rem 1.25rem 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); }
+.np-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.4rem 1rem; margin-bottom: 0.85rem; }
+.np-code { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-1); overflow-wrap: anywhere; }
+.np-code span { color: var(--text-3); }
+.np-count { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; color: #ef4444; white-space: nowrap; transition: color 0.3s var(--ease); }
+.nplus1.fixed .np-count { color: #22c55e; }
+.np-dots { display: grid; grid-template-columns: repeat(auto-fill, 10px); gap: 5px; min-height: 40px; }
+.np-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); transform: scale(0.55); transition: transform 0.45s var(--spring), background 0.3s var(--ease), opacity 0.35s var(--ease); }
+.np-dots span.on { background: #ef4444; transform: scale(1); }
+.nplus1.fixed .np-dots span.on { transform: scale(0); opacity: 0; }
+.nplus1.fixed .np-dots span.keep { background: #22c55e; transform: scale(1.25); opacity: 1; }
+.np-caption { margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-2); line-height: 1.6; }
+.np-replay { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-3); padding: 0.8rem 0.5rem; margin: -0.8rem 0; min-height: 44px; }
+.np-replay:hover { color: var(--accent); }
+
+/* ============================================
+   `php artisan migrate` (Skills)
+   ============================================ */
+.migrate-log { margin-bottom: 1.5rem; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.9; color: var(--text-3); }
+.migrate-log div { display: flex; align-items: baseline; gap: 0.5rem; opacity: 0; transform: translateX(-6px); transition: opacity 0.25s var(--ease), transform 0.25s var(--ease); }
+.migrate-log div.in { opacity: 1; transform: none; }
+.migrate-log .ml-cmd { color: var(--text-2); }
+.migrate-log .ml-cmd b { color: var(--accent); font-weight: 500; }
+.migrate-log .ml-name { color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.migrate-log .ml-dots { flex: 1; min-width: 1rem; border-bottom: 1px dotted var(--text-3); opacity: 0.5; transform: translateY(-4px); }
+.migrate-log .ml-done { color: #22c55e; font-weight: 500; opacity: 0; transition: opacity 0.2s var(--ease) 0.12s; }
+.migrate-log div.in .ml-done { opacity: 1; }
+.migrate-log .ml-pre { color: var(--text-3); }
+@media (max-width: 480px) { .migrate-log { font-size: 0.75rem; } .migrate-log .ml-pre { display: none; } }
+
+/* ============================================
+   QUEUE BELT (Queues talk card) — runs only while the card is on screen
+   ============================================ */
+.queue-belt { position: relative; height: 34px; margin: 0.25rem 0 0.35rem; overflow: hidden; border-bottom: 2px solid var(--border); }
+.queue-belt i { position: absolute; left: 0; bottom: 3px; width: 13px; height: 13px; border-radius: 3px; background: var(--text-3);
+  animation: qb-move 6s linear infinite, qb-ok 6s linear infinite; animation-delay: calc(var(--i) * -1s); animation-play-state: paused; }
+.queue-belt i.qb-fail { animation-name: qb-move, qb-retry; }
+.queue-belt.running i { animation-play-state: running; }
+.qb-worker { position: absolute; top: 0; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.75rem; line-height: 1; color: var(--text-3); padding: 2px 5px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-surface); }
+.qb-legend { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-3); margin-bottom: 1rem; }
+@media (prefers-reduced-motion: reduce) { .queue-belt i { left: calc(6% + var(--i) * 15%); background: #22c55e; } .queue-belt i:nth-of-type(-n+2) { background: var(--text-3); } }
+@keyframes qb-move  { from { transform: translateX(-16px); } to { transform: translateX(var(--belt, 640px)); } }
+@keyframes qb-ok    { 0%, 39% { background: var(--text-3); } 41%, 100% { background: #22c55e; } }
+@keyframes qb-retry { 0%, 39% { background: var(--text-3); } 41%, 64% { background: #ef4444; } 66%, 100% { background: #22c55e; } }
+
+/* ============================================
+   LOAD-TIME GAUGE (footer badge)
+   ============================================ */
+.perf-gauge { width: 30px; height: 18px; margin-right: 0.45rem; vertical-align: -3px; overflow: visible; }
+.perf-gauge path { fill: none; stroke-width: 3; stroke-linecap: round; }
+.perf-gauge circle { fill: var(--text-2); }
+.perf-needle { stroke: var(--text-1); stroke-width: 1.8; stroke-linecap: round; transform-origin: 20px 22px; transform: rotate(-84deg); transition: transform 1.3s cubic-bezier(0.2, 1.4, 0.4, 1); }
+.perf-badge.measured .perf-needle { transform: rotate(var(--needle, -84deg)); }
+
+/* ============================================
+   SECTION TICKS on the progress line — the elePHPant hops over each one
+   ============================================ */
+.progress-ticks { position: fixed; left: 0; right: 0; top: calc(var(--nav-h) - 7px); height: 7px; z-index: 9998; pointer-events: none; opacity: 0; transition: opacity 0.3s var(--ease); }
+.progress-ticks.show { opacity: 1; }
+.progress-ticks i { position: absolute; bottom: 0; width: 2px; height: 7px; border-radius: 1px; background: var(--text-3); opacity: 0.55; transition: background 0.25s var(--ease), opacity 0.25s var(--ease); }
+.progress-ticks i.passed { background: var(--accent); opacity: 1; }
+.elephpant.hop svg { animation: ele-hop 0.34s var(--ease); }
+@keyframes ele-hop { 45% { translate: 0 -6px; } }   /* `translate`, not `transform`: it must not undo the scaleX(-1) that faces it left */
+
+/* ============================================
    PRINT — the page doubles as a résumé (Ctrl+P / "Save as PDF")
    ============================================ */
 @media print {
@@ -2302,7 +2369,8 @@ path.ele-dark { fill: none; }
   .navbar, .page-loader, .scroll-progress-bar, #cursor-glow, #cursor-dot, #cursor-ring,
   #hero-canvas, .hero-spotlight, .hero-scroll, .hero-cta, .term-chips, .term-output, .term-input,
   .skills-tabs, .side-social, .back-to-top, .footer-brand, .perf-badge, .print-cv, .toast,
-  .carousel-dots, .git-cmd, .commit-meta, .skill-code-tip, .about-image-wrap, .paper-plane, .elephpant, .ele-spray, .print-sheet, .maintenance-mode,
+  .carousel-dots, .git-cmd, .commit-meta, .skill-code-tip, .about-image-wrap, .paper-plane, .elephpant, .ele-spray,
+  .nplus1, .migrate-log, .queue-belt, .qb-legend, .progress-ticks, .perf-gauge, .print-sheet, .maintenance-mode,
   .hero::before, .hero::after { display: none !important; }
 
   .js .hero-terminal, .js .hero-title .greeting, .js .hero-title .name,

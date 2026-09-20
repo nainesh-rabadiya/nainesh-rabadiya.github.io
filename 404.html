@@ -152,6 +152,20 @@
       text-align: left;
     }
     .terminal .prompt { color: var(--accent); }
+    .terminal .dim { opacity: 0.6; }
+    #lost-path, #lost-path-2 { word-break: break-all; }
+    /* the elePHPant (PHP's mascot) paces up and down looking for the route */
+    .lost { width: min(420px, 100%); margin: 0 auto 1.75rem; border-bottom: 1px dashed rgba(255,45,32,0.45); overflow: hidden; }
+    .lost-walker { position: relative; width: 58px; animation: lost-pace 9s ease-in-out infinite; }
+    .lost-walker svg { display: block; width: 58px; height: 40px; overflow: visible; animation: lost-face 9s steps(1) infinite; }
+    .lost-walker .leg { transform-box: fill-box; transform-origin: 50% 8%; animation: lost-step 0.62s ease-in-out infinite alternate; }
+    .lost-walker .leg.b { animation-direction: alternate-reverse; }
+    .lost-q { position: absolute; top: -2px; left: 50%; font: 700 15px/1 'Fira Code', monospace; color: var(--accent); opacity: 0; animation: lost-wonder 9s ease-in-out infinite; }
+    @keyframes lost-pace   { 0%, 4% { transform: translateX(0); } 46%, 54% { transform: translateX(calc(min(420px, 100vw - 3rem) - 58px)); } 96%, 100% { transform: translateX(0); } }
+    @keyframes lost-face   { 0% { transform: scaleX(1); } 50% { transform: scaleX(-1); } }
+    @keyframes lost-step   { from { transform: rotate(-14deg); } to { transform: rotate(14deg); } }
+    @keyframes lost-wonder { 0%, 44%, 56%, 94%, 100% { opacity: 0; transform: translateY(4px); } 47%, 53%, 97% { opacity: 1; transform: translateY(-6px); } }
+    @media (prefers-reduced-motion: reduce) { .lost-walker, .lost-walker svg, .lost-walker .leg, .lost-q { animation: none; } .lost-q { opacity: 1; } }
     .terminal .cursor {
       display: inline-block;
       width: 8px; height: 1em;
@@ -176,10 +190,34 @@
       <a href="/" class="btn btn-primary">← Back to Portfolio</a>
       <a href="/#contact" class="btn btn-secondary">Contact Me</a>
     </div>
+    <div class="lost" aria-hidden="true">
+      <div class="lost-walker">
+        <svg viewBox="0 0 64 44" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 16c-4 1-6 5-5 10" fill="none" stroke="#4F5B93" stroke-width="2.5" stroke-linecap="round"/>
+          <rect class="leg b" fill="#4F5B93" x="12" y="28" width="7" height="14" rx="3"/><rect class="leg a" fill="#4F5B93" x="37" y="28" width="7" height="14" rx="3"/>
+          <rect fill="#8892BF" x="8" y="8" width="40" height="25" rx="12"/>
+          <rect class="leg a" fill="#8892BF" x="19" y="28" width="7" height="14" rx="3"/><rect class="leg b" fill="#8892BF" x="43" y="28" width="7" height="14" rx="3"/>
+          <circle fill="#8892BF" cx="49" cy="17" r="11.5"/>
+          <path d="M57 20c4 5 4 11 1 16-1 2 1 4 3 3" fill="none" stroke="#8892BF" stroke-width="5.5" stroke-linecap="round"/>
+          <ellipse fill="#4F5B93" cx="43" cy="17" rx="6" ry="8.5"/><circle cx="53" cy="14" r="1.6" fill="#fff"/>
+          <text x="15" y="25" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="700" font-style="italic" fill="#fff">PHP</text>
+        </svg>
+        <span class="lost-q">?</span>
+      </div>
+    </div>
     <div class="terminal">
+      <span class="prompt">~/nainesh $</span> php artisan route:list | grep <span id="lost-path">/that-page</span><br>
+      <span class="dim">Route [<span id="lost-path-2">/that-page</span>] not defined. The elePHPant is still looking.</span><br>
       <span class="prompt">~/nainesh $</span> cd ..<br>
       <span class="prompt">~/nainesh $</span> <span class="cursor"></span>
     </div>
   </div>
+  <script>
+    // show the path that was actually requested (textContent, so it cannot inject markup)
+    (function () {
+      var p = location.pathname.length > 38 ? location.pathname.slice(0, 35) + '…' : location.pathname;
+      ['lost-path', 'lost-path-2'].forEach(function (id) { var n = document.getElementById(id); if (n && p && p !== '/404.html') n.textContent = p; });
+    })();
+  </script>
 </body>
 </html>
