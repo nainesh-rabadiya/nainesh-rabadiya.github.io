@@ -86,68 +86,122 @@ if (window.matchMedia('(hover: hover)').matches) {
 const progressBar = document.getElementById('scroll-progress');
 
 // The elePHPant (PHP's mascot) walks the progress line: right as you scroll down, back as you scroll up.
+//
+// Motion model (rewritten after it stuttered on iPhone):
+//  - scroll events only record a target; one rAF loop eases the elephant toward it, so uneven
+//    event timing during momentum scrolling never shows up as stop-start movement
+//  - the legs step by DISTANCE scrolled, not by a timer: on a long page the body moves ~1px per
+//    30px of scroll, and timer-driven legs looked like frantic running on the spot
+//  - it turns round only after 36px of travel the other way over 3+ events, so wobble or a glitch can't flip it
+//  - only transforms change per frame; every layout measurement is cached
 const elephpant = document.getElementById('elephpant');
-let lastProgressY = window.scrollY, walkTimer, lastP = 0, greeted = false;
-try { greeted = sessionStorage.getItem('elephpant-greeted') === '1'; } catch (e) { /* unavailable */ }
-
-// On touch screens the elephant walks under the logo and the nav buttons: it must not take their taps.
+const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const isTouch = window.matchMedia('(hover: none)').matches;
-function elephpantYieldsTaps(x) {
-    if (!isTouch) return false;
-    const w = elephpant.offsetWidth, pad = 10;
-    return [...document.querySelectorAll('.nav-logo, .theme-toggle, .nav-toggle')].some(node => {
-        if (!node.offsetParent) return false;
-        const r = node.getBoundingClientRect();
-        return x + w + pad > r.left && x - pad < r.right;
-    });
+const ele = { w: 0, track: 0, maxScroll: 1, vw: 0, blocked: [], target: 0, cur: null, dist: 0, t: 0, lastY: window.scrollY,
+              turn: 0, turnEvents: 0, facingLeft: false, raf: 0, lastP: 0, greeted: false, lastCheer: 0, summonedUntil: 0 };
+try { ele.greeted = sessionStorage.getItem('elephpant-greeted') === '1'; } catch (e) { /* unavailable */ }
+
+function measureElephpant() {
+    ele.vw = window.innerWidth;
+    ele.maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    if (!elephpant) return;
+    ele.w = elephpant.offsetWidth;
+    ele.track = ele.vw - ele.w;
+    // On touch screens it walks under the logo and the nav buttons: it must not take their taps there.
+    ele.blocked = !isTouch ? [] : [...document.querySelectorAll('.nav-logo, .theme-toggle, .nav-toggle')]
+        .filter(node => node.offsetParent)
+        .map(node => { const r = node.getBoundingClientRect(); return [r.left - ele.w - 10, r.right + 10]; });
+}
+
+function renderElephpant() {
+    const x = ele.cur;
+    elephpant.style.transform = `translate3d(${x.toFixed(2)}px, 0, 0)`;
+    progressBar.style.transform = `scaleX(${((x + ele.w * 0.3) / ele.vw).toFixed(5)})`;   // the line ends under its back legs
+    // one full leg swing per ~190px scrolled (capped in elephpantFrame): a calm walk that stops when you do
+    const swing = reducedMotionQuery.matches ? 0 : Math.sin(ele.dist / 30);
+    elephpant.style.setProperty('--leg', (swing * 15).toFixed(2) + 'deg');
+    elephpant.style.setProperty('--bob', (-Math.abs(swing) * 1.1).toFixed(2) + 'px');
+    elephpant.style.pointerEvents = ele.blocked.some(([a, b]) => x > a && x < b) ? 'none' : '';
+}
+
+function elephpantFrame(t) {
+    const dt = ele.t ? Math.min(50, t - ele.t) : 16.7;      // real elapsed time: same feel at 60Hz and 120Hz
+    ele.t = t;
+    const gap = ele.target - ele.cur;
+    if (Math.abs(gap) < 0.05) { ele.cur = ele.target; ele.raf = 0; ele.t = 0; renderElephpant(); return; }
+    const move = gap * (1 - Math.exp(-dt / 70));
+    ele.cur += move;
+    // Steps follow the distance scrolled, but never faster than a calm ~1 stride a second: a fast fling
+    // covers 50-90px a frame, which would otherwise spin the legs several steps per frame (looks like shaking).
+    const scrolledEquivalent = Math.abs(move) * (ele.maxScroll / Math.max(1, ele.track));
+    ele.dist += Math.min(scrolledEquivalent, dt * 0.2);
+    renderElephpant();
+    ele.raf = requestAnimationFrame(elephpantFrame);
 }
 
 function updateProgress() {
-    const scrolled  = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const p = docHeight > 0 ? Math.min(1, scrolled / docHeight) : 0;
-    if (!elephpant) { progressBar.style.width = (p * 100) + '%'; return; }
+    const y = window.scrollY;
+    const p = Math.max(0, Math.min(1, y / ele.maxScroll));
+    if (!elephpant) { progressBar.style.transform = `scaleX(${p})`; return; }
 
-    const x = p * (window.innerWidth - elephpant.offsetWidth);
-    elephpant.style.setProperty('--x', x.toFixed(1) + 'px');
-    const visible = scrolled > 40;                                        // nothing at the very top of the page
-    progressBar.style.width = visible ? (x + elephpant.offsetWidth * 0.3) + 'px' : '0px';   // the line ends under its back legs
+    // nothing at the very top of the page — unless `php -v` just summoned it and it is mid-trumpet
+    const visible = y > 40 || performance.now() < ele.summonedUntil;
     elephpant.classList.toggle('show', visible);
-    elephpant.style.pointerEvents = elephpantYieldsTaps(x) ? 'none' : '';
+    progressBar.style.opacity = visible ? '1' : '0';
+
+    // direction, with hysteresis
+    const dy = y - ele.lastY;
+    ele.lastY = y;
+    // Turn round only after 36px of travel the other way across at least 3 consecutive events:
+    // a 1px wobble can't flip it, and neither can a single glitchy jump of any size.
+    if (dy !== 0) {
+        if ((dy < 0) === ele.facingLeft) { ele.turn = 0; ele.turnEvents = 0; }
+        else {
+            ele.turn += Math.abs(dy);
+            if (++ele.turnEvents >= 3 && ele.turn > 36) {
+                ele.facingLeft = dy < 0;
+                ele.turn = 0; ele.turnEvents = 0;
+                elephpant.classList.toggle('left', ele.facingLeft);
+            }
+        }
+    }
+
+    ele.target = p * ele.track;
+    if (ele.cur === null || reducedMotionQuery.matches) { ele.cur = ele.target; renderElephpant(); }
+    else if (!ele.raf) ele.raf = requestAnimationFrame(elephpantFrame);
 
     // It says hello once per visit the first time it appears, and celebrates when you reach the end
     // (both are unprompted motion, so not under reduced motion — a tap still works there)
-    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (visible && !greeted) {
-        greeted = true;
+    if (visible && !ele.greeted) {
+        ele.greeted = true;
         try { sessionStorage.setItem('elephpant-greeted', '1'); } catch (e) { /* unavailable */ }
-        if (!still) setTimeout(elephpantTrumpet, 700);
+        if (!reducedMotionQuery.matches) setTimeout(elephpantTrumpet, 700);
     }
-    if (!still && p >= 0.995 && lastP < 0.995) setTimeout(elephpantTrumpet, 300);
-    lastP = p;
-
-    if (scrolled !== lastProgressY) {
-        elephpant.classList.toggle('left', scrolled < lastProgressY);
-        lastProgressY = scrolled;
-        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            elephpant.classList.add('walking');
-            clearTimeout(walkTimer);
-            walkTimer = setTimeout(() => elephpant.classList.remove('walking'), 170);   // stands still when you stop
-        }
+    const now = performance.now();
+    if (!reducedMotionQuery.matches && p >= 0.995 && ele.lastP < 0.995 && now - ele.lastCheer > 6000) {   // cooldown: iOS rubber-banding re-crosses the line
+        ele.lastCheer = now;
+        setTimeout(elephpantTrumpet, 300);
     }
+    ele.lastP = p;
 }
+
+const remeasure = () => { measureElephpant(); updateProgress(); };
 window.addEventListener('scroll', updateProgress, { passive: true });
-window.addEventListener('resize', updateProgress, { passive: true });
-updateProgress();   // a reload can restore a scroll position
+window.addEventListener('resize', remeasure, { passive: true });
+window.addEventListener('load', remeasure);
+if ('ResizeObserver' in window) new ResizeObserver(remeasure).observe(document.body);   // page height changes (terminal output, skill filter)
+remeasure();   // a reload can restore a scroll position
 
 // Click it (or run `php -v` in the terminal) and it rears up and trumpets a little PHP
 function elephpantTrumpet() {
     if (!elephpant || elephpant.classList.contains('trumpet')) return;
     // keep the spray on screen: at either edge it turns to face the page first
     const box = elephpant.getBoundingClientRect();
-    if (box.right > window.innerWidth - 130) elephpant.classList.add('left');
-    else if (box.left < 130) elephpant.classList.remove('left');
+    if (box.right > window.innerWidth - 130) ele.facingLeft = true;
+    else if (box.left < 130) ele.facingLeft = false;
+    elephpant.classList.toggle('left', ele.facingLeft);
 
+    ele.summonedUntil = performance.now() + 1500;
     elephpant.classList.add('show', 'trumpet');
     setTimeout(() => elephpant.classList.remove('trumpet'), 650);
     setTimeout(updateProgress, 1600);   // summoned from the top of the page (`php -v`)? slip away again afterwards

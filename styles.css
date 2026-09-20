@@ -115,11 +115,14 @@ button { cursor: pointer; font: inherit; border: none; background: none; }
 .scroll-progress-bar {
   position: fixed;
   top: calc(var(--nav-h) - 2px); left: 0;   /* the nav's bottom edge: the ground the elePHPant walks on */
-  width: 0%;
+  width: 100%;
   height: 2px;
   background: var(--accent);
   z-index: 9999;
-  transition: width 80ms linear;
+  transform: scaleX(0);                     /* script.js scales it; never animate `width` (relayout every frame) */
+  transform-origin: 0 50%;
+  will-change: transform;
+  transition: opacity 0.3s var(--ease);
   box-shadow: 0 0 8px var(--accent-glow);
 }
 
@@ -2238,8 +2241,9 @@ body.theme-transitioning *::after {
   padding: 0;
   pointer-events: none;
   opacity: 0;
-  transform: translateX(var(--x, 0px));
-  transition: transform 80ms linear, opacity 0.3s var(--ease);   /* same 80ms as the line it pulls */
+  transform: translate3d(0, 0, 0);          /* script.js eases this every frame — no CSS transition on it */
+  will-change: transform;
+  transition: opacity 0.3s var(--ease);
   display: none;
 }
 .js .elephpant { display: block; }
@@ -2252,11 +2256,10 @@ body.theme-transitioning *::after {
 path.ele-dark { fill: none; }
 
 .ele-leg { transform-box: fill-box; transform-origin: 50% 8%; }
-.elephpant.walking .leg-a { animation: ele-step 0.36s ease-in-out infinite alternate; }
-.elephpant.walking .leg-b { animation: ele-step 0.36s ease-in-out infinite alternate-reverse; }
-.elephpant.walking .ele-bob { animation: ele-bob 0.36s ease-in-out infinite alternate; }
-@keyframes ele-step { from { transform: rotate(-20deg); } to { transform: rotate(20deg); } }
-@keyframes ele-bob  { from { transform: translateY(0); } to { transform: translateY(-1.2px); } }
+/* legs are driven by distance scrolled (script.js sets --leg / --bob), not by a timer */
+.leg-a { transform: rotate(var(--leg, 0deg)); }
+.leg-b { transform: rotate(calc(var(--leg, 0deg) * -1)); }
+.ele-bob { transform: translateY(var(--bob, 0px)); }
 
 .ele-trunk { transform-box: fill-box; transform-origin: 10% 5%; transition: transform 0.22s var(--spring); }
 .elephpant.trumpet .ele-trunk { transform: rotate(-72deg); }
