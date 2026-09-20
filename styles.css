@@ -1869,7 +1869,7 @@ body.theme-transitioning *::after {
 /* ============================================
    INTERACTIVE TERMINAL (hero)
    ============================================ */
-.hero-terminal { margin-bottom: 1.75rem; max-width: 720px; }  /* wide enough for the chip row on one line */
+.hero-terminal { margin-bottom: 1.75rem; max-width: 800px; }  /* wide enough for the chip row on one line */
 .term-output { max-width: 560px; }
 
 .term-line { position: relative; cursor: text; max-width: 100%; }
@@ -2274,8 +2274,11 @@ path.ele-dark { fill: none; }
   white-space: nowrap;
 }
 
-@media (hover: hover) { .elephpant.show { pointer-events: auto; cursor: pointer; } }
-@media (max-width: 768px) { .elephpant { width: 27px; height: 19px; top: calc(var(--nav-h) - 19px); } }
+/* Tappable everywhere. script.js turns pointer-events off while it is passing under the logo or the
+   nav buttons on touch screens, so it can never steal their taps. */
+.elephpant.show { pointer-events: auto; cursor: pointer; }
+.elephpant::before { content: ''; position: absolute; inset: -6px -9px -20px -9px; }   /* finger-sized hit area, extends below the nav */
+@media (max-width: 768px) { .elephpant { width: 32px; height: 22px; top: calc(var(--nav-h) - 22px); } }
 @media (prefers-reduced-motion: reduce) { .elephpant { transition: opacity 0.01s; } }
 
 /* ============================================

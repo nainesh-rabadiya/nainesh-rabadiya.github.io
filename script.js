@@ -87,7 +87,20 @@ const progressBar = document.getElementById('scroll-progress');
 
 // The elePHPant (PHP's mascot) walks the progress line: right as you scroll down, back as you scroll up.
 const elephpant = document.getElementById('elephpant');
-let lastProgressY = window.scrollY, walkTimer;
+let lastProgressY = window.scrollY, walkTimer, lastP = 0, greeted = false;
+try { greeted = sessionStorage.getItem('elephpant-greeted') === '1'; } catch (e) { /* unavailable */ }
+
+// On touch screens the elephant walks under the logo and the nav buttons: it must not take their taps.
+const isTouch = window.matchMedia('(hover: none)').matches;
+function elephpantYieldsTaps(x) {
+    if (!isTouch) return false;
+    const w = elephpant.offsetWidth, pad = 10;
+    return [...document.querySelectorAll('.nav-logo, .theme-toggle, .nav-toggle')].some(node => {
+        if (!node.offsetParent) return false;
+        const r = node.getBoundingClientRect();
+        return x + w + pad > r.left && x - pad < r.right;
+    });
+}
 
 function updateProgress() {
     const scrolled  = window.scrollY;
@@ -100,6 +113,18 @@ function updateProgress() {
     const visible = scrolled > 40;                                        // nothing at the very top of the page
     progressBar.style.width = visible ? (x + elephpant.offsetWidth * 0.3) + 'px' : '0px';   // the line ends under its back legs
     elephpant.classList.toggle('show', visible);
+    elephpant.style.pointerEvents = elephpantYieldsTaps(x) ? 'none' : '';
+
+    // It says hello once per visit the first time it appears, and celebrates when you reach the end
+    // (both are unprompted motion, so not under reduced motion — a tap still works there)
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (visible && !greeted) {
+        greeted = true;
+        try { sessionStorage.setItem('elephpant-greeted', '1'); } catch (e) { /* unavailable */ }
+        if (!still) setTimeout(elephpantTrumpet, 700);
+    }
+    if (!still && p >= 0.995 && lastP < 0.995) setTimeout(elephpantTrumpet, 300);
+    lastP = p;
 
     if (scrolled !== lastProgressY) {
         elephpant.classList.toggle('left', scrolled < lastProgressY);
@@ -118,8 +143,14 @@ updateProgress();   // a reload can restore a scroll position
 // Click it (or run `php -v` in the terminal) and it rears up and trumpets a little PHP
 function elephpantTrumpet() {
     if (!elephpant || elephpant.classList.contains('trumpet')) return;
+    // keep the spray on screen: at either edge it turns to face the page first
+    const box = elephpant.getBoundingClientRect();
+    if (box.right > window.innerWidth - 130) elephpant.classList.add('left');
+    else if (box.left < 130) elephpant.classList.remove('left');
+
     elephpant.classList.add('show', 'trumpet');
     setTimeout(() => elephpant.classList.remove('trumpet'), 650);
+    setTimeout(updateProgress, 1600);   // summoned from the top of the page (`php -v`)? slip away again afterwards
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !elephpant.animate) return;
 
     const r = elephpant.getBoundingClientRect();
@@ -954,7 +985,7 @@ function initSectionUnderlines() {
         },
         elephant: () => {
             elephpantTrumpet();
-            return [line('elePHPant 13.0 (cli) — 13+ years of uptime'), line(el('span', 't-dim', 'The mascot walks the red line under the nav as you scroll. Click it.'))];
+            return [line('elePHPant 13.0 (cli) — 13+ years of uptime'), line(el('span', 't-dim', 'The mascot walks the red line under the top bar as you scroll. Tap it.'))];
         },
         inspire: () => {
             const quotes = [
