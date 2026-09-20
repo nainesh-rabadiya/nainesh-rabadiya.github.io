@@ -713,16 +713,16 @@
             <h3 class="project-title">Laravel Queues on Steroids</h3>
             <p class="talk-meta">LaravelLive Ahmedabad · Dec 22, 2024 · York IE APAC</p>
             <p class="project-description">Performance and optimization techniques for Laravel Queues, including queue management strategies for large-scale background processing.</p>
-            <div class="queue-demo" id="queue-demo" role="img"
+            <div class="talk-demo s-res" data-demo="queue" role="img"
               aria-label="Illustration of why queues matter: a checkout request returns 200 OK in 120 milliseconds because sending the order email, generating the invoice PDF and updating inventory are pushed onto a queue and processed by two background workers. The email job fails with an SMTP timeout and succeeds on retry.">
               <div class="qd-req" aria-hidden="true">
-                <code>POST /checkout</code><span class="qd-arrow">→</span><span class="qd-res">200 OK · 120 ms</span>
+                <code class="qd-code">POST /checkout</code><span class="qd-arrow">→</span><span class="qd-res">200 OK · 120 ms</span>
               </div>
-              <p class="qd-note" aria-hidden="true"><span id="qd-note">dispatching 3 jobs to the queue…</span><span class="qd-workers">2 workers</span></p>
+              <p class="qd-note" aria-hidden="true"><span class="qd-note-text">Customer saw success in 120 ms. The slow work ran after.</span><span class="qd-workers">2 workers</span></p>
               <ul class="qd-jobs" aria-hidden="true">
-                <li><span class="qd-name">SendOrderEmail</span><span class="qd-state"></span><span class="qd-bar"><i></i></span></li>
-                <li><span class="qd-name">GenerateInvoicePdf</span><span class="qd-state"></span><span class="qd-bar"><i></i></span></li>
-                <li><span class="qd-name">UpdateInventory</span><span class="qd-state"></span><span class="qd-bar"><i></i></span></li>
+                <li class="in" style="--c:#22c55e;--fill:1"><span class="qd-name">SendOrderEmail</span><span class="qd-state">✓ done</span><span class="qd-bar"><i></i></span></li>
+                <li class="in" style="--c:#22c55e;--fill:1"><span class="qd-name">GenerateInvoicePdf</span><span class="qd-state">✓ done</span><span class="qd-bar"><i></i></span></li>
+                <li class="in" style="--c:#22c55e;--fill:1"><span class="qd-name">UpdateInventory</span><span class="qd-state">✓ done</span><span class="qd-bar"><i></i></span></li>
               </ul>
             </div>
             <p class="card-links">
@@ -750,6 +750,18 @@
             <h3 class="project-title">Speeding Up Your Large-Scale Laravel App, Part 2</h3>
             <p class="talk-meta">LaravelLive Ahmedabad · Feb 25, 2024 · 7Span</p>
             <p class="project-description">Second part of the series: database optimization, caching strategies, and application profiling for large-scale applications.</p>
+            <div class="talk-demo s-res" data-demo="redis" role="img"
+              aria-label="Illustration of Redis caching with Cache::remember: the first request misses the cache and takes 480 milliseconds from MySQL, the following requests hit Redis in about 4 milliseconds, and when a product is updated the cache is invalidated and rebuilt.">
+              <div class="qd-req" aria-hidden="true">
+                <code class="qd-code">Cache::remember(&#x27;products&#x27;, 3600, …)</code><span class="qd-arrow">→</span><span class="qd-res">cache: warm</span>
+              </div>
+              <p class="qd-note" aria-hidden="true"><span class="qd-note-text">Same data, over 100× faster. The database did the work once.</span><span class="qd-workers">TTL 1h</span></p>
+              <ul class="qd-jobs" aria-hidden="true">
+                <li class="in" style="--c:#ef4444;--fill:1"><span class="qd-name">request #1</span><span class="qd-state">MISS · 480 ms</span><span class="qd-bar"><i></i></span></li>
+                <li class="in" style="--c:#22c55e;--fill:0.04"><span class="qd-name">request #2</span><span class="qd-state">HIT · 4 ms</span><span class="qd-bar"><i></i></span></li>
+                <li class="in" style="--c:#22c55e;--fill:0.03"><span class="qd-name">request #3</span><span class="qd-state">HIT · 3 ms</span><span class="qd-bar"><i></i></span></li>
+              </ul>
+            </div>
             <p class="card-links">
               <a class="card-link" href="https://x.com/LaravelAhm/status/1760912096370307409" target="_blank" rel="noopener noreferrer">Announcement on X ↗</a>
             </p>
@@ -775,6 +787,18 @@
             <h3 class="project-title">Speeding Up Your Large-Scale Laravel App</h3>
             <p class="talk-meta">LaravelLive Ahmedabad · Jul 30, 2023 · 7Span</p>
             <p class="project-description">Foundations of scaling Laravel: query optimization, eager loading, caching, and performance monitoring for high-traffic applications.</p>
+            <div class="talk-demo s-res" data-demo="perf" role="img"
+              aria-label="Illustration of performance monitoring: the dashboard endpoint has a p95 of 2.4 seconds; profiling shows 187 SQL queries taking most of the time; after eager loading and an index it runs 6 queries and the p95 drops to 310 milliseconds.">
+              <div class="qd-req" aria-hidden="true">
+                <code class="qd-code">GET /dashboard</code><span class="qd-arrow">→</span><span class="qd-res">p95 310 ms</span>
+              </div>
+              <p class="qd-note" aria-hidden="true"><span class="qd-note-text">Measure first, then fix the biggest bar.</span><span class="qd-workers">profiler</span></p>
+              <ul class="qd-jobs" aria-hidden="true">
+                <li class="in" style="--c:#22c55e;--fill:0.05"><span class="qd-name">SQL · 6 queries</span><span class="qd-state">90 ms</span><span class="qd-bar"><i></i></span></li>
+                <li class="in" style="--c:#22c55e;--fill:0.09"><span class="qd-name">PHP · app code</span><span class="qd-state">180 ms</span><span class="qd-bar"><i></i></span></li>
+                <li class="in" style="--c:#22c55e;--fill:0.02"><span class="qd-name">Redis · cache</span><span class="qd-state">40 ms</span><span class="qd-bar"><i></i></span></li>
+              </ul>
+            </div>
             <p class="card-links">
               <a class="card-link" href="https://x.com/LaravelAhm/status/1684448175833378816" target="_blank" rel="noopener noreferrer">Announcement on X ↗</a>
               <a class="card-link" href="https://x.com/LaravelAhm/status/1685578611888451585" target="_blank" rel="noopener noreferrer">Event recap ↗</a>
@@ -801,6 +825,18 @@
             <h3 class="project-title">Working with Laravel Observers</h3>
             <p class="talk-meta">LaravelLive Ahmedabad · Dec 18, 2022</p>
             <p class="project-description">Practical use of Laravel Observers: handling model events cleanly while keeping the codebase maintainable.</p>
+            <div class="talk-demo s-res" data-demo="observer" role="img"
+              aria-label="Illustration of a Laravel Observer: the controller only calls markAsShipped on the order; Eloquent fires the updated event, the OrderObserver catches it and notifies the customer, writes the audit log and clears the orders cache.">
+              <div class="qd-req" aria-hidden="true">
+                <code class="qd-code">$order-&gt;markAsShipped();</code><span class="qd-arrow">→</span><span class="qd-res">updated event</span>
+              </div>
+              <p class="qd-note" aria-hidden="true"><span class="qd-note-text">The controller stayed one line. Side effects live in one place.</span><span class="qd-workers">OrderObserver</span></p>
+              <ul class="qd-jobs" aria-hidden="true">
+                <li class="in" style="--c:#22c55e;--fill:1"><span class="qd-name">NotifyCustomer</span><span class="qd-state">✓ queued</span><span class="qd-bar"><i></i></span></li>
+                <li class="in" style="--c:#22c55e;--fill:1"><span class="qd-name">WriteAuditLog</span><span class="qd-state">✓ saved</span><span class="qd-bar"><i></i></span></li>
+                <li class="in" style="--c:#22c55e;--fill:1"><span class="qd-name">ForgetOrdersCache</span><span class="qd-state">✓ cleared</span><span class="qd-bar"><i></i></span></li>
+              </ul>
+            </div>
             <p class="card-links">
               <a class="card-link" href="https://x.com/LaravelAhm/status/1603798887432876033" target="_blank" rel="noopener noreferrer">Announcement on X ↗</a>
               <a class="card-link" href="https://x.com/LaravelAhm/status/1604447699876466688" target="_blank" rel="noopener noreferrer">Event recap ↗</a>

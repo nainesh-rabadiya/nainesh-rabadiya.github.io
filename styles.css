@@ -2318,35 +2318,31 @@ path.ele-dark { fill: none; }
 @media (max-width: 480px) { .migrate-log { font-size: 0.75rem; } .migrate-log .ml-pre { display: none; } }
 
 /* ============================================
-   QUEUE DEMO (Queues talk card) — why queues matter: the response is instant, the slow work happens after
+   TALK DEMOS — one small scripted panel per talk card (queue, redis, profiler, observer).
+   script.js drives them; each row's colour, bar length and bar speed are CSS variables.
    ============================================ */
-.queue-demo { margin: 0.25rem 0 1.1rem; padding: 0.85rem 0.9rem 0.75rem; font-family: var(--font-mono); font-size: 0.75rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
-.qd-req { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.5rem; }
-.qd-req code { font: inherit; color: var(--text-1); padding: 0.2rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease); }
-.queue-demo.s-req .qd-req code { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.talk-demo { margin: 0.25rem 0 1.1rem; padding: 0.85rem 0.9rem 0.75rem; font-family: var(--font-mono); font-size: 0.75rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.qd-req { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.5rem; min-height: 1.9rem; }
+.qd-code { font: inherit; color: var(--text-1); padding: 0.2rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; overflow-wrap: anywhere; transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease); }
+.talk-demo.s-req .qd-code { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .qd-arrow { color: var(--text-3); }
-.qd-res { color: #22c55e; font-weight: 500; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(34,197,94,0.12); opacity: 0; transform: translateX(-6px) scale(0.96); transition: opacity 0.35s var(--ease), transform 0.45s var(--spring); }
-.queue-demo.s-res .qd-res { opacity: 1; transform: none; }
+.qd-res { color: #22c55e; font-weight: 500; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(34,197,94,0.12); white-space: nowrap; transition: opacity 0.35s var(--ease), transform 0.45s var(--spring), color 0.3s var(--ease), background 0.3s var(--ease); }
+.qd-res.bad { color: #ef4444; background: rgba(239,68,68,0.12); }
+.qd-res.idle { color: var(--text-3); background: var(--bg-card); }
+.js .talk-demo:not(.s-res) .qd-res { opacity: 0; transform: translateX(-6px) scale(0.96); }
 .qd-note { display: flex; justify-content: space-between; gap: 0.75rem; margin: 0.6rem 0 0.45rem; color: var(--text-3); line-height: 1.5; min-height: 3.1em; }
 .qd-workers { white-space: nowrap; }
-@media (max-width: 768px) { .qd-note { min-height: 4.6em; } }   /* room for 3 lines, so the card never changes height mid-sequence */
 .qd-jobs { display: flex; flex-direction: column; gap: 0.5rem; }
-.qd-jobs li { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 0.25rem 0.5rem; opacity: 0; transform: translateY(5px); transition: opacity 0.4s var(--ease), transform 0.4s var(--ease); }
-.qd-jobs li.in { opacity: 1; transform: none; }
+.qd-jobs li { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 0.25rem 0.5rem; transition: opacity 0.4s var(--ease), transform 0.4s var(--ease); }
+.js .qd-jobs li:not(.in) { opacity: 0; transform: translateY(5px); }
 .qd-name { color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.qd-state { color: var(--text-3); white-space: nowrap; transition: color 0.25s var(--ease); }
+.qd-state { color: var(--c, var(--text-3)); white-space: nowrap; transition: color 0.25s var(--ease); }
 .qd-bar { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: var(--border); overflow: hidden; }
-.qd-bar i { display: block; height: 100%; width: 100%; background: var(--text-3); transform: scaleX(0); transform-origin: 0 50%; }
-.qd-jobs li.processing .qd-state { color: #eab308; }
-.qd-jobs li.processing .qd-bar i { background: #eab308; transform: scaleX(1); transition: transform var(--work, 2.4s) linear; }
-.qd-jobs li.failed .qd-state { color: #ef4444; }
-.qd-jobs li.failed .qd-bar i { background: #ef4444; transform: scaleX(0.62); }
-.qd-jobs li.retry .qd-state { color: #eab308; }
-.qd-jobs li.retry .qd-bar i { background: #ef4444; transform: scaleX(0); transition: transform 0.5s var(--ease); }
-.qd-jobs li.done .qd-state { color: #22c55e; }
-.qd-jobs li.done .qd-bar i { background: #22c55e; transform: scaleX(1); }
-/* narrow phones: status goes under the job name, so neither is ever cut off (must come after the base grid rule) */
-@media (max-width: 380px) { .qd-jobs li { grid-template-columns: 1fr; gap: 0.1rem; } .qd-state { min-height: 1.5em; } }
+.qd-bar i { display: block; height: 100%; width: 100%; background: var(--c, var(--text-3)); transform: scaleX(var(--fill, 0)); transform-origin: 0 50%; transition: transform var(--dur, 0.4s) linear, background 0.25s var(--ease); }
+/* phones: the caption gets the full width (side label hidden) and a reserved 3 lines, so the card never changes size mid-sequence */
+@media (max-width: 768px) { .qd-note { display: block; min-height: 4.6em; } .qd-workers { display: none; } .qd-req { min-height: 3.9rem; align-content: flex-start; } }
+/* narrow phones: status goes under the name, so neither is ever cut off (must come after the base grid rule) */
+@media (max-width: 380px) { .qd-jobs li { grid-template-columns: 1fr; gap: 0.1rem; align-items: start; } .qd-name, .qd-state { display: block; height: 1.5em; line-height: 1.5em; } .qd-note { min-height: 6.1em; } }
 
 /* ============================================
    LOAD-TIME GAUGE (footer badge)
@@ -2386,7 +2382,7 @@ path.ele-dark { fill: none; }
   #hero-canvas, .hero-spotlight, .hero-scroll, .hero-cta, .term-chips, .term-output, .term-input,
   .skills-tabs, .side-social, .back-to-top, .footer-brand, .perf-badge, .print-cv, .toast,
   .carousel-dots, .git-cmd, .commit-meta, .skill-code-tip, .about-image-wrap, .paper-plane, .elephpant, .ele-spray,
-  .nplus1, .migrate-log, .queue-demo, .progress-ticks, .perf-gauge, .print-sheet, .maintenance-mode,
+  .nplus1, .migrate-log, .talk-demo, .progress-ticks, .perf-gauge, .print-sheet, .maintenance-mode,
   .hero::before, .hero::after { display: none !important; }
 
   .js .hero-terminal, .js .hero-title .greeting, .js .hero-title .name,

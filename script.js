@@ -1295,54 +1295,105 @@ document.querySelectorAll('.projects-grid').forEach(grid => {
 })();
 
 // ============================================
-// QUEUE DEMO (Queues talk card): a checkout returns in 120ms; the email, invoice and inventory jobs run
-// afterwards on two workers, and the email fails once and is retried. Loops slowly while on screen.
+// TALK DEMOS — one scripted panel per talk card. Each runs slowly (~15s), holds, and loops while at
+// least half of it is on screen; off screen it clears its timers and rests on the final state that is
+// already in the HTML. Numbers are illustrative.
 // ============================================
-(function initQueueDemo() {
-    const demo = document.getElementById('queue-demo');
-    if (!demo) return;
-    const note = document.getElementById('qd-note');
-    const jobs = [...demo.querySelectorAll('.qd-jobs li')].map(li => ({ li, state: li.querySelector('.qd-state') }));
-    const [email, invoice, inventory] = jobs;
-    let timers = [], visible = false;
-    const stop = () => { timers.forEach(clearTimeout); timers = []; };
-    const at = (ms, fn) => timers.push(setTimeout(fn, ms));
-    const set = (job, cls, label) => { job.li.className = 'in ' + cls; job.state.textContent = label; };
-    const say = text => { note.textContent = text; };
+(function initTalkDemos() {
+    const GREEN = '#22c55e', AMBER = '#eab308', RED = '#ef4444', GREY = 'var(--text-3)';
 
-    const finalState = () => {
-        demo.className = 'queue-demo s-res';
-        jobs.forEach(j => set(j, 'done', '✓ done'));
-        say('Customer saw success in 120 ms. The slow work ran after.');
-    };
+    function talkDemo(kind, script) {
+        const root = document.querySelector(`.talk-demo[data-demo="${kind}"]`);
+        if (!root) return;
+        const finalHTML = root.innerHTML, finalClass = root.className;      // the no-JS / resting state
+        let timers = [], visible = false;
+        const stop = () => { timers.forEach(clearTimeout); timers = []; };
+        const rest = () => { stop(); root.innerHTML = finalHTML; root.className = finalClass; };
 
-    function play() {
-        stop();
-        if (!motionOK()) { finalState(); return; }
-        demo.className = 'queue-demo s-req';
-        jobs.forEach(j => { j.li.className = ''; j.state.textContent = ''; });
-        say('customer clicks “Place order”…');
+        const api = {
+            at: (ms, fn) => timers.push(setTimeout(fn, ms)),
+            say: text => { root.querySelector('.qd-note-text').textContent = text; },
+            request: () => { root.classList.add('s-req'); },
+            pill: (text, tone) => { const p = root.querySelector('.qd-res'); p.textContent = text; p.className = 'qd-res' + (tone ? ' ' + tone : ''); root.classList.add('s-res'); },
+            // row(i, {name, label, color, fill 0..1, dur ms}) — dur is how long the bar takes to reach `fill`
+            row: (i, { name, label = '', color = GREY, fill = 0, dur = 400 }) => {
+                const r = root.querySelectorAll('.qd-jobs li')[i];
+                if (name) r.querySelector('.qd-name').textContent = name;
+                r.querySelector('.qd-state').textContent = label;
+                r.style.setProperty('--c', color); r.style.setProperty('--dur', dur + 'ms'); r.style.setProperty('--fill', fill);
+                r.classList.add('in');
+            },
+        };
 
-        at(1300,  () => { demo.classList.add('s-res'); say('Response sent. The customer is already done.'); });
-        at(3000,  () => { say('Meanwhile, 3 jobs were pushed to the queue:'); set(email, 'queued', 'queued'); });
-        at(3450,  () => set(invoice, 'queued', 'queued'));
-        at(3900,  () => set(inventory, 'queued', 'queued'));
-        // two workers: the first two jobs start together, the third waits for a free worker
-        at(5400,  () => { say('Two workers pick up the first two jobs.'); set(email, 'processing', 'processing'); set(invoice, 'processing', 'processing'); });
-        at(7900,  () => { set(invoice, 'done', '✓ done'); set(email, 'failed', '✗ SMTP timeout'); say('The email fails. No customer ever sees this error.'); });
-        at(8500,  () => set(inventory, 'processing', 'processing'));
-        at(10300, () => { set(email, 'retry', 'retry 2/3'); say('It is retried automatically, with backoff.'); });
-        at(11000, () => set(inventory, 'done', '✓ done'));
-        at(12000, () => set(email, 'processing', 'processing'));
-        at(14500, () => { set(email, 'done', '✓ done'); say('All done. Response time stayed 120 ms throughout.'); });
-        at(19500, () => { if (visible) play(); });
+        function play() {
+            rest();
+            if (!motionOK()) return;
+            root.className = 'talk-demo';
+            root.querySelectorAll('.qd-jobs li').forEach(li => { li.className = ''; li.style.setProperty('--fill', 0); li.style.setProperty('--dur', '0ms'); li.querySelector('.qd-state').textContent = ''; });
+            const length = script(api);
+            api.at(length + 5000, () => { if (visible) play(); });
+        }
+        new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            if (visible) play(); else rest();
+        }, { threshold: 0.5 }).observe(root);
     }
 
-    new IntersectionObserver(([entry]) => {
-        visible = entry.isIntersecting;
-        if (visible) play();
-        else { stop(); finalState(); }
-    }, { threshold: 0.5 }).observe(demo);
+    // Queues: the response is instant; the slow work happens after, on two workers, and a failure is retried
+    talkDemo('queue', d => {
+        d.request(); d.say('customer clicks “Place order”…');
+        d.at(1300,  () => { d.pill('200 OK · 120 ms'); d.say('Response sent. The customer is already done.'); });
+        d.at(3000,  () => { d.say('Meanwhile, 3 jobs were pushed to the queue:'); d.row(0, { label: 'queued' }); });
+        d.at(3450,  () => d.row(1, { label: 'queued' }));
+        d.at(3900,  () => d.row(2, { label: 'queued' }));
+        d.at(5400,  () => { d.say('Two workers pick up the first two jobs.'); d.row(0, { label: 'processing', color: AMBER, fill: 1, dur: 4000 }); d.row(1, { label: 'processing', color: AMBER, fill: 1, dur: 2400 }); });
+        d.at(7900,  () => { d.row(1, { label: '✓ done', color: GREEN, fill: 1 }); d.row(0, { label: '✗ SMTP timeout', color: RED, fill: 0.62 }); d.say('The email fails. No customer ever sees this error.'); });
+        d.at(8500,  () => d.row(2, { label: 'processing', color: AMBER, fill: 1, dur: 2400 }));
+        d.at(10300, () => { d.row(0, { label: 'retry 2/3', color: AMBER, fill: 0, dur: 500 }); d.say('It is retried automatically, with backoff.'); });
+        d.at(11000, () => d.row(2, { label: '✓ done', color: GREEN, fill: 1 }));
+        d.at(12000, () => d.row(0, { label: 'processing', color: AMBER, fill: 1, dur: 2400 }));
+        d.at(14500, () => { d.row(0, { label: '✓ done', color: GREEN, fill: 1 }); d.say('All done. Response time stayed 120 ms throughout.'); });
+        return 14500;
+    });
+
+    // Redis: the first request pays for the query, the rest are served from memory; an update invalidates it
+    talkDemo('redis', d => {
+        d.request(); d.pill('cache: empty', 'idle'); d.say('First visitor asks for the product list…');
+        d.at(1500,  () => { d.row(0, { label: 'MISS → MySQL', color: AMBER, fill: 1, dur: 2600 }); d.say('Not in Redis yet, so MySQL runs the heavy query.'); });
+        d.at(4200,  () => { d.row(0, { label: 'MISS · 480 ms', color: RED, fill: 1 }); d.pill('cache: warm'); d.say('The result is stored in Redis for an hour.'); });
+        d.at(6200,  () => { d.row(1, { label: 'HIT · 4 ms', color: GREEN, fill: 0.04, dur: 150 }); d.say('Next visitor: served straight from memory.'); });
+        d.at(8000,  () => d.row(2, { label: 'HIT · 3 ms', color: GREEN, fill: 0.03, dur: 150 }));
+        d.at(9200,  () => d.say('Same data, over 100× faster. MySQL did the work once.'));
+        d.at(11500, () => { d.pill('Cache::forget', 'bad'); d.say('A product is edited → its cache key is cleared…'); });
+        d.at(13500, () => { d.pill('cache: warm'); d.say('…and rebuilt on the next request. Never stale, still fast.'); });
+        return 13500;
+    });
+
+    // Monitoring: measure where the time goes, fix the biggest bar, measure again
+    talkDemo('perf', d => {
+        d.request(); d.pill('p95 2.4 s', 'bad'); d.say('Users say the dashboard is slow. Guessing is not a plan.');
+        d.at(2200,  () => { d.say('Profile it: where does 2.4 s actually go?'); d.row(0, { name: 'SQL · 187 queries', label: '1.9 s', color: RED, fill: 0.8, dur: 2200 }); });
+        d.at(3200,  () => d.row(1, { name: 'PHP · app code', label: '320 ms', color: AMBER, fill: 0.13, dur: 700 }));
+        d.at(3900,  () => d.row(2, { name: 'Redis · cache', label: '40 ms', color: GREEN, fill: 0.02, dur: 300 }));
+        d.at(6000,  () => d.say('187 queries for one page: an N+1 and a missing index.'));
+        d.at(9000,  () => { d.say('Fix the biggest bar: eager loading + one index.'); d.row(0, { name: 'SQL · 6 queries', label: '90 ms', color: GREEN, fill: 0.05, dur: 1800 }); });
+        d.at(11200, () => d.row(1, { name: 'PHP · app code', label: '180 ms', color: GREEN, fill: 0.09, dur: 900 }));
+        d.at(12600, () => { d.pill('p95 310 ms'); d.say('Measure again: 2.4 s → 310 ms. Then keep watching it.'); });
+        return 12600;
+    });
+
+    // Observers: the controller stays one line; the model's side effects live in one class
+    talkDemo('observer', d => {
+        d.request(); d.say('The controller does one thing: mark the order shipped.');
+        d.at(2000,  () => { d.pill('updated event'); d.say('Eloquent fires “updated”. OrderObserver is listening.'); });
+        d.at(4300,  () => { d.say('The observer runs every side effect, in one place:'); d.row(0, { label: 'running', color: AMBER, fill: 1, dur: 1500 }); });
+        d.at(5900,  () => { d.row(0, { label: '✓ queued', color: GREEN, fill: 1 }); d.row(1, { label: 'running', color: AMBER, fill: 1, dur: 1500 }); });
+        d.at(7500,  () => { d.row(1, { label: '✓ saved', color: GREEN, fill: 1 }); d.row(2, { label: 'running', color: AMBER, fill: 1, dur: 1500 }); });
+        d.at(9100,  () => d.row(2, { label: '✓ cleared', color: GREEN, fill: 1 }));
+        d.at(10400, () => d.say('Ship it from the API, a job or tinker: same result.'));
+        d.at(13000, () => d.say('The controller stayed one line. Side effects live in one place.'));
+        return 13000;
+    });
 })();
 
 // ============================================
