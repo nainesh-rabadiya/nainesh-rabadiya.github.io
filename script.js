@@ -776,10 +776,10 @@ function initSectionUnderlines() {
     const SECTIONS = ['about', 'skills', 'experience', 'projects', 'speaking', 'community', 'contact'];
     const ALIASES  = { community: 'leadership', talks: 'speaking', work: 'projects', '~': 'home', home: 'home', education: 'education' };
     const TALKS = [
-        ['2024-12', 'Laravel Queues on Steroids',                 'Laravel Ahmedabad Meetup'],
-        ['2024-02', 'Speeding Up Large-Scale Laravel App, Part 2', 'LaravelLive Ahmedabad'],
-        ['2023-07', 'Speeding Up Large-Scale Laravel App',         'LaravelLive Ahmedabad'],
-        ['2022-12', 'Working with Laravel Observers',              'Laravel Ahmedabad Meetup'],
+        ['2024-12', 'Laravel Queues on Steroids',                       'LaravelLive Ahmedabad'],
+        ['2024-02', 'Speeding Up Your Large-Scale Laravel App, Part 2', 'LaravelLive Ahmedabad'],
+        ['2023-07', 'Speeding Up Your Large-Scale Laravel App',         'LaravelLive Ahmedabad'],
+        ['2022-12', 'Working with Laravel Observers',                   'LaravelLive Ahmedabad'],
     ];
 
     // tiny DOM helpers — everything goes through textContent, never innerHTML

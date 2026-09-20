@@ -2092,6 +2092,30 @@ body.theme-transitioning *::after {
 }
 
 /* ============================================
+   TALK CARDS — official event poster on top
+   ============================================ */
+.talk-card { padding: 0; }
+.talk-body { display: flex; flex-direction: column; flex: 1; padding: 1.25rem 1.5rem 1.5rem; }
+.talk-poster {
+  display: block;
+  aspect-ratio: 960 / 630;
+  overflow: hidden;
+  background: #020B2D;                 /* the posters' navy, so nothing flashes while loading */
+  border-bottom: 1px solid var(--border);
+}
+.talk-poster img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+.talk-card:hover .talk-poster img { transform: scale(1.03); }
+/* the 2022 poster is square: show all of it instead of cropping the date off */
+.talk-poster--square { background: #fff; }
+.talk-poster--square img { object-fit: contain; }
+.talk-meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); margin: -0.35rem 0 0.75rem; }
+.card-links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin-bottom: 1rem; }
+.card-links .card-link { margin-bottom: 0; padding: 0.35rem 0; }
+.photo-credit { margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-3); }
+.photo-credit a { display: inline-block; padding: 0.75rem 0; color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: none) { .card-links .card-link { padding: 0.7rem 0; } }   /* 40px+ tap height */
+
+/* ============================================
    PRINT — the page doubles as a résumé (Ctrl+P / "Save as PDF")
    ============================================ */
 @media print {
@@ -2158,6 +2182,8 @@ body.theme-transitioning *::after {
   .projects-grid, .projects-grid.grid-2, .education-grid { display: block; overflow: visible; margin: 0; padding: 0; }
   .project-card, .education-card { break-inside: avoid; margin-bottom: 4mm; padding: 0; }
   .project-header { display: none; }
+  .talk-poster, .photo-credit, .card-links { display: none; }
+  .talk-body { padding: 0; }
   .project-title { font-size: 10.5pt; }
 
   /* contact details belong under the name on a résumé: a print-only line in the hero replaces the section */
