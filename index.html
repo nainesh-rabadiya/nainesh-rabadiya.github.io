@@ -161,8 +161,22 @@
     <div class="hero-spotlight" id="hero-spotlight" aria-hidden="true"></div>
     <div class="container">
       <div class="hero-content">
-        <div class="hero-eyebrow">
-          <span class="eyebrow-prompt">~/nainesh $&nbsp;</span><span id="typing-text"></span><span class="typing-cursor" aria-hidden="true"></span>
+        <div class="hero-terminal" id="hero-terminal">
+          <form class="hero-eyebrow term-line" id="term-form" autocomplete="off">
+            <label class="eyebrow-prompt" for="term-input">~/nainesh $&nbsp;</label><span id="typing-text"
+              aria-hidden="true"></span><span class="typing-cursor" aria-hidden="true"></span>
+            <input class="term-input" id="term-input" type="text" inputmode="text" spellcheck="false"
+              autocapitalize="off" autocorrect="off" maxlength="40" aria-label="Terminal: type a command, or help">
+          </form>
+          <div class="term-output" id="term-output" role="log" aria-live="polite" hidden></div>
+          <div class="term-chips" id="term-chips" role="group" aria-label="Try a command">
+            <span class="term-chips-label" aria-hidden="true">try:</span>
+            <button type="button" class="term-chip" data-cmd="whoami">whoami</button>
+            <button type="button" class="term-chip" data-cmd="ls talks/">ls talks/</button>
+            <button type="button" class="term-chip" data-cmd="php artisan about">artisan about</button>
+            <button type="button" class="term-chip" data-cmd="cd projects">cd projects</button>
+            <button type="button" class="term-chip" data-cmd="help">help</button>
+          </div>
         </div>
         <h1 class="hero-title">
           <span class="greeting">Hi, I'm</span>
@@ -172,6 +186,8 @@
           I build high-performance Laravel applications that handle millions of users. Leading teams, optimizing
           systems, and sharing knowledge with the developer community.
         </p>
+        <p class="print-contact">nkrabadiya@gmail.com · linkedin.com/in/naineshrabadiya · github.com/nainesh-rabadiya ·
+          x.com/nainesh_9x · nainesh.dev</p>
         <div class="hero-cta">
           <a href="#projects" class="btn btn-primary">View My Work</a>
           <a href="#contact" class="btn btn-secondary">Let's Talk</a>
@@ -351,10 +367,13 @@
         <h2 class="section-title">Professional Experience</h2>
       </div>
 
+      <p class="git-cmd" aria-hidden="true"><span>$</span> git log --graph --first-parent career</p>
+
       <div class="experience-timeline">
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">c7a91f4</span><span class="commit-ref">HEAD → main</span></p>
             <h3>Technical Lead</h3>
             <p class="timeline-company">WebOccult Technologies Pvt. Ltd.</p>
             <p class="timeline-date" data-start="2021-07">Jul 2021 - Present</p>
@@ -370,6 +389,15 @@
                 <li>Implemented database optimization strategies reducing query execution time by 60%</li>
                 <li>Collaborated with stakeholders to translate business requirements into technical solutions</li>
               </ul>
+              <div class="branch-log">
+                <p class="branch-name"><span aria-hidden="true">⑂</span> merged from <strong>feature/speaking</strong></p>
+                <ul>
+                  <li><a href="#speaking"><span class="commit-hash" aria-hidden="true">e4d2a10</span>Laravel Queues on Steroids <time>Dec 2024</time></a></li>
+                  <li><a href="#speaking"><span class="commit-hash" aria-hidden="true">a87f3c5</span>Speeding Up Large-Scale Laravel App, Part 2 <time>Feb 2024</time></a></li>
+                  <li><a href="#speaking"><span class="commit-hash" aria-hidden="true">3bc9e08</span>Speeding Up Large-Scale Laravel App <time>Jul 2023</time></a></li>
+                  <li><a href="#speaking"><span class="commit-hash" aria-hidden="true">d05a6f1</span>Working with Laravel Observers <time>Dec 2022</time></a></li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -377,6 +405,7 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">9e3b5d2</span></p>
             <h3>Senior Software Engineer</h3>
             <p class="timeline-company">Pro Start Me Technology Private Limited</p>
             <p class="timeline-date" data-start="2020-02" data-end="2021-06">Feb 2020 - Jun 2021</p>
@@ -396,6 +425,7 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">4f8a0c6</span></p>
             <h3>Technical Lead</h3>
             <p class="timeline-company">EXCEL OVERSEAS PVT.LTD.</p>
             <p class="timeline-date" data-start="2017-03" data-end="2020-02">Mar 2017 - Feb 2020</p>
@@ -415,6 +445,7 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">b21d7e9</span></p>
             <h3>Senior Software Engineer</h3>
             <p class="timeline-company">Munjani Brothers</p>
             <p class="timeline-date" data-start="2015-11" data-end="2017-02">Nov 2015 - Feb 2017</p>
@@ -428,6 +459,7 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">70c4e1a</span></p>
             <h3>Software Engineer</h3>
             <p class="timeline-company">D&K Group</p>
             <p class="timeline-date" data-start="2013-08" data-end="2015-10">Aug 2013 - Oct 2015</p>
@@ -440,6 +472,7 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">1a2b3c4</span><span class="commit-ref">initial commit</span></p>
             <h3>Intern</h3>
             <p class="timeline-company">Aisomex Consultancy Services Pvt. Ltd.</p>
             <p class="timeline-date" data-start="2013-02" data-end="2013-08">Feb 2013 - Aug 2013</p>
@@ -767,6 +800,8 @@
             <span class="link-text">GitHub</span>
           </a>
         </div>
+
+        <button type="button" class="print-cv" id="print-cv">Save this page as a PDF résumé ↓</button>
       </div>
     </div>
   </section>
@@ -775,6 +810,7 @@
   <footer class="footer">
     <div class="container">
       <p>&copy; 2026 Nainesh Rabadiya. Built with passion for clean code and performance.</p>
+      <p class="perf-badge" id="perf-badge" hidden></p>
     </div>
     <!-- Binary "Nainesh" — generated by JS below -->
     <div class="footer-brand" id="footer-brand-el" aria-hidden="true"></div>

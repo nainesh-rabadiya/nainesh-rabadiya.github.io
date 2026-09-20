@@ -442,7 +442,7 @@ body.cursor-hover #cursor-dot {
 }
 
 /* Per-element entrance animations, triggered when body gets .loaded */
-.js .hero-eyebrow,
+.js .hero-terminal,
 .js .hero-title .greeting,
 .js .hero-title .name,
 .js .hero-description,
@@ -451,7 +451,7 @@ body.cursor-hover #cursor-dot {
   transform: translateY(22px);
 }
 
-body.loaded .hero-eyebrow      { animation: hero-in 0.55s var(--spring) 0.15s forwards; }
+body.loaded .hero-terminal     { animation: hero-in 0.55s var(--spring) 0.15s forwards; }
 body.loaded .hero-title .greeting { animation: hero-in 0.6s  var(--spring) 0.35s forwards; }
 body.loaded .hero-title .name     { animation: hero-in 0.65s var(--spring) 0.52s forwards; }
 body.loaded .hero-description     { animation: hero-in 0.55s var(--spring) 0.68s forwards; }
@@ -468,7 +468,6 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
   font-family: var(--font-mono);
   font-size: 0.85rem;
   color: var(--text-2);
-  margin-bottom: 1.75rem;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -1703,7 +1702,8 @@ body.loaded .side-social {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
   .hero::before { display: none; }
-  .js .hero-eyebrow,
+  html { scroll-behavior: auto; }
+  .js .hero-terminal,
   .js .hero-title .greeting,
   .js .hero-title .name,
   .js .hero-description,
@@ -1861,4 +1861,315 @@ body.theme-transitioning *::after {
   .hero { min-height: auto; padding-top: calc(var(--nav-h) + 2rem); padding-bottom: 3rem; }
   .hero-scroll { display: none; }
   .nav-menu { max-height: calc(100vh - var(--nav-h)); overflow-y: auto; }
+}
+
+/* ============================================
+   INTERACTIVE TERMINAL (hero)
+   ============================================ */
+.hero-terminal { margin-bottom: 1.75rem; max-width: 560px; }
+
+.term-line { position: relative; cursor: text; max-width: 100%; }
+.term-line:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* idle: the input is an invisible click target over the bar; the typing animation shows through */
+.term-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  font: inherit;
+  color: var(--text-1);
+  background: none;
+  border: none;
+  outline: none;
+  caret-color: var(--accent);
+  cursor: text;
+}
+/* active: the input takes the animation's place */
+.term-line:focus-within .term-input,
+.term-line.has-value .term-input {
+  position: static;
+  opacity: 1;
+  width: 24ch;
+  max-width: 100%;
+}
+.term-line:focus-within #typing-text,
+.term-line:focus-within .typing-cursor,
+.term-line.has-value #typing-text,
+.term-line.has-value .typing-cursor { display: none; }
+
+.term-output {
+  margin-top: 0.6rem;
+  padding: 0.85rem 1rem;
+  max-height: 196px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--text-2);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.term-output .t-cmd { color: var(--text-1); }
+.term-output .t-cmd::before { content: '$ '; color: var(--accent); }
+.term-output .t-key { color: var(--accent); }
+.term-output .t-cmd-name { color: var(--text-1); font-weight: 500; }
+.term-output .t-dim { color: var(--text-3); }
+.term-output .t-venue::before { content: '  — '; }
+.term-output a { color: var(--text-1); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+.term-output .t-block + .t-block { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--border); }
+
+.term-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+.term-chips-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-3); margin-right: 0.15rem; }
+.term-chip {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-2);
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.term-chip:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+/* touch: no keyboard-first UI (and iOS zooms into sub-16px inputs) — chips drive the terminal */
+@media (hover: none) {
+  .term-input { display: none; }
+  .term-line { cursor: default; }
+  .term-chip { min-height: 40px; padding: 0.4rem 0.85rem; font-size: 0.8rem; }
+}
+
+/* ============================================
+   EXPERIENCE AS GIT LOG
+   ============================================ */
+.git-cmd {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-3);
+  margin: -2.25rem 0 2rem;
+}
+.git-cmd span { color: var(--accent); }
+
+.commit-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+.commit-hash { color: var(--text-3); letter-spacing: 0.02em; }
+.commit-ref {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid rgba(255,45,32,0.2);
+  border-radius: 4px;
+  padding: 0.05rem 0.45rem;
+}
+
+/* side branch: the talks given during the current role */
+.branch-log {
+  position: relative;
+  margin-top: 1.25rem;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 1px dashed var(--accent);
+}
+.branch-log::before { /* the fork off the main line */
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: -0.9rem;
+  width: 14px;
+  height: 0.9rem;
+  border-left: 1px dashed var(--accent);
+  border-bottom-left-radius: 10px;
+}
+.branch-name { font-family: var(--font-mono); font-size: 0.75rem !important; color: var(--text-3) !important; margin-bottom: 0.4rem !important; }
+.branch-name strong { color: var(--accent); font-weight: 500; }
+.timeline-description .branch-log ul { padding-left: 0; gap: 0.15rem; }
+.timeline-description .branch-log ul li { padding-left: 0; }
+.timeline-description .branch-log ul li::before { content: none; }
+.branch-log a {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.6rem;
+  padding: 0.55rem 0; /* 40px+ tap height */
+  color: var(--text-2);
+  transition: color var(--dur) var(--ease);
+}
+.branch-log a:hover { color: var(--accent); }
+.branch-log time { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-3); margin-left: auto; }
+.branch-log .commit-hash { font-family: var(--font-mono); font-size: 0.75rem; }
+
+.print-contact { display: none; }
+
+/* ============================================
+   PERF BADGE + PRINT BUTTON
+   ============================================ */
+.perf-badge {
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-3);
+}
+.perf-badge b { color: var(--accent); font-weight: 500; }
+
+.print-cv {
+  margin-top: 1.75rem;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-3);
+  border-bottom: 1px dashed transparent;
+  transition: color var(--dur) var(--ease);
+}
+.print-cv:hover { color: var(--accent); }
+
+/* ============================================
+   PHONES: CARD SECTIONS BECOME SWIPEABLE ROWS
+   ============================================ */
+.carousel-dots { display: none; }
+
+@media (max-width: 480px) {
+  .projects-grid,
+  .projects-grid.grid-2 {
+    display: flex;
+    gap: 0.85rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* bleed to the screen edges so the next card peeks in */
+    margin-inline: -1.25rem;
+    padding: 0.25rem 1.25rem 0.5rem;
+  }
+  .projects-grid::-webkit-scrollbar { display: none; }
+  .projects-grid > .project-card {
+    flex: 0 0 84%;
+    scroll-snap-align: start;
+  }
+  /* cards off to the right never intersect the viewport — don't leave them waiting on a reveal */
+  .js .projects-grid > .scroll-reveal { opacity: 1; transform: none; transition-delay: 0s; }
+
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.9rem;
+  }
+  .carousel-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-3);
+    opacity: 0.45;
+    transition: width var(--dur) var(--ease), background var(--dur) var(--ease);
+  }
+  .carousel-dots span.on { width: 18px; border-radius: 3px; background: var(--accent); opacity: 1; }
+
+  .git-cmd { margin-top: -1rem; font-size: 0.75rem; }
+  .term-output .t-venue { display: block; padding-left: 9ch; }
+  .term-output .t-venue::before { content: none; }
+  .term-output { font-size: 0.75rem; }
+  .branch-log time { margin-left: 0; flex-basis: 100%; }
+}
+
+/* ============================================
+   PRINT — the page doubles as a résumé (Ctrl+P / "Save as PDF")
+   ============================================ */
+@media print {
+  @page { margin: 14mm 14mm; }
+
+  :root, [data-theme] {
+    --bg-base: #fff; --bg-surface: #fff; --bg-card: #fff; --bg-card-hov: #fff;
+    --text-1: #111; --text-2: #333; --text-3: #666;
+    --border: #ddd; --border-hover: #ccc;
+  }
+  *, *::before, *::after { animation: none !important; transition: none !important; box-shadow: none !important; }
+  html { scroll-behavior: auto; }
+  body { font-size: 10pt; line-height: 1.45; cursor: auto; background: #fff; }
+
+  .navbar, .page-loader, .scroll-progress-bar, #cursor-glow, #cursor-dot, #cursor-ring,
+  #hero-canvas, .hero-spotlight, .hero-scroll, .hero-cta, .term-chips, .term-output, .term-input,
+  .skills-tabs, .side-social, .back-to-top, .footer-brand, .perf-badge, .print-cv, .toast,
+  .carousel-dots, .git-cmd, .commit-meta, .skill-code-tip, .about-image-wrap,
+  .hero::before, .hero::after { display: none !important; }
+
+  .js .hero-terminal, .js .hero-title .greeting, .js .hero-title .name,
+  .js .hero-description, .js .scroll-reveal { opacity: 1 !important; transform: none !important; }
+
+  .hero { min-height: 0; padding: 0 0 2mm; display: block; }
+  .hero-eyebrow { border: none; padding: 0; background: none; }
+  #typing-text::after { content: 'Technical Lead & Senior Laravel Developer'; }
+  #typing-text { font-size: 0; }
+  #typing-text::after { font-size: 9pt; }
+  .typing-cursor { display: none; }
+  .hero-title { font-size: 24pt; margin-bottom: 3mm; }
+  .hero-title .greeting { display: none; }
+  .hero-title .name { color: #111; -webkit-text-fill-color: #111; background: none; }
+  .hero-description { max-width: none; }
+
+  .container { max-width: none; padding: 0; }
+  .section { padding: 3.5mm 0; }
+  .section-header { margin-bottom: 3mm; }
+  .section-title { font-size: 14pt; border-bottom: 1px solid #111; padding-bottom: 1mm; }
+  .section-title::after { display: none; }
+
+  .about-layout { display: block; margin-bottom: 4mm; }
+  .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2mm; }
+  .bento-item { grid-column: span 1 !important; padding: 2mm; min-height: 0; text-align: center; }
+  .stat-number { font-size: 13pt; }
+  .stat-label { font-size: 7.5pt; }
+  .stat-subtext { display: none; }
+
+  .card { border: none; padding: 0; background: none; }
+  .skills-grid { display: block; }
+  .skill-category { margin-bottom: 2.5mm; }
+  .skill-category.hidden { display: block; }
+  .skill-category h3 { font-size: 10pt; margin-bottom: 1mm; }
+  .skill-list { gap: 1mm 1.5mm; }
+  .skill-tag, .tech-tag { border: none; background: none; padding: 0; color: #333; font-size: 9pt; }
+  .skill-tag:not(:last-child)::after, .tech-tag:not(:last-child)::after { content: ' ·'; }
+
+  .experience-timeline { padding-left: 0; }
+  .experience-timeline::before, .timeline-dot { display: none; }
+  .timeline-item { padding-bottom: 4mm; break-inside: avoid; }
+  .timeline-content { padding: 0; }
+  .branch-log { border-left: 1px solid #ccc; }
+  .branch-log::before { display: none; }
+
+  .projects-grid, .projects-grid.grid-2, .education-grid { display: block; overflow: visible; margin: 0; padding: 0; }
+  .project-card, .education-card { break-inside: avoid; margin-bottom: 4mm; padding: 0; }
+  .project-header { display: none; }
+  .project-title { font-size: 10.5pt; }
+
+  /* contact details belong under the name on a résumé: a print-only line in the hero replaces the section */
+  #contact { display: none; }
+  .print-contact { display: block !important; margin-top: 3mm; font-size: 9pt; color: #333; }
+  .section-header, .timeline-content h3, .project-title { break-after: avoid; }
+  .branch-log .commit-hash { display: none; }
+
+  .card { overflow: visible; }           /* otherwise the first glyph of each line is clipped */
+  .about-body h3 { display: none; }      /* "About Me" already heads this block */
+  .about-body p { margin-bottom: 2mm; }
+  .timeline-description p { margin-bottom: 1.5mm; }
+  .timeline-description ul { gap: 0.5mm; }
+  .project-description { margin-bottom: 1mm; }
+  #speaking .project-tech, #leadership .project-tech { display: none; }
+  .footer { display: none; }
+  a { color: inherit; }
 }

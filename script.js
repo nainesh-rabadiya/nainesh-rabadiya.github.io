@@ -759,6 +759,171 @@ function initSectionUnderlines() {
 }
 
 // ============================================
+// INTERACTIVE TERMINAL (hero)
+// ============================================
+(function initTerminal() {
+    const form   = document.getElementById('term-form');
+    const input  = document.getElementById('term-input');
+    const output = document.getElementById('term-output');
+    if (!form || !input || !output) return;
+
+    const SECTIONS = ['about', 'skills', 'experience', 'projects', 'speaking', 'community', 'contact'];
+    const ALIASES  = { community: 'leadership', talks: 'speaking', work: 'projects', '~': 'home', home: 'home', education: 'education' };
+    const TALKS = [
+        ['2024-12', 'Laravel Queues on Steroids',                 'Laravel Ahmedabad Meetup'],
+        ['2024-02', 'Speeding Up Large-Scale Laravel App, Part 2', 'LaravelLive Ahmedabad'],
+        ['2023-07', 'Speeding Up Large-Scale Laravel App',         'LaravelLive Ahmedabad'],
+        ['2022-12', 'Working with Laravel Observers',              'Laravel Ahmedabad Meetup'],
+    ];
+
+    // tiny DOM helpers — everything goes through textContent, never innerHTML
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    const line = (...parts) => { const d = el('div'); parts.forEach(p => d.append(p)); return d; };
+    const kv = (k, v) => line(el('span', 't-key', k.padEnd(11)), v);
+    const link = (text, href) => { const a = el('a', null, text); a.href = href; if (/^http/.test(href)) { a.target = '_blank'; a.rel = 'noopener noreferrer'; } return a; };
+
+    function goTo(id) {
+        const target = document.getElementById(id);
+        if (!target) return false;
+        const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: id === 'home' ? 0 : target.offsetTop - navbar.offsetHeight, behavior: still ? 'instant' : 'smooth' });
+        return true;
+    }
+
+    const COMMANDS = {
+        help: () => [
+            kv('whoami', 'who is this'),
+            kv('about', 'php artisan about — the short version'),
+            kv('ls', 'list sections  ·  ls talks/ lists talks'),
+            kv('cd <name>', 'jump to a section, e.g. cd projects'),
+            kv('contact', 'how to reach me'),
+            kv('theme', 'toggle dark / light'),
+            kv('clear', 'clear the terminal'),
+        ],
+        whoami: () => [
+            line(el('span', 't-cmd-name', 'Nainesh Rabadiya')),
+            line('Technical Lead · Senior Laravel Developer'),
+            line('13+ years · 50+ projects · 25+ developers led'),
+            line(el('span', 't-dim', '4× speaker — LaravelLive & Laravel Ahmedabad')),
+        ],
+        about: () => [
+            kv('Role', 'Technical Lead @ WebOccult Technologies'),
+            kv('Experience', '13+ years, since 2013'),
+            kv('Stack', 'PHP · Laravel · MySQL · PostgreSQL · Redis'),
+            kv('Focus', 'high-traffic performance, architecture, mentoring'),
+            kv('Talks', '4 (2022 – 2024)'),
+            kv('Laracons', '4 attended'),
+        ],
+        ls: arg => {
+            if (/^talks\/?$/.test(arg || '')) {
+                return [...TALKS.map(([d, t, v]) => line(el('span', 't-dim', d + '  '), t, el('span', 't-dim t-venue', v))),
+                        line(el('span', 't-dim', '→ '), link('cd speaking', '#speaking'))];
+            }
+            if (arg) return [line(`ls: ${arg}: no such directory — try ls`)];
+            return [line(SECTIONS.map(s => s + '/').join('  '))];
+        },
+        cd: arg => {
+            const name = (arg || '').replace(/\/$/, '').toLowerCase();
+            if (!name) return [line('usage: cd <section> — ' + SECTIONS.join(', '))];
+            const id = ALIASES[name] || name;
+            if (!goTo(id)) return [line(`cd: no such section: ${name} — try ls`)];
+            return [line(el('span', 't-dim', `→ ~/nainesh/${name}`))];
+        },
+        contact: () => [
+            kv('email', link('nkrabadiya@gmail.com', 'mailto:nkrabadiya@gmail.com')),
+            kv('linkedin', link('in/naineshrabadiya', 'https://www.linkedin.com/in/naineshrabadiya/')),
+            kv('github', link('nainesh-rabadiya', 'https://github.com/nainesh-rabadiya')),
+            kv('x', link('@nainesh_9x', 'https://x.com/nainesh_9x')),
+        ],
+        theme: () => { themeToggle.click(); return [line(el('span', 't-dim', 'APP_THEME=' + htmlElement.getAttribute('data-theme')))]; },
+        sudo: () => [line('Permission denied. (contact works without sudo.)')],
+    };
+
+    function run(raw) {
+        const text = raw.trim().replace(/\s+/g, ' ');
+        if (!text) return;
+        if (text === 'clear') { output.replaceChildren(); output.hidden = true; return; }
+
+        let [name, ...rest] = text.split(' ');
+        let arg = rest.join(' ');
+        if (/^php artisan about$/i.test(text) || /^artisan about$/i.test(text)) { name = 'about'; arg = ''; }
+        name = name.toLowerCase();
+
+        const block = el('div', 't-block');
+        block.append(el('div', 't-cmd', text));
+        const handler = Object.prototype.hasOwnProperty.call(COMMANDS, name) ? COMMANDS[name] : null;
+        (handler ? handler(arg) : [line(`command not found: ${name} — try help`)]).forEach(n => block.append(n));
+
+        output.hidden = false;
+        output.append(block);
+        while (output.children.length > 6) output.firstElementChild.remove();
+        output.scrollTop = output.scrollHeight;
+
+        if (typeof gtag === 'function') gtag('event', 'terminal_command', { event_category: 'engagement', event_label: handler ? name : 'unknown' });
+    }
+
+    form.addEventListener('submit', e => { e.preventDefault(); run(input.value); input.value = ''; form.classList.remove('has-value'); });
+    input.addEventListener('input', () => form.classList.toggle('has-value', input.value !== ''));
+    input.addEventListener('keydown', e => { if (e.key === 'Escape') { input.value = ''; form.classList.remove('has-value'); input.blur(); } });
+    document.querySelectorAll('.term-chip').forEach(chip => chip.addEventListener('click', () => run(chip.dataset.cmd)));
+    // links printed by the terminal (#speaking) use the same offset scroll as the nav
+    output.addEventListener('click', e => {
+        const a = e.target.closest('a[href^="#"]');
+        if (a) { e.preventDefault(); goTo(a.getAttribute('href').slice(1)); }
+    });
+})();
+
+// ============================================
+// PERF BADGE — this page's own numbers, measured in the visitor's browser
+// ============================================
+window.addEventListener('load', () => setTimeout(() => {
+    const badge = document.getElementById('perf-badge');
+    const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if (!badge || !nav || !nav.loadEventEnd) return;
+
+    const b = text => { const n = document.createElement('b'); n.textContent = text; return n; };
+    const bytes = [nav, ...performance.getEntriesByType('resource')].reduce((sum, e) => sum + (e.transferSize || 0), 0);
+    badge.append('⚡ This page loaded in ', b((nav.loadEventEnd / 1000).toFixed(2) + 's'));
+    const fresh = bytes > 8 * 1024; // a revisit only transfers a few hundred bytes of 304 headers
+    badge.append(' · ', fresh ? b(Math.round(bytes / 1024) + ' KB') : 'served from ', fresh ? ' transferred' : b('cache'));
+    badge.append(' · ', b('0'), ' frameworks');
+    badge.hidden = false;
+}, 0));
+
+// ============================================
+// CAROUSEL DOTS (phones — card rows scroll sideways, see styles.css)
+// ============================================
+document.querySelectorAll('.projects-grid').forEach(grid => {
+    const cards = [...grid.children];
+    if (cards.length < 2) return;
+    const dots = document.createElement('div');
+    dots.className = 'carousel-dots';
+    dots.setAttribute('aria-hidden', 'true');
+    cards.forEach((_, i) => { const d = document.createElement('span'); if (i === 0) d.className = 'on'; dots.append(d); });
+    grid.after(dots);
+
+    let ticking = false;
+    grid.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            ticking = false;
+            const atEnd = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 2;
+            const base = cards[0].offsetLeft;
+            let active = atEnd ? cards.length - 1 : 0;
+            if (!atEnd) cards.forEach((c, i) => { if (c.offsetLeft - base <= grid.scrollLeft + 8) active = i; });
+            [...dots.children].forEach((d, i) => d.classList.toggle('on', i === active));
+        });
+    }, { passive: true });
+});
+
+// ============================================
+// PRINT AS RÉSUMÉ
+// ============================================
+const printBtn = document.getElementById('print-cv');
+if (printBtn) printBtn.addEventListener('click', () => window.print());
+
+// ============================================
 // CONSOLE
 // ============================================
 console.log('%c👋 Hello, Developer!', 'font-size:18px;font-weight:bold;color:#FF2D20;');
