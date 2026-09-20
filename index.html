@@ -8,7 +8,7 @@
   <!-- SEO Meta Tags -->
   <title>Nainesh Rabadiya - Technical Lead & Senior Laravel Developer</title>
   <meta name="description"
-    content="Technical Lead and Senior Laravel Developer specializing in high-traffic application optimization, enterprise architecture, and team leadership. Speaker at LaravelLive Ahmedabad 2024.">
+    content="Technical Lead and Senior Laravel Developer specializing in high-traffic application optimization, enterprise architecture, and team leadership. 4× speaker at LaravelLive and Laravel Ahmedabad meetups.">
   <meta name="keywords"
     content="Laravel Developer, Technical Lead, PHP Developer, Software Architect, WebOccult Technologies, High-Traffic Optimization">
   <meta name="author" content="Nainesh Rabadiya">
@@ -18,7 +18,7 @@
   <meta property="og:description"
     content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://nainesh.dev">
+  <meta property="og:url" content="https://nainesh.dev/">
   <meta property="og:image" content="https://nainesh.dev/og-image.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
@@ -35,7 +35,7 @@
   <meta name="twitter:creator" content="@nainesh_9x">
 
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://nainesh.dev">
+  <link rel="canonical" href="https://nainesh.dev/">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml"
@@ -54,6 +54,17 @@
     href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
     rel="stylesheet" fetchpriority="high">
 
+  <!-- Flag JS + apply saved theme before first paint (avoids flash, keeps no-JS readable) -->
+  <script>
+    (function () {
+      var d = document.documentElement, t = null;
+      d.classList.add('js');
+      try { t = localStorage.getItem('theme'); } catch (e) {}
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      d.setAttribute('data-theme', t);
+    })();
+  </script>
+
   <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="theme-toggle.css">
@@ -65,9 +76,10 @@
     "@type": "Person",
     "name": "Nainesh Rabadiya",
     "jobTitle": "Technical Lead & Senior Laravel Developer",
-    "url": "https://nainesh.dev",
+    "url": "https://nainesh.dev/",
     "email": "nkrabadiya@gmail.com",
     "sameAs": [
+      "https://www.linkedin.com/in/naineshrabadiya/",
       "https://github.com/nainesh-rabadiya",
       "https://x.com/nainesh_9x"
     ],
@@ -107,17 +119,17 @@
   <!-- Navigation -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="#home" class="nav-logo">
+      <a href="#home" class="nav-logo" aria-label="Nainesh Rabadiya — home">
         <span>&lt;</span>NR<span>/&gt;</span>
       </a>
 
       <ul class="nav-menu" id="nav-menu">
-        <li><a href="#home" class="nav-link active">Home</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
         <li><a href="#skills" class="nav-link">Skills</a></li>
         <li><a href="#experience" class="nav-link">Experience</a></li>
         <li><a href="#projects" class="nav-link">Projects</a></li>
-        <li><a href="#education" class="nav-link">Education</a></li>
+        <li><a href="#speaking" class="nav-link">Speaking</a></li>
+        <li><a href="#leadership" class="nav-link">Community</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
 
@@ -134,7 +146,7 @@
         </svg>
       </button>
 
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-menu">
         <span></span>
         <span></span>
         <span></span>
@@ -178,7 +190,11 @@
 
       <div class="about-layout">
         <div class="about-image-wrap">
-          <img src="profile.png" alt="Nainesh Rabadiya - Technical Lead" class="profile-photo" loading="lazy">
+          <picture>
+            <source srcset="profile.webp" type="image/webp">
+            <img src="profile.jpg" alt="Nainesh Rabadiya - Technical Lead" class="profile-photo" width="560"
+              height="560" loading="lazy" decoding="async">
+          </picture>
         </div>
 
         <div class="about-body">
@@ -201,7 +217,7 @@
 
       <div class="bento-grid">
         <div class="bento-item">
-          <span class="stat-number">⏱️ 12+</span>
+          <span class="stat-number">⏱️ 13+</span>
           <span class="stat-label">Years Experience</span>
         </div>
         <div class="bento-item">
@@ -214,13 +230,13 @@
         </div>
         <div class="bento-item">
           <span class="stat-number">🎤 4</span>
-          <span class="stat-label">Speaker</span>
-          <span class="stat-subtext">LaravelLive Ahmedabad</span>
+          <span class="stat-label">Conference &amp; Meetup Talks</span>
+          <span class="stat-subtext">LaravelLive · Laravel Ahmedabad</span>
         </div>
         <div class="bento-item">
-          <span class="stat-number">🎫 65+</span>
-          <span class="stat-label">Tech Meetups</span>
-          <span class="stat-subtext">Active Attendee</span>
+          <span class="stat-number">👥 25+</span>
+          <span class="stat-label">Developers Led</span>
+          <span class="stat-subtext">Cross-functional Teams</span>
         </div>
         <div class="bento-item">
           <span class="stat-number">🐘 4</span>
@@ -238,13 +254,13 @@
         <h2 class="section-title">Skills &amp; Technologies</h2>
       </div>
 
-      <div class="skills-tabs">
-        <button class="skill-tab active" data-tab="all">All</button>
-        <button class="skill-tab" data-tab="backend">Backend</button>
-        <button class="skill-tab" data-tab="frontend">Frontend</button>
-        <button class="skill-tab" data-tab="architecture">Architecture</button>
-        <button class="skill-tab" data-tab="tools">Tools &amp; DevOps</button>
-        <button class="skill-tab" data-tab="ai">AI &amp; CV</button>
+      <div class="skills-tabs" role="group" aria-label="Filter skills by category">
+        <button class="skill-tab active" data-tab="all" aria-pressed="true">All</button>
+        <button class="skill-tab" data-tab="backend" aria-pressed="false">Backend</button>
+        <button class="skill-tab" data-tab="frontend" aria-pressed="false">Frontend</button>
+        <button class="skill-tab" data-tab="architecture" aria-pressed="false">Architecture</button>
+        <button class="skill-tab" data-tab="tools" aria-pressed="false">Tools &amp; DevOps</button>
+        <button class="skill-tab" data-tab="ai" aria-pressed="false">AI &amp; CV</button>
       </div>
 
       <div class="skills-grid">
@@ -341,7 +357,7 @@
           <div class="timeline-content card">
             <h3>Technical Lead</h3>
             <p class="timeline-company">WebOccult Technologies Pvt. Ltd.</p>
-            <p class="timeline-date">Jul 2021 - Present · 4 yrs 7 mos</p>
+            <p class="timeline-date" data-start="2021-07">Jul 2021 - Present</p>
             <div class="timeline-description">
               <p>Leading engineering teams in developing enterprise-grade applications and driving technical excellence
                 across the organization.</p>
@@ -363,7 +379,7 @@
           <div class="timeline-content card">
             <h3>Senior Software Engineer</h3>
             <p class="timeline-company">Pro Start Me Technology Private Limited</p>
-            <p class="timeline-date">Feb 2020 - Jun 2021 · 1 yr 5 mos</p>
+            <p class="timeline-date" data-start="2020-02" data-end="2021-06">Feb 2020 - Jun 2021</p>
             <div class="timeline-description">
               <p>Developed and maintained mission-critical applications using Laravel and CodeIgniter frameworks.</p>
               <ul>
@@ -382,7 +398,7 @@
           <div class="timeline-content card">
             <h3>Technical Lead</h3>
             <p class="timeline-company">EXCEL OVERSEAS PVT.LTD.</p>
-            <p class="timeline-date">Mar 2017 - Feb 2020 · 3 yrs</p>
+            <p class="timeline-date" data-start="2017-03" data-end="2020-02">Mar 2017 - Feb 2020</p>
             <div class="timeline-description">
               <p>Led technical initiatives and development teams in building enterprise web applications.</p>
               <ul>
@@ -401,15 +417,10 @@
           <div class="timeline-content card">
             <h3>Senior Software Engineer</h3>
             <p class="timeline-company">Munjani Brothers</p>
-            <p class="timeline-date">Nov 2015 - Feb 2017 · 1 yr 4 mos</p>
+            <p class="timeline-date" data-start="2015-11" data-end="2017-02">Nov 2015 - Feb 2017</p>
             <div class="timeline-description">
-              <p>Developed robust backend systems using .NET Core and managed relational databases.</p>
-              <ul>
-                <li>Built scalable backend applications using C# and .NET Core</li>
-                <li>Designed and optimized relational database schemas and queries</li>
-                <li>Implemented object-oriented programming principles for maintainable code</li>
-                <li>Collaborated with cross-functional teams on system requirements and data management</li>
-              </ul>
+              <p>Built and maintained backend systems in C# and .NET, owning relational database schema design
+                and query optimization for internal business applications.</p>
             </div>
           </div>
         </div>
@@ -419,15 +430,9 @@
           <div class="timeline-content card">
             <h3>Software Engineer</h3>
             <p class="timeline-company">D&K Group</p>
-            <p class="timeline-date">Aug 2013 - Oct 2015 · 2 yrs 3 mos</p>
+            <p class="timeline-date" data-start="2013-08" data-end="2015-10">Aug 2013 - Oct 2015</p>
             <div class="timeline-description">
-              <p>Developed backend web applications and managed database systems using .NET technologies.</p>
-              <ul>
-                <li>Built web applications using C# and .NET Core framework</li>
-                <li>Designed and implemented relational database solutions</li>
-                <li>Applied OOP principles and design patterns in application development</li>
-                <li>Managed version control using Git and followed coding standards</li>
-              </ul>
+              <p>Developed backend web applications in C# and ASP.NET, including relational database design.</p>
             </div>
           </div>
         </div>
@@ -437,15 +442,9 @@
           <div class="timeline-content card">
             <h3>Intern</h3>
             <p class="timeline-company">Aisomex Consultancy Services Pvt. Ltd.</p>
-            <p class="timeline-date">Feb 2013 - Aug 2013 · 7 mos</p>
+            <p class="timeline-date" data-start="2013-02" data-end="2013-08">Feb 2013 - Aug 2013</p>
             <div class="timeline-description">
-              <p>Gained hands-on experience in backend development and REST API implementation.</p>
-              <ul>
-                <li>Developed backend components using C# and .NET Core</li>
-                <li>Implemented REST APIs for web applications</li>
-                <li>Learned OOP principles and software development best practices</li>
-                <li>Worked with Git for version control and SQL for database operations</li>
-              </ul>
+              <p>Built backend components and REST APIs in C# and ASP.NET.</p>
             </div>
           </div>
         </div>
@@ -457,82 +456,10 @@
   <section class="section" id="projects">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Featured Projects &amp; Achievements</h2>
+        <h2 class="section-title">Featured Projects</h2>
       </div>
 
-      <div class="projects-grid">
-        <div class="project-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon emoji-icon">🎤</div>
-          </div>
-          <h3 class="project-title">Laravel Queues on Steroids</h3>
-          <p class="project-description">
-            Delivered an electrifying session at Laravel Ahmedabad Meetup (Dec 22, 2024) on high-speed performance and
-            optimization techniques for Laravel Queues. Covered advanced queue management strategies for handling
-            large-scale background processing.
-          </p>
-          <div class="project-tech">
-            <span class="tech-tag">Laravel Queues</span>
-            <span class="tech-tag">Performance</span>
-            <span class="tech-tag">Optimization</span>
-            <span class="tech-tag">Community Speaker</span>
-          </div>
-        </div>
-
-        <div class="project-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon emoji-icon">🎤</div>
-          </div>
-          <h3 class="project-title">Speeding Up Large-Scale Laravel App Part-2</h3>
-          <p class="project-description">
-            Presented at LaravelLive Ahmedabad (Feb 25, 2024) continuing the deep dive into performance optimization for
-            large-scale applications. Shared advanced techniques for database optimization, caching strategies, and
-            application profiling.
-          </p>
-          <div class="project-tech">
-            <span class="tech-tag">Laravel</span>
-            <span class="tech-tag">Performance</span>
-            <span class="tech-tag">Scaling</span>
-            <span class="tech-tag">Database Optimization</span>
-          </div>
-        </div>
-
-        <div class="project-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon emoji-icon">🎤</div>
-          </div>
-          <h3 class="project-title">Speeding Up Large-Scale Laravel App</h3>
-          <p class="project-description">
-            Featured speaker at LaravelLive Ahmedabad (Jul 30, 2023) sharing foundational strategies for scaling Laravel
-            applications. Covered query optimization, eager loading, caching mechanisms, and performance monitoring for
-            high-traffic applications.
-          </p>
-          <div class="project-tech">
-            <span class="tech-tag">Laravel</span>
-            <span class="tech-tag">Performance</span>
-            <span class="tech-tag">High-Traffic</span>
-            <span class="tech-tag">Best Practices</span>
-          </div>
-        </div>
-
-        <div class="project-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon emoji-icon">🎤</div>
-          </div>
-          <h3 class="project-title">Working with Laravel Observers</h3>
-          <p class="project-description">
-            Presented at Laravel Ahmedabad Meetup (Dec 16, 2022) covering practical implementation and benefits of using
-            Laravel Observers. Demonstrated how to handle model events elegantly and maintain clean, maintainable code
-            architecture.
-          </p>
-          <div class="project-tech">
-            <span class="tech-tag">Laravel</span>
-            <span class="tech-tag">Observers</span>
-            <span class="tech-tag">Design Patterns</span>
-            <span class="tech-tag">Best Practices</span>
-          </div>
-        </div>
-
+      <div class="projects-grid grid-2">
         <div class="project-card card scroll-reveal">
           <div class="project-header">
             <div class="project-icon emoji-icon">⚡</div>
@@ -607,29 +534,92 @@
             <span class="tech-tag">MySQL</span>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Speaking Section -->
+  <section class="section" id="speaking">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Speaking</h2>
+      </div>
+
+      <div class="projects-grid grid-2">
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon emoji-icon">🎤</div>
+          </div>
+          <h3 class="project-title">Laravel Queues on Steroids</h3>
+          <p class="project-description">
+            Laravel Ahmedabad Meetup · Dec 22, 2024. Performance and optimization techniques for Laravel Queues,
+            including queue management strategies for large-scale background processing.
+          </p>
+          <!-- Add when available: <a class="card-link" href="SLIDES_OR_VIDEO_URL" target="_blank" rel="noopener noreferrer">Slides / recording ↗</a> -->
+          <div class="project-tech">
+            <span class="tech-tag">Laravel Queues</span>
+            <span class="tech-tag">Performance</span>
+            <span class="tech-tag">Optimization</span>
+            <span class="tech-tag">Background Jobs</span>
+          </div>
+        </div>
 
         <div class="project-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon emoji-icon">🎓</div>
+            <div class="project-icon emoji-icon">🎤</div>
           </div>
-          <h3 class="project-title">Technical Mentorship & Knowledge Sharing</h3>
+          <h3 class="project-title">Speeding Up Large-Scale Laravel App Part-2</h3>
           <p class="project-description">
-            Actively mentor developers through code reviews, technical discussions, and knowledge-sharing sessions.
-            Created internal documentation and best practice guides that improved team efficiency and code quality
-            across the organization.
+            LaravelLive Ahmedabad · Feb 25, 2024. Second part of the series: database optimization, caching strategies,
+            and application profiling for large-scale applications.
           </p>
+          <!-- Add when available: <a class="card-link" href="SLIDES_OR_VIDEO_URL" target="_blank" rel="noopener noreferrer">Slides / recording ↗</a> -->
           <div class="project-tech">
-            <span class="tech-tag">Leadership</span>
-            <span class="tech-tag">Mentorship</span>
-            <span class="tech-tag">Documentation</span>
-            <span class="tech-tag">Code Review</span>
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">Performance</span>
+            <span class="tech-tag">Scaling</span>
+            <span class="tech-tag">Database Optimization</span>
+          </div>
+        </div>
+
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon emoji-icon">🎤</div>
+          </div>
+          <h3 class="project-title">Speeding Up Large-Scale Laravel App</h3>
+          <p class="project-description">
+            LaravelLive Ahmedabad · Jul 30, 2023. Foundations of scaling Laravel: query optimization, eager loading,
+            caching, and performance monitoring for high-traffic applications.
+          </p>
+          <!-- Add when available: <a class="card-link" href="SLIDES_OR_VIDEO_URL" target="_blank" rel="noopener noreferrer">Slides / recording ↗</a> -->
+          <div class="project-tech">
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">Performance</span>
+            <span class="tech-tag">High-Traffic</span>
+            <span class="tech-tag">Best Practices</span>
+          </div>
+        </div>
+
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon emoji-icon">🎤</div>
+          </div>
+          <h3 class="project-title">Working with Laravel Observers</h3>
+          <p class="project-description">
+            Laravel Ahmedabad Meetup · Dec 16, 2022. Practical use of Laravel Observers: handling model events cleanly
+            while keeping the codebase maintainable.
+          </p>
+          <!-- Add when available: <a class="card-link" href="SLIDES_OR_VIDEO_URL" target="_blank" rel="noopener noreferrer">Slides / recording ↗</a> -->
+          <div class="project-tech">
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">Observers</span>
+            <span class="tech-tag">Design Patterns</span>
+            <span class="tech-tag">Best Practices</span>
           </div>
         </div>
       </div>
     </div>
   </section>
-
-
 
   <!-- Leadership Section -->
   <section class="section" id="leadership">
@@ -638,14 +628,14 @@
         <h2 class="section-title">Leadership &amp; Community</h2>
       </div>
 
-      <div class="projects-grid">
+      <div class="projects-grid grid-2">
         <div class="project-card card scroll-reveal">
           <div class="project-header">
             <div class="project-icon emoji-icon">🎓</div>
           </div>
-          <h3 class="project-title">Technical Interviewer & Recruitment Team</h3>
+          <h3 class="project-title">Technical Interviewer &amp; Recruitment Team</h3>
           <p class="project-description">
-            Active member of the recruitment team at <strong>WebOccult Technologies</strong>. conducting in-house and
+            Active member of the recruitment team at <strong>WebOccult Technologies</strong>, conducting in-house and
             campus technical interviews to hire Junior, Mid, and Senior level developers. Assessing technical depth,
             problem-solving skills, and role fit across various profiles.
           </p>
@@ -680,13 +670,31 @@
           <h3 class="project-title">Mentor - DataThrone 2024</h3>
           <p class="project-description">
             Dedicated 40+ hours mentoring participants at the <strong>DataThrone 2024</strong> hackathon (organized
-            by WebOccult & Lucent Innovation). Guided 300+ students through a 36-hour sprint, assisting with
+            by WebOccult &amp; Lucent Innovation). Guided 300+ students through a 36-hour sprint, assisting with
             architecture, debugging, and product development.
           </p>
           <div class="project-tech">
             <span class="tech-tag">Mentorship</span>
             <span class="tech-tag">Team Guidance</span>
             <span class="tech-tag">Problem Solving</span>
+          </div>
+        </div>
+
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon emoji-icon">🎓</div>
+          </div>
+          <h3 class="project-title">Technical Mentorship &amp; Knowledge Sharing</h3>
+          <p class="project-description">
+            Actively mentor developers through code reviews, technical discussions, and knowledge-sharing sessions.
+            Created internal documentation and best practice guides that improved team efficiency and code quality
+            across the organization.
+          </p>
+          <div class="project-tech">
+            <span class="tech-tag">Leadership</span>
+            <span class="tech-tag">Mentorship</span>
+            <span class="tech-tag">Documentation</span>
+            <span class="tech-tag">Code Review</span>
           </div>
         </div>
       </div>
@@ -697,7 +705,7 @@
   <section class="section" id="education">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Education &amp; Certifications</h2>
+        <h2 class="section-title">Education</h2>
       </div>
 
       <div class="education-grid">
@@ -709,24 +717,6 @@
           <p class="education-degree">Bachelor of Engineering in Information Technology</p>
           <p class="education-date">2009 - 2013</p>
         </div>
-
-        <div class="education-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon emoji-icon">🚀</div>
-          </div>
-          <h3>Laravel Expertise</h3>
-          <p class="education-degree">Advanced Laravel Development & Architecture</p>
-          <p class="education-date">Professional Experience & Continuous Learning</p>
-        </div>
-
-        <div class="education-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon emoji-icon">🎤</div>
-          </div>
-          <h3>Community Speaker</h3>
-          <p class="education-degree">Laravel Ahmedabad Meetups</p>
-          <p class="education-date">2022 - 2024 · 4 Technical Talks</p>
-        </div>
       </div>
     </div>
   </section>
@@ -734,16 +724,11 @@
   <!-- Contact Section -->
   <section class="section" id="contact">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title" style="display:none">Let's Connect</h2>
-      </div>
-
       <div class="contact-wrapper">
-        <h3>Let's Collaborate</h3>
+        <h2>Let's Talk</h2>
         <p>
-          Passionate about open source contributions and solving complex engineering problems. I enjoy building
-          scalable applications and helping the community grow. If you have a technical challenge to discuss,
-          let's talk.
+          Have a Laravel application that needs to go faster, an architecture decision to pressure-test, or a
+          meetup or conference slot to fill? Email is the quickest way to reach me.
         </p>
 
         <div class="contact-links">
@@ -896,9 +881,12 @@
         }
 
         // Always-running sweep — spotlight bounces left↔right via rAF
-        var sweepX = -15, sweepDir = 1, hovering = false;
+        var sweepX = -15, sweepDir = 1, hovering = false, onScreen = true;
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver(function (en) { onScreen = en[0].isIntersecting; }).observe(el);
+        }
         function sweep() {
-          if (!hovering) {
+          if (!hovering && onScreen) {
             sweepX += sweepDir * 0.38;
             if (sweepX >= 115) sweepDir = -1;
             if (sweepX <= -15) sweepDir =  1;

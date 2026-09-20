@@ -90,6 +90,14 @@ img { display: block; max-width: 100%; }
 ul { list-style: none; }
 button { cursor: pointer; font: inherit; border: none; background: none; }
 
+/* Keyboard focus — the native cursor is hidden, so this must stay obvious */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
 /* ============================================
    CUSTOM SCROLLBAR
    ============================================ */
@@ -379,6 +387,7 @@ body.cursor-hover #cursor-dot {
    ============================================ */
 .hero {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   position: relative;
@@ -433,11 +442,11 @@ body.cursor-hover #cursor-dot {
 }
 
 /* Per-element entrance animations, triggered when body gets .loaded */
-.hero-eyebrow,
-.hero-title .greeting,
-.hero-title .name,
-.hero-description,
-.hero-cta {
+.js .hero-eyebrow,
+.js .hero-title .greeting,
+.js .hero-title .name,
+.js .hero-description,
+.js .hero-cta {
   opacity: 0;
   transform: translateY(22px);
 }
@@ -666,6 +675,7 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
 
 .profile-photo {
   width: 100%;
+  height: auto; /* width/height attrs reserve space; CSS keeps it square */
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: var(--radius-lg);
@@ -1015,7 +1025,7 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
    ============================================ */
 .education-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: minmax(0, 420px);
   gap: 1.25rem;
 }
 
@@ -1054,7 +1064,7 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
   text-align: center;
 }
 
-.contact-wrapper h3 {
+.contact-wrapper h2 {
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
   font-weight: 800;
@@ -1172,13 +1182,14 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
 .page-loader {
   position: fixed;
   inset: 0;
-  background: var(--bg);
+  background: var(--bg-base);
   z-index: 99999;
-  display: flex;
+  display: none; /* shown only when JS is available to dismiss it */
   align-items: center;
   justify-content: center;
   transition: opacity 0.55s ease, visibility 0.55s ease;
 }
+.js .page-loader { display: flex; }
 .page-loader.out {
   opacity: 0;
   visibility: hidden;
@@ -1230,12 +1241,12 @@ body.loaded .hero-cta             { animation: hero-in 0.5s  var(--spring) 0.82s
    ============================================ */
 .side-social {
   position: fixed;
-  left: 1.5rem;
+  left: calc(1.5rem - 11px); /* icon stays where it was; the hit area grows around it */
   bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0;
   z-index: 500;
   opacity: 0;
   transform: translateY(16px);
@@ -1249,6 +1260,8 @@ body.loaded .side-social {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 40px;   /* finger-sized hit area around the 17px icon */
+  height: 40px;
   color: var(--text-3);
   transition: color var(--dur) var(--ease), transform var(--dur) var(--spring);
 }
@@ -1268,7 +1281,8 @@ body.loaded .side-social {
   background: var(--text-3);
   opacity: 0.35;
 }
-@media (max-width: 1024px) {
+/* below ~1240px the strip would sit on top of the content's left edge */
+@media (max-width: 1240px) {
   .side-social { display: none; }
 }
 
@@ -1403,14 +1417,14 @@ body.loaded .side-social {
 /* ============================================
    SCROLL REVEAL
    ============================================ */
-.scroll-reveal {
+.js .scroll-reveal {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.6s var(--ease),
               transform 0.6s var(--ease);
 }
 
-.scroll-reveal.revealed {
+.js .scroll-reveal.revealed {
   opacity: 1;
   transform: none;
 }
@@ -1548,17 +1562,17 @@ body.loaded .side-social {
    RESPONSIVE — SMALL MOBILE (≤ 480px)
    ============================================ */
 @media (max-width: 480px) {
-  .bento-grid { grid-template-columns: 1fr; }
-  .bento-item { grid-column: span 1 !important; min-height: 100px; }
+  .bento-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .bento-item { grid-column: span 1 !important; min-height: 100px; padding: 1.1rem; }
+  .stat-number { font-size: 1.75rem; }
   .contact-link .link-text { display: none; }
 
   /* Hero — tighter on small screens */
   .hero-title { font-size: clamp(2.2rem, 10vw, 3rem); letter-spacing: -0.01em; line-height: 1.12; }
   .hero-title .greeting { letter-spacing: 0em; }
   .hero-description { font-size: 0.97rem; line-height: 1.75; }
-  /* Eyebrow terminal bar: clamp width, smaller font, hide overflow */
-  .hero-eyebrow { font-size: 0.68rem; max-width: 100%; overflow: hidden; white-space: nowrap; }
-  #typing-text  { max-width: 48vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: bottom; }
+  /* Eyebrow terminal bar: readable size; script.js types shorter roles at this width so they fit */
+  .hero-eyebrow { font-size: 0.75rem; max-width: 100%; overflow: hidden; white-space: nowrap; padding: 0.45rem 0.75rem; }
 
   /* Timeline — extra tight on very small screens */
   .experience-timeline { padding-left: 1.25rem; }
@@ -1609,22 +1623,6 @@ body.loaded .side-social {
   .about-layout { grid-template-columns: 220px 1fr; gap: 2.5rem; }
   .projects-grid { grid-template-columns: repeat(2, 1fr); }
   .bento-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-/* ============================================
-   3. GLITCH FLASH — hero name (class toggled by JS after hero-in completes)
-   ============================================ */
-.hero-title .name.name-glitching {
-  animation: name-glitch 8s ease-in-out infinite;
-}
-
-@keyframes name-glitch {
-  0%, 86%, 100% { filter: none; transform: none; }
-  87%  { filter: hue-rotate(80deg)  brightness(1.4) saturate(3); transform: translate(-2px, 0) skewX(-4deg); }
-  88%  { filter: hue-rotate(-70deg) brightness(1.5); transform: translate(3px, 0) skewX(2deg); }
-  89%  { filter: none; transform: none; }
-  90%  { filter: hue-rotate(160deg) brightness(1.3); transform: translate(-1px, 0); }
-  91%  { filter: none; transform: none; }
 }
 
 /* ============================================
@@ -1705,20 +1703,30 @@ body.loaded .side-social {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
   .hero::before { display: none; }
+  .js .hero-eyebrow,
+  .js .hero-title .greeting,
+  .js .hero-title .name,
+  .js .hero-description,
+  .js .hero-cta,
+  .js .scroll-reveal { opacity: 1; transform: none; }
 }
 
-/* leadership section (re-use projects layout) */
-#leadership .projects-grid {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-@media (max-width: 1024px) {
-  #leadership .projects-grid { grid-template-columns: repeat(2, 1fr); }
-}
+/* four-card sections: 2 × 2 instead of 3 + 1 orphan */
+.projects-grid.grid-2 { grid-template-columns: repeat(2, 1fr); }
 
 @media (max-width: 768px) {
-  #leadership .projects-grid { grid-template-columns: 1fr; }
+  .projects-grid.grid-2 { grid-template-columns: 1fr; }
 }
+
+/* link slot on talk / project cards */
+.card-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+.card-link:hover { text-decoration: underline; }
 
 /* ============================================
    SMOOTH THEME TRANSITION
@@ -1806,4 +1814,51 @@ body.theme-transitioning *::after {
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================
+   TOUCH & SMALL-SCREEN POLISH
+   ============================================ */
+@media (max-width: 768px) {
+  /* 44px+ tap targets */
+  .nav-logo { display: inline-flex; align-items: center; min-height: 44px; }
+  .nav-menu .nav-link { display: block; padding: 0.8rem 0.85rem; font-size: 1rem; }
+  .skill-tab { min-height: 44px; padding: 0.5rem 1.1rem; font-size: 0.875rem; }
+
+  /* mono tags were 11px — too small to read on a phone */
+  .tech-tag  { font-size: 0.75rem; padding: 0.25rem 0.55rem; }
+  .skill-tag { font-size: 0.8rem; }
+
+  /* long single-column page: tighten the vertical rhythm */
+  .section { padding: 4rem 0; }
+  .section-header { margin-bottom: 2.5rem; }
+}
+
+/* touch tablets keep the desktop nav — still needs finger-sized targets */
+@media (hover: none) and (min-width: 769px) {
+  .nav-logo { display: inline-flex; align-items: center; min-height: 44px; }
+  .nav-link { padding: 0.75rem 0.7rem; }
+  .skill-tab { min-height: 44px; padding: 0.5rem 1.1rem; }
+  .tech-tag { font-size: 0.75rem; }
+}
+
+/* large phones / small tablets: buttons side by side instead of two full-width bars */
+@media (min-width: 481px) and (max-width: 768px) {
+  .hero-cta { flex-direction: row; }
+  .hero-cta .btn { width: auto; min-width: 180px; }
+  .projects-grid.grid-2, .projects-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .section { padding: 3.25rem 0; }
+  .section-header { margin-bottom: 2rem; }
+  /* short phones: keep the terminal bar clear of the fixed nav */
+  .hero { padding-top: calc(var(--nav-h) + 1.75rem); padding-bottom: 2.5rem; }
+}
+
+/* phone landscape: not enough height for a full-screen hero + scroll hint */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero { min-height: auto; padding-top: calc(var(--nav-h) + 2rem); padding-bottom: 3rem; }
+  .hero-scroll { display: none; }
+  .nav-menu { max-height: calc(100vh - var(--nav-h)); overflow-y: auto; }
 }

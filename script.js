@@ -79,16 +79,19 @@ const navToggle = document.getElementById('nav-toggle');
 const navMenu  = document.getElementById('nav-menu');
 const navLinks = document.querySelectorAll('.nav-link');
 
-navToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    navToggle.classList.toggle('active');
-});
+const setNavOpen = open => {
+    navMenu.classList.toggle('active', open);
+    navToggle.classList.toggle('active', open);
+    navToggle.setAttribute('aria-expanded', String(open));
+};
 
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
-        navToggle.classList.remove('active');
-    });
+navToggle.addEventListener('click', () => setNavOpen(!navMenu.classList.contains('active')));
+
+navLinks.forEach(link => link.addEventListener('click', () => setNavOpen(false)));
+
+// tap outside the open mobile menu closes it
+document.addEventListener('click', e => {
+    if (navMenu.classList.contains('active') && !e.target.closest('#navbar')) setNavOpen(false);
 });
 
 window.addEventListener('scroll', () => {
@@ -119,7 +122,10 @@ const highlightNavigation = () => {
     });
 };
 
+const linkedIds = new Set([...navLinks].map(l => l.getAttribute('href').slice(1)));
+
 const updateActiveLink = id => {
+    if (id !== 'home' && !linkedIds.has(id)) return;
     navLinks.forEach(link => {
         link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
     });
@@ -190,7 +196,8 @@ const statsObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             const num = entry.target.querySelector('.stat-number');
-            if (num && !num.classList.contains('animated')) {
+            const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (num && !still && !num.classList.contains('animated')) {
                 num.classList.add('animated');
                 animateCounter(num, num.textContent.trim(), 2000);
                 // pop the stat-number emoji on entry
@@ -205,6 +212,23 @@ const statsObserver = new IntersectionObserver(entries => {
 document.querySelectorAll('.bento-item').forEach(c => statsObserver.observe(c));
 
 // ============================================
+// EXPERIENCE DURATIONS — computed so "Present" never goes stale
+// ============================================
+document.querySelectorAll('.timeline-date[data-start]').forEach(el => {
+    const [sy, sm] = el.dataset.start.split('-').map(Number);
+    const now = new Date();
+    const [ey, em] = el.dataset.end
+        ? el.dataset.end.split('-').map(Number)
+        : [now.getFullYear(), now.getMonth() + 1];
+    const months = (ey - sy) * 12 + (em - sm) + 1; // inclusive, LinkedIn-style
+    const y = Math.floor(months / 12), m = months % 12;
+    const parts = [];
+    if (y) parts.push(`${y} yr${y > 1 ? 's' : ''}`);
+    if (m) parts.push(`${m} mo${m > 1 ? 's' : ''}`);
+    if (parts.length) el.textContent += ' · ' + parts.join(' ');
+});
+
+// ============================================
 // SKILL CATEGORY TABS
 // ============================================
 const skillTabs = document.querySelectorAll('.skill-tab');
@@ -214,8 +238,10 @@ skillTabs.forEach(tab => {
     tab.addEventListener('click', () => {
         const target = tab.dataset.tab;
 
-        skillTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
+        skillTabs.forEach(t => {
+            t.classList.toggle('active', t === tab);
+            t.setAttribute('aria-pressed', String(t === tab));
+        });
 
         skillCategories.forEach(cat => {
             if (target === 'all' || cat.dataset.category === target) {
@@ -334,8 +360,7 @@ window.addEventListener('scroll', debouncedHighlight, { passive: true });
 // ============================================
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && navMenu.classList.contains('active')) {
-        navMenu.classList.remove('active');
-        navToggle.classList.remove('active');
+        setNavOpen(false);
         navToggle.focus();
     }
 });
@@ -382,7 +407,7 @@ function initHeroCanvas() {
         // AI / CV work
         'TensorFlow', 'OpenCV', 'CV Pipeline',
         // Role & impact
-        'Tech Lead', '12+ Years', '50+ Projects', '25+ Devs',
+        'Tech Lead', '13+ Years', '50+ Projects', '25+ Devs',
         'Performance', 'Scalable', 'Architecture', 'ERP',
         'LaravelLive', 'Speaker', 'Mentor',
     ];
@@ -457,12 +482,19 @@ function initHeroTyping() {
     const el = document.getElementById('typing-text');
     if (!el) return;
 
-    const roles = [
+    // Phones: the terminal bar fits ~22 characters after the prompt at 320px
+    const roles = window.matchMedia('(max-width: 480px)').matches ? [
+        'Technical Lead',
+        'Laravel Expert',
+        '13+ Years Experience',
+        'Speaker & Mentor',
+        'Performance Tuning'
+    ] : [
         'Technical Lead & Laravel Expert',
         '13+ Years Engineering Experience',
         'Conference Speaker & Mentor',
         'Performance Optimization Specialist',
-        'Open Source Contributor'
+        'Scaling Laravel for High Traffic'
     ];
 
     const cursor = document.querySelector('.typing-cursor');
@@ -503,7 +535,10 @@ function initHeroTyping() {
 // ============================================
 // PAGE LOAD
 // ============================================
-window.addEventListener('load', () => {
+let pageStarted = false;
+function startPage() {
+    if (pageStarted) return;
+    pageStarted = true;
     document.body.classList.add('loaded');
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -517,14 +552,15 @@ window.addEventListener('load', () => {
     initHeroSpotlight();
     initSectionUnderlines();
     if (!reducedMotion) {
-        initCardTilt();
+        initCardTouchShimmer();
         initMagneticBtns();
-        initCursorTrail();
-        initNameGlitch();
     }
     initSectionGlow();
     initSkillTooltips();
-});
+}
+
+window.addEventListener('load', startPage);
+setTimeout(startPage, 2500); // fallback if analytics/fonts stall the load event
 
 // ============================================
 // DYNAMIC COPYRIGHT YEAR
@@ -533,31 +569,17 @@ const footer = document.querySelector('.footer p');
 if (footer) footer.textContent = footer.textContent.replace(/\d{4}/, new Date().getFullYear());
 
 // ============================================
-// 1. 3D CARD TILT (desktop) / TOUCH SHIMMER (mobile)
+// 1. CARD TOUCH SHIMMER (mobile)
 // ============================================
-function initCardTilt() {
-    const isTouch = window.matchMedia('(hover: none)').matches;
+function initCardTouchShimmer() {
+    if (!window.matchMedia('(hover: none)').matches) return;
     document.querySelectorAll('.card').forEach(card => {
-        if (isTouch) {
-            card.addEventListener('touchstart', () => {
-                card.style.transition = 'box-shadow 0.25s ease, border-color 0.25s ease';
-                card.style.boxShadow  = '0 0 28px rgba(255,45,32,0.28)';
-                card.style.borderColor = 'rgba(255,45,32,0.55)';
-                setTimeout(() => { card.style.boxShadow = ''; card.style.borderColor = ''; }, 550);
-            }, { passive: true });
-        } else {
-            card.addEventListener('mousemove', e => {
-                const r  = card.getBoundingClientRect();
-                const rx = ((e.clientY - r.top)  / r.height - 0.5) * -12;
-                const ry = ((e.clientX - r.left) / r.width  - 0.5) *  12;
-                card.style.transition = 'transform 0.06s ease, box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease)';
-                card.style.transform  = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-5px)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transition = 'transform 0.55s var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease)';
-                card.style.transform  = '';
-            });
-        }
+        card.addEventListener('touchstart', () => {
+            card.style.transition = 'box-shadow 0.25s ease, border-color 0.25s ease';
+            card.style.boxShadow  = '0 0 28px rgba(255,45,32,0.28)';
+            card.style.borderColor = 'rgba(255,45,32,0.55)';
+            setTimeout(() => { card.style.boxShadow = ''; card.style.borderColor = ''; }, 550);
+        }, { passive: true });
     });
 }
 
@@ -597,56 +619,19 @@ function initMagneticBtns() {
 }
 
 // ============================================
-// 3. CURSOR PARTICLE TRAIL (desktop only)
-// ============================================
-function initCursorTrail() {
-    if (window.matchMedia('(hover: none)').matches) return;
-    const cv  = document.createElement('canvas');
-    cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9990;';
-    document.body.appendChild(cv);
-    const ctx = cv.getContext('2d');
-    let W, H;
-    const resize = () => { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; };
-    resize();
-    window.addEventListener('resize', resize, { passive: true });
-
-    const pts = [];
-    document.addEventListener('mousemove', e => {
-        pts.push({ x: e.clientX, y: e.clientY, r: 3.8, life: 1 });
-        if (pts.length > 30) pts.shift();
-    }, { passive: true });
-
-    (function loop() {
-        ctx.clearRect(0, 0, W, H);
-        for (let i = pts.length - 1; i >= 0; i--) {
-            const p = pts[i];
-            p.life -= 0.055;
-            p.r    *= 0.92;
-            if (p.life <= 0) { pts.splice(i, 1); continue; }
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, Math.max(p.r, 0.4), 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,45,32,${(p.life * 0.5).toFixed(2)})`;
-            ctx.fill();
-        }
-        requestAnimationFrame(loop);
-    })();
-}
-
-// ============================================
 // 4. SECTION AMBIENT GLOW ON SCROLL
 // ============================================
 function initSectionGlow() {
     const obs = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (!entry.isIntersecting) return;
-            const title = entry.target.querySelector('.section-title');
-            if (!title || title.dataset.glowed) return;
-            title.dataset.glowed = '1';
+            const title = entry.target;
             title.classList.add('section-glow');
             setTimeout(() => title.classList.remove('section-glow'), 1800);
+            obs.unobserve(title);
         });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.section').forEach(s => obs.observe(s));
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.section-title').forEach(t => obs.observe(t));
 }
 
 // ============================================
@@ -669,7 +654,7 @@ function initSkillTooltips() {
         'RabbitMQ':      "Queue::connection('rabbitmq')->push(new ProcessOrderJob($order));",
         'TensorFlow':    "model.fit(X_train, y_train, epochs=10, validation_split=0.2)",
         'Git':           "git push origin feature/perf-opt --force-with-lease",
-        'CI/CD':         "push → build → test → deploy → notify :white_check_mark:",
+        'CI/CD':         "push → build → test → deploy → notify ✅",
         'n8n':           "// Trigger → HTTP Request → Transform → Slack Notify",
         'Azure':         "az webapp up --name myapp --resource-group prod-rg",
         'Stripe':        "PaymentIntent::create(['amount'=>1999,'currency'=>'usd']);",
@@ -712,16 +697,6 @@ function initSkillTooltips() {
 }
 
 // ============================================
-// 6. NAME GLITCH (JS-driven, avoids CSS specificity conflict)
-// ============================================
-function initNameGlitch() {
-    const nameEl = document.querySelector('.hero-title .name');
-    if (!nameEl) return;
-    // hero-in finishes at ~0.52s delay + 0.65s = 1.17s; wait a bit after
-    setTimeout(() => nameEl.classList.add('name-glitching'), 1500);
-}
-
-// ============================================
 // COPY EMAIL TO CLIPBOARD
 // ============================================
 function showToast(msg) {
@@ -734,8 +709,7 @@ function showToast(msg) {
 
 const emailLink = document.getElementById('email-link');
 if (emailLink) {
-    emailLink.addEventListener('click', function (e) {
-        e.preventDefault();
+    emailLink.addEventListener('click', function () {
         const email = 'nkrabadiya@gmail.com';
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(email).then(() => showToast('✓ Email copied to clipboard'));
@@ -776,15 +750,12 @@ function initSectionUnderlines() {
     const obs = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (!entry.isIntersecting) return;
-            const title = entry.target.querySelector('.section-title');
-            if (title && !title.dataset.underlined) {
-                title.dataset.underlined = '1';
-                setTimeout(() => title.classList.add('underlined'), 200);
-            }
-            obs.unobserve(entry.target);
+            const title = entry.target;
+            setTimeout(() => title.classList.add('underlined'), 200);
+            obs.unobserve(title);
         });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.section').forEach(s => obs.observe(s));
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.section-title').forEach(t => obs.observe(t));
 }
 
 // ============================================
