@@ -63,6 +63,9 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -2172,4 +2175,33 @@ body.theme-transitioning *::after {
   #speaking .project-tech, #leadership .project-tech { display: none; }
   .footer { display: none; }
   a { color: inherit; }
+}
+
+/* ============================================
+   PHONE HERO — the name leads, the terminal supports
+   ============================================ */
+@media (max-width: 768px) {
+  /* chips: one swipeable line instead of two rows stacked above the name */
+  .term-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+    /* fade the right edge to hint there is more to swipe */
+    -webkit-mask-image: linear-gradient(to right, #000 86%, transparent);
+            mask-image: linear-gradient(to right, #000 86%, transparent);
+  }
+  .term-chips::-webkit-scrollbar { display: none; }
+  .term-chip { flex: 0 0 auto; white-space: nowrap; }
+  .term-chips::after { content: ''; flex: 0 0 1.5rem; } /* room to scroll the last chip out of the fade */
+
+  /* output: short panel, latest command only (script.js keeps one block on phones) */
+  .term-output { max-height: 148px; padding: 0.7rem 0.85rem; }
+
+  .hero-terminal { margin-bottom: 1.25rem; }
+
+  /* rocket steps aside once the footer is on screen (it sat on the footer text) */
+  .back-to-top.at-footer { opacity: 0 !important; pointer-events: none; transform: scale(0.7); }
 }

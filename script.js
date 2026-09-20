@@ -262,6 +262,11 @@ window.addEventListener('scroll', () => {
     backToTop.classList.toggle('visible', window.scrollY > 500);
 }, { passive: true });
 
+const footerEl = document.querySelector('.footer');
+if (footerEl && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => backToTop.classList.toggle('at-footer', entry.isIntersecting)).observe(footerEl);
+}
+
 backToTop.addEventListener('click', () => {
     if (backToTop.dataset.flying === '1') return;
     backToTop.dataset.flying = '1';
@@ -445,7 +450,8 @@ function initHeroCanvas() {
         draw() {
             const dark = isDark();
             ctx.save();
-            ctx.globalAlpha = dark ? this.opa : this.opa * 1.5; // dark 0.22–0.40, light 0.33–0.60
+            // phones have no empty margin: the words drift across the copy, so keep them as faint texture only
+            ctx.globalAlpha = (dark ? this.opa : this.opa * 1.5) * (W <= 768 ? 0.3 : 1); // dark 0.22–0.40, light 0.33–0.60
             ctx.fillStyle   = dark ? '#FF2D20' : '#8B1A0E';
             ctx.font        = `${this.size}px "Fira Code", monospace`;
             ctx.fillText(this.text, this.x, this.y);
@@ -456,7 +462,7 @@ function initHeroCanvas() {
     function init() {
         resize();
         // Responsive count: ~1 symbol per 60px of width, capped for perf
-        const count = Math.max(10, Math.min(26, Math.floor(W / 60)));
+        const count = W <= 768 ? 6 : Math.max(10, Math.min(26, Math.floor(W / 60)));
         particles = Array.from({ length: count }, (_, i) => new Sym(i, count, true));
     }
 
@@ -856,8 +862,9 @@ function initSectionUnderlines() {
 
         output.hidden = false;
         output.append(block);
-        while (output.children.length > 6) output.firstElementChild.remove();
-        output.scrollTop = output.scrollHeight;
+        const keep = window.matchMedia('(max-width: 768px)').matches ? 1 : 6;
+        while (output.children.length > keep) output.firstElementChild.remove();
+        output.scrollTop = keep === 1 ? 0 : output.scrollHeight;
 
         if (typeof gtag === 'function') gtag('event', 'terminal_command', { event_category: 'engagement', event_label: handler ? name : 'unknown' });
     }
@@ -883,9 +890,9 @@ window.addEventListener('load', () => setTimeout(() => {
 
     const b = text => { const n = document.createElement('b'); n.textContent = text; return n; };
     const bytes = [nav, ...performance.getEntriesByType('resource')].reduce((sum, e) => sum + (e.transferSize || 0), 0);
-    badge.append('⚡ This page loaded in ', b((nav.loadEventEnd / 1000).toFixed(2) + 's'));
+    badge.append('⚡ Loaded in ', b((nav.loadEventEnd / 1000).toFixed(2) + 's'));
     const fresh = bytes > 8 * 1024; // a revisit only transfers a few hundred bytes of 304 headers
-    badge.append(' · ', fresh ? b(Math.round(bytes / 1024) + ' KB') : 'served from ', fresh ? ' transferred' : b('cache'));
+    badge.append(' · ', b(fresh ? Math.round(bytes / 1024) + ' KB' : 'cached'));
     badge.append(' · ', b('0'), ' frameworks');
     badge.hidden = false;
 }, 0));
