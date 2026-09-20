@@ -8,7 +8,7 @@
   <!-- SEO Meta Tags -->
   <title>Nainesh Rabadiya - Technical Lead & Senior Laravel Developer</title>
   <meta name="description"
-    content="Technical Lead and Senior Laravel Developer specializing in high-traffic application optimization, enterprise architecture, and team leadership. Speaker at LaravelLive Ahmedabad 2024.">
+    content="Technical Lead and Senior Laravel Developer specializing in high-traffic application optimization, enterprise architecture, and team leadership. 4× speaker at LaravelLive and Laravel Ahmedabad meetups.">
   <meta name="keywords"
     content="Laravel Developer, Technical Lead, PHP Developer, Software Architect, WebOccult Technologies, High-Traffic Optimization">
   <meta name="author" content="Nainesh Rabadiya">
@@ -18,27 +18,52 @@
   <meta property="og:description"
     content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://nainesh.dev">
+  <meta property="og:url" content="https://nainesh.dev/">
+  <meta property="og:image" content="https://nainesh.dev/og-image.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Nainesh Rabadiya — Technical Lead & Senior Laravel Developer">
+  <meta property="og:site_name" content="Nainesh Rabadiya">
 
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nainesh Rabadiya - Technical Lead & Senior Laravel Developer">
   <meta name="twitter:description"
     content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
+  <meta name="twitter:image" content="https://nainesh.dev/og-image.png">
+  <meta name="twitter:creator" content="@nainesh_9x">
 
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://nainesh.dev">
+  <link rel="canonical" href="https://nainesh.dev/">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
 
-  <!-- Google Fonts -->
+  <!-- Performance: DNS prefetch + preconnect -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Google Fonts — preload then apply -->
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap">
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
-    rel="stylesheet">
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet" fetchpriority="high">
+
+  <!-- Flag JS + apply saved theme before first paint (avoids flash, keeps no-JS readable) -->
+  <script>
+    (function () {
+      var d = document.documentElement, t = null;
+      d.classList.add('js');
+      try { t = localStorage.getItem('theme'); } catch (e) {}
+      if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      d.setAttribute('data-theme', t);
+    })();
+  </script>
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="styles.css">
@@ -51,9 +76,10 @@
     "@type": "Person",
     "name": "Nainesh Rabadiya",
     "jobTitle": "Technical Lead & Senior Laravel Developer",
-    "url": "https://nainesh.dev",
+    "url": "https://nainesh.dev/",
     "email": "nkrabadiya@gmail.com",
     "sameAs": [
+      "https://www.linkedin.com/in/naineshrabadiya/",
       "https://github.com/nainesh-rabadiya",
       "https://x.com/nainesh_9x"
     ],
@@ -74,23 +100,40 @@
 
 <body>
 
+  <!-- Page Loader -->
+  <div class="page-loader" id="page-loader">
+    <div class="loader-inner">
+      <div class="loader-logo">NR</div>
+      <div class="loader-bar"><span></span></div>
+    </div>
+  </div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress-bar" id="scroll-progress"></div>
+
+  <!-- Custom Cursor -->
+  <div id="cursor-glow" aria-hidden="true"></div>
+  <div id="cursor-dot"  aria-hidden="true"></div>
+  <div id="cursor-ring" aria-hidden="true"></div>
+
   <!-- Navigation -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="#home" class="nav-logo">
+      <a href="#home" class="nav-logo" aria-label="Nainesh Rabadiya — home">
         <span>&lt;</span>NR<span>/&gt;</span>
       </a>
 
       <ul class="nav-menu" id="nav-menu">
-        <li><a href="#home" class="nav-link active">Home</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
         <li><a href="#skills" class="nav-link">Skills</a></li>
         <li><a href="#experience" class="nav-link">Experience</a></li>
         <li><a href="#projects" class="nav-link">Projects</a></li>
-        <li><a href="#education" class="nav-link">Education</a></li>
+        <li><a href="#speaking" class="nav-link">Speaking</a></li>
+        <li><a href="#leadership" class="nav-link">Community</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
 
+      <div class="nav-actions">
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
         <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
           <path
@@ -103,49 +146,74 @@
         </svg>
       </button>
 
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-menu">
         <span></span>
         <span></span>
         <span></span>
       </button>
+      </div><!-- /nav-actions -->
     </div>
   </nav>
 
   <!-- Hero Section -->
   <section class="hero section" id="home">
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+    <div class="hero-spotlight" id="hero-spotlight" aria-hidden="true"></div>
     <div class="container">
       <div class="hero-content">
-        <p class="hero-subtitle">💻 Technical Lead & Laravel Expert</p>
+        <div class="hero-terminal" id="hero-terminal">
+          <form class="hero-eyebrow term-line" id="term-form" autocomplete="off">
+            <label class="eyebrow-prompt" for="term-input">~/nainesh $&nbsp;</label><span id="typing-text"
+              aria-hidden="true"></span><span class="typing-cursor" aria-hidden="true"></span>
+            <input class="term-input" id="term-input" type="text" inputmode="text" spellcheck="false"
+              autocapitalize="off" autocorrect="off" maxlength="40" aria-label="Terminal: type a command, or help">
+          </form>
+          <div class="term-output" id="term-output" role="log" aria-live="polite" hidden></div>
+          <div class="term-chips" id="term-chips" role="group" aria-label="Try a command">
+            <span class="term-chips-label" aria-hidden="true">try:</span>
+            <button type="button" class="term-chip" data-cmd="whoami">whoami</button>
+            <button type="button" class="term-chip" data-cmd="ls talks/">ls talks/</button>
+            <button type="button" class="term-chip" data-cmd="php artisan about">artisan about</button>
+            <button type="button" class="term-chip" data-cmd="cd projects">cd projects</button>
+            <button type="button" class="term-chip" data-cmd="help">help</button>
+          </div>
+        </div>
         <h1 class="hero-title">
-          Hi, I'm <span
-            style="background: linear-gradient(135deg, #FF2D20 0%, #FF4436 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Nainesh
-            Rabadiya</span>
+          <span class="greeting">Hi, I'm</span>
+          <span class="name">Nainesh Rabadiya</span>
         </h1>
         <p class="hero-description">
           I build high-performance Laravel applications that handle millions of users. Leading teams, optimizing
           systems, and sharing knowledge with the developer community.
         </p>
+        <p class="print-contact">nkrabadiya@gmail.com · linkedin.com/in/naineshrabadiya · github.com/nainesh-rabadiya ·
+          x.com/nainesh_9x · nainesh.dev</p>
         <div class="hero-cta">
           <a href="#projects" class="btn btn-primary">View My Work</a>
           <a href="#contact" class="btn btn-secondary">Let's Talk</a>
         </div>
       </div>
     </div>
+    <div class="hero-scroll" aria-hidden="true">scroll</div>
   </section>
 
   <!-- About Section -->
   <section class="section" id="about">
     <div class="container">
-      <div class="section-title">
-        <h2>👋 About Me</h2>
+      <div class="section-header">
+        <h2 class="section-title">About Me</h2>
       </div>
 
-      <div class="about-content">
-        <div class="about-image">
-          <img src="profile.png" alt="Nainesh Rabadiya - Technical Lead" class="profile-photo" loading="lazy">
+      <div class="about-layout">
+        <div class="about-image-wrap">
+          <picture>
+            <source srcset="profile.webp" type="image/webp">
+            <img src="profile.jpg" alt="Nainesh Rabadiya - Technical Lead" class="profile-photo" width="560"
+              height="560" loading="lazy" decoding="async">
+          </picture>
         </div>
 
-        <div class="about-text">
+        <div class="about-body">
           <h3>What I Do</h3>
           <p>
             I am a Technical Lead at WebOccult Technologies, focused on building reliable, high-traffic enterprise
@@ -163,30 +231,30 @@
         </div>
       </div>
 
-      <div class="about-stats">
-        <div class="stat-card card">
-          <span class="stat-number">⏱️ 12+</span>
+      <div class="bento-grid">
+        <div class="bento-item">
+          <span class="stat-number">⏱️ 13+</span>
           <span class="stat-label">Years Experience</span>
         </div>
-        <div class="stat-card card">
+        <div class="bento-item">
           <span class="stat-number">🚀 50+</span>
           <span class="stat-label">Projects Delivered</span>
         </div>
-        <div class="stat-card card">
+        <div class="bento-item">
           <span class="stat-number">⚡ 5+</span>
           <span class="stat-label">Large Scale Apps</span>
         </div>
-        <div class="stat-card card">
+        <div class="bento-item">
           <span class="stat-number">🎤 4</span>
-          <span class="stat-label">Speaker</span>
-          <span class="stat-subtext">LaravelLive Ahmedabad</span>
+          <span class="stat-label">Conference &amp; Meetup Talks</span>
+          <span class="stat-subtext">LaravelLive · Laravel Ahmedabad</span>
         </div>
-        <div class="stat-card card">
-          <span class="stat-number">🎫 65+</span>
-          <span class="stat-label">Tech Meetups</span>
-          <span class="stat-subtext">Active Attendee</span>
+        <div class="bento-item">
+          <span class="stat-number">👥 25+</span>
+          <span class="stat-label">Developers Led</span>
+          <span class="stat-subtext">Cross-functional Teams</span>
         </div>
-        <div class="stat-card card">
+        <div class="bento-item">
           <span class="stat-number">🐘 4</span>
           <span class="stat-label">Laracons Attended</span>
           <span class="stat-subtext">Global Conferences</span>
@@ -198,13 +266,22 @@
   <!-- Skills Section -->
   <section class="section" id="skills">
     <div class="container">
-      <div class="section-title">
-        <h2>🛠️ Skills & Technologies</h2>
+      <div class="section-header">
+        <h2 class="section-title">Skills &amp; Technologies</h2>
+      </div>
+
+      <div class="skills-tabs" role="group" aria-label="Filter skills by category">
+        <button class="skill-tab active" data-tab="all" aria-pressed="true">All</button>
+        <button class="skill-tab" data-tab="backend" aria-pressed="false">Backend</button>
+        <button class="skill-tab" data-tab="frontend" aria-pressed="false">Frontend</button>
+        <button class="skill-tab" data-tab="architecture" aria-pressed="false">Architecture</button>
+        <button class="skill-tab" data-tab="tools" aria-pressed="false">Tools &amp; DevOps</button>
+        <button class="skill-tab" data-tab="ai" aria-pressed="false">AI &amp; CV</button>
       </div>
 
       <div class="skills-grid">
-        <div class="skill-category card scroll-reveal">
-          <h3>🚀 Backend Development</h3>
+        <div class="skill-category card scroll-reveal" data-category="backend">
+          <h3><span class="emoji-icon">🚀</span> Backend Development</h3>
           <div class="skill-list">
             <span class="skill-tag">PHP</span>
             <span class="skill-tag">Laravel</span>
@@ -219,8 +296,8 @@
           </div>
         </div>
 
-        <div class="skill-category card scroll-reveal">
-          <h3>💻 Frontend Development</h3>
+        <div class="skill-category card scroll-reveal" data-category="frontend">
+          <h3><span class="emoji-icon">💻</span> Frontend Development</h3>
           <div class="skill-list">
             <span class="skill-tag">JavaScript</span>
             <span class="skill-tag">Vue.js</span>
@@ -233,8 +310,8 @@
           </div>
         </div>
 
-        <div class="skill-category card scroll-reveal">
-          <h3>🏗️ Architecture & Leadership</h3>
+        <div class="skill-category card scroll-reveal" data-category="architecture">
+          <h3><span class="emoji-icon">🏗️</span> Architecture &amp; Leadership</h3>
           <div class="skill-list">
             <span class="skill-tag">System Design</span>
             <span class="skill-tag">Software Architecture</span>
@@ -247,8 +324,8 @@
           </div>
         </div>
 
-        <div class="skill-category card scroll-reveal">
-          <h3>🛠️ Tools & DevOps</h3>
+        <div class="skill-category card scroll-reveal" data-category="tools">
+          <h3><span class="emoji-icon">🛠️</span> Tools &amp; DevOps</h3>
           <div class="skill-list">
             <span class="skill-tag">Git</span>
             <span class="skill-tag">Docker</span>
@@ -266,8 +343,8 @@
           </div>
         </div>
 
-        <div class="skill-category card scroll-reveal">
-          <h3>🤖 AI & Computer Vision</h3>
+        <div class="skill-category card scroll-reveal" data-category="ai">
+          <h3><span class="emoji-icon">🤖</span> AI &amp; Computer Vision</h3>
           <div class="skill-list">
             <span class="skill-tag">Machine Learning</span>
             <span class="skill-tag">Computer Vision</span>
@@ -286,17 +363,20 @@
   <!-- Experience Section -->
   <section class="section" id="experience">
     <div class="container">
-      <div class="section-title">
-        <h2>💼 Professional Experience</h2>
+      <div class="section-header">
+        <h2 class="section-title">Professional Experience</h2>
       </div>
+
+      <p class="git-cmd" aria-hidden="true"><span>$</span> git log --graph --first-parent career</p>
 
       <div class="experience-timeline">
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">c7a91f4</span><span class="commit-ref">HEAD → main</span></p>
             <h3>Technical Lead</h3>
             <p class="timeline-company">WebOccult Technologies Pvt. Ltd.</p>
-            <p class="timeline-date">Jul 2021 - Present · 4 yrs 7 mos</p>
+            <p class="timeline-date" data-start="2021-07">Jul 2021 - Present</p>
             <div class="timeline-description">
               <p>Leading engineering teams in developing enterprise-grade applications and driving technical excellence
                 across the organization.</p>
@@ -309,6 +389,15 @@
                 <li>Implemented database optimization strategies reducing query execution time by 60%</li>
                 <li>Collaborated with stakeholders to translate business requirements into technical solutions</li>
               </ul>
+              <div class="branch-log">
+                <p class="branch-name"><span aria-hidden="true">⑂</span> merged from <strong>feature/speaking</strong></p>
+                <ul>
+                  <li><a href="#speaking"><span class="commit-hash" aria-hidden="true">e4d2a10</span>Laravel Queues on Steroids <time>Dec 2024</time></a></li>
+                  <li><a href="#speaking"><span class="commit-hash" aria-hidden="true">a87f3c5</span>Speeding Up Large-Scale Laravel App, Part 2 <time>Feb 2024</time></a></li>
+                  <li><a href="#speaking"><span class="commit-hash" aria-hidden="true">3bc9e08</span>Speeding Up Large-Scale Laravel App <time>Jul 2023</time></a></li>
+                  <li><a href="#speaking"><span class="commit-hash" aria-hidden="true">d05a6f1</span>Working with Laravel Observers <time>Dec 2022</time></a></li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -316,9 +405,10 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">9e3b5d2</span></p>
             <h3>Senior Software Engineer</h3>
             <p class="timeline-company">Pro Start Me Technology Private Limited</p>
-            <p class="timeline-date">Feb 2020 - Jun 2021 · 1 yr 5 mos</p>
+            <p class="timeline-date" data-start="2020-02" data-end="2021-06">Feb 2020 - Jun 2021</p>
             <div class="timeline-description">
               <p>Developed and maintained mission-critical applications using Laravel and CodeIgniter frameworks.</p>
               <ul>
@@ -335,9 +425,10 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">4f8a0c6</span></p>
             <h3>Technical Lead</h3>
             <p class="timeline-company">EXCEL OVERSEAS PVT.LTD.</p>
-            <p class="timeline-date">Mar 2017 - Feb 2020 · 3 yrs</p>
+            <p class="timeline-date" data-start="2017-03" data-end="2020-02">Mar 2017 - Feb 2020</p>
             <div class="timeline-description">
               <p>Led technical initiatives and development teams in building enterprise web applications.</p>
               <ul>
@@ -354,17 +445,13 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">b21d7e9</span></p>
             <h3>Senior Software Engineer</h3>
             <p class="timeline-company">Munjani Brothers</p>
-            <p class="timeline-date">Nov 2015 - Feb 2017 · 1 yr 4 mos</p>
+            <p class="timeline-date" data-start="2015-11" data-end="2017-02">Nov 2015 - Feb 2017</p>
             <div class="timeline-description">
-              <p>Developed robust backend systems using .NET Core and managed relational databases.</p>
-              <ul>
-                <li>Built scalable backend applications using C# and .NET Core</li>
-                <li>Designed and optimized relational database schemas and queries</li>
-                <li>Implemented object-oriented programming principles for maintainable code</li>
-                <li>Collaborated with cross-functional teams on system requirements and data management</li>
-              </ul>
+              <p>Built and maintained backend systems in C# and .NET, owning relational database schema design
+                and query optimization for internal business applications.</p>
             </div>
           </div>
         </div>
@@ -372,17 +459,12 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">70c4e1a</span></p>
             <h3>Software Engineer</h3>
             <p class="timeline-company">D&K Group</p>
-            <p class="timeline-date">Aug 2013 - Oct 2015 · 2 yrs 3 mos</p>
+            <p class="timeline-date" data-start="2013-08" data-end="2015-10">Aug 2013 - Oct 2015</p>
             <div class="timeline-description">
-              <p>Developed backend web applications and managed database systems using .NET technologies.</p>
-              <ul>
-                <li>Built web applications using C# and .NET Core framework</li>
-                <li>Designed and implemented relational database solutions</li>
-                <li>Applied OOP principles and design patterns in application development</li>
-                <li>Managed version control using Git and followed coding standards</li>
-              </ul>
+              <p>Developed backend web applications in C# and ASP.NET, including relational database design.</p>
             </div>
           </div>
         </div>
@@ -390,17 +472,12 @@
         <div class="timeline-item scroll-reveal">
           <div class="timeline-dot"></div>
           <div class="timeline-content card">
+            <p class="commit-meta" aria-hidden="true"><span class="commit-hash">1a2b3c4</span><span class="commit-ref">initial commit</span></p>
             <h3>Intern</h3>
             <p class="timeline-company">Aisomex Consultancy Services Pvt. Ltd.</p>
-            <p class="timeline-date">Feb 2013 - Aug 2013 · 7 mos</p>
+            <p class="timeline-date" data-start="2013-02" data-end="2013-08">Feb 2013 - Aug 2013</p>
             <div class="timeline-description">
-              <p>Gained hands-on experience in backend development and REST API implementation.</p>
-              <ul>
-                <li>Developed backend components using C# and .NET Core</li>
-                <li>Implemented REST APIs for web applications</li>
-                <li>Learned OOP principles and software development best practices</li>
-                <li>Worked with Git for version control and SQL for database operations</li>
-              </ul>
+              <p>Built backend components and REST APIs in C# and ASP.NET.</p>
             </div>
           </div>
         </div>
@@ -411,86 +488,14 @@
   <!-- Projects Section -->
   <section class="section" id="projects">
     <div class="container">
-      <div class="section-title">
-        <h2>✨ Featured Projects & Achievements</h2>
+      <div class="section-header">
+        <h2 class="section-title">Featured Projects</h2>
       </div>
 
-      <div class="projects-grid">
+      <div class="projects-grid grid-2">
         <div class="project-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon">🎤</div>
-          </div>
-          <h3 class="project-title">Laravel Queues on Steroids</h3>
-          <p class="project-description">
-            Delivered an electrifying session at Laravel Ahmedabad Meetup (Dec 22, 2024) on high-speed performance and
-            optimization techniques for Laravel Queues. Covered advanced queue management strategies for handling
-            large-scale background processing.
-          </p>
-          <div class="project-tech">
-            <span class="tech-tag">Laravel Queues</span>
-            <span class="tech-tag">Performance</span>
-            <span class="tech-tag">Optimization</span>
-            <span class="tech-tag">Community Speaker</span>
-          </div>
-        </div>
-
-        <div class="project-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon">🎤</div>
-          </div>
-          <h3 class="project-title">Speeding Up Large-Scale Laravel App Part-2</h3>
-          <p class="project-description">
-            Presented at LaravelLive Ahmedabad (Feb 25, 2024) continuing the deep dive into performance optimization for
-            large-scale applications. Shared advanced techniques for database optimization, caching strategies, and
-            application profiling.
-          </p>
-          <div class="project-tech">
-            <span class="tech-tag">Laravel</span>
-            <span class="tech-tag">Performance</span>
-            <span class="tech-tag">Scaling</span>
-            <span class="tech-tag">Database Optimization</span>
-          </div>
-        </div>
-
-        <div class="project-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon">🎤</div>
-          </div>
-          <h3 class="project-title">Speeding Up Large-Scale Laravel App</h3>
-          <p class="project-description">
-            Featured speaker at LaravelLive Ahmedabad (Jul 30, 2023) sharing foundational strategies for scaling Laravel
-            applications. Covered query optimization, eager loading, caching mechanisms, and performance monitoring for
-            high-traffic applications.
-          </p>
-          <div class="project-tech">
-            <span class="tech-tag">Laravel</span>
-            <span class="tech-tag">Performance</span>
-            <span class="tech-tag">High-Traffic</span>
-            <span class="tech-tag">Best Practices</span>
-          </div>
-        </div>
-
-        <div class="project-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon">🎤</div>
-          </div>
-          <h3 class="project-title">Working with Laravel Observers</h3>
-          <p class="project-description">
-            Presented at Laravel Ahmedabad Meetup (Dec 16, 2022) covering practical implementation and benefits of using
-            Laravel Observers. Demonstrated how to handle model events elegantly and maintain clean, maintainable code
-            architecture.
-          </p>
-          <div class="project-tech">
-            <span class="tech-tag">Laravel</span>
-            <span class="tech-tag">Observers</span>
-            <span class="tech-tag">Design Patterns</span>
-            <span class="tech-tag">Best Practices</span>
-          </div>
-        </div>
-
-        <div class="project-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon">⚡</div>
+            <div class="project-icon emoji-icon">⚡</div>
           </div>
           <h3 class="project-title">High-Traffic E-Commerce Platform</h3>
           <p class="project-description">
@@ -509,7 +514,7 @@
 
         <div class="project-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon">🏢</div>
+            <div class="project-icon emoji-icon">🏢</div>
           </div>
           <h3 class="project-title">Enterprise Resource Planning System</h3>
           <p class="project-description">
@@ -528,7 +533,7 @@
 
         <div class="project-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon">📊</div>
+            <div class="project-icon emoji-icon">📊</div>
           </div>
           <h3 class="project-title">Real-Time Analytics Dashboard</h3>
           <p class="project-description">
@@ -547,7 +552,7 @@
 
         <div class="project-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon">🔐</div>
+            <div class="project-icon emoji-icon">🔐</div>
           </div>
           <h3 class="project-title">Multi-Tenant SaaS Application</h3>
           <p class="project-description">
@@ -562,45 +567,108 @@
             <span class="tech-tag">MySQL</span>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Speaking Section -->
+  <section class="section" id="speaking">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Speaking</h2>
+      </div>
+
+      <div class="projects-grid grid-2">
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon emoji-icon">🎤</div>
+          </div>
+          <h3 class="project-title">Laravel Queues on Steroids</h3>
+          <p class="project-description">
+            Laravel Ahmedabad Meetup · Dec 22, 2024. Performance and optimization techniques for Laravel Queues,
+            including queue management strategies for large-scale background processing.
+          </p>
+          <!-- Add when available: <a class="card-link" href="SLIDES_OR_VIDEO_URL" target="_blank" rel="noopener noreferrer">Slides / recording ↗</a> -->
+          <div class="project-tech">
+            <span class="tech-tag">Laravel Queues</span>
+            <span class="tech-tag">Performance</span>
+            <span class="tech-tag">Optimization</span>
+            <span class="tech-tag">Background Jobs</span>
+          </div>
+        </div>
 
         <div class="project-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon">🎓</div>
+            <div class="project-icon emoji-icon">🎤</div>
           </div>
-          <h3 class="project-title">Technical Mentorship & Knowledge Sharing</h3>
+          <h3 class="project-title">Speeding Up Large-Scale Laravel App Part-2</h3>
           <p class="project-description">
-            Actively mentor developers through code reviews, technical discussions, and knowledge-sharing sessions.
-            Created internal documentation and best practice guides that improved team efficiency and code quality
-            across the organization.
+            LaravelLive Ahmedabad · Feb 25, 2024. Second part of the series: database optimization, caching strategies,
+            and application profiling for large-scale applications.
           </p>
+          <!-- Add when available: <a class="card-link" href="SLIDES_OR_VIDEO_URL" target="_blank" rel="noopener noreferrer">Slides / recording ↗</a> -->
           <div class="project-tech">
-            <span class="tech-tag">Leadership</span>
-            <span class="tech-tag">Mentorship</span>
-            <span class="tech-tag">Documentation</span>
-            <span class="tech-tag">Code Review</span>
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">Performance</span>
+            <span class="tech-tag">Scaling</span>
+            <span class="tech-tag">Database Optimization</span>
+          </div>
+        </div>
+
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon emoji-icon">🎤</div>
+          </div>
+          <h3 class="project-title">Speeding Up Large-Scale Laravel App</h3>
+          <p class="project-description">
+            LaravelLive Ahmedabad · Jul 30, 2023. Foundations of scaling Laravel: query optimization, eager loading,
+            caching, and performance monitoring for high-traffic applications.
+          </p>
+          <!-- Add when available: <a class="card-link" href="SLIDES_OR_VIDEO_URL" target="_blank" rel="noopener noreferrer">Slides / recording ↗</a> -->
+          <div class="project-tech">
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">Performance</span>
+            <span class="tech-tag">High-Traffic</span>
+            <span class="tech-tag">Best Practices</span>
+          </div>
+        </div>
+
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon emoji-icon">🎤</div>
+          </div>
+          <h3 class="project-title">Working with Laravel Observers</h3>
+          <p class="project-description">
+            Laravel Ahmedabad Meetup · Dec 16, 2022. Practical use of Laravel Observers: handling model events cleanly
+            while keeping the codebase maintainable.
+          </p>
+          <!-- Add when available: <a class="card-link" href="SLIDES_OR_VIDEO_URL" target="_blank" rel="noopener noreferrer">Slides / recording ↗</a> -->
+          <div class="project-tech">
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">Observers</span>
+            <span class="tech-tag">Design Patterns</span>
+            <span class="tech-tag">Best Practices</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-
-
   <!-- Leadership Section -->
   <section class="section" id="leadership">
     <div class="container">
-      <div class="section-title">
-        <h2>🏆 Leadership & Community</h2>
+      <div class="section-header">
+        <h2 class="section-title">Leadership &amp; Community</h2>
       </div>
 
-      <div class="projects-grid">
+      <div class="projects-grid grid-2">
         <div class="project-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon">🎓</div>
+            <div class="project-icon emoji-icon">🎓</div>
           </div>
-          <h3 class="project-title">Technical Interviewer & Recruitment Team</h3>
+          <h3 class="project-title">Technical Interviewer &amp; Recruitment Team</h3>
           <p class="project-description">
-            Active member of the recruitment team at <strong>WebOccult Technologies</strong>. conducting in-house and
+            Active member of the recruitment team at <strong>WebOccult Technologies</strong>, conducting in-house and
             campus technical interviews to hire Junior, Mid, and Senior level developers. Assessing technical depth,
             problem-solving skills, and role fit across various profiles.
           </p>
@@ -613,7 +681,7 @@
 
         <div class="project-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon">⚖️</div>
+            <div class="project-icon emoji-icon">⚖️</div>
           </div>
           <h3 class="project-title">Panel Judge - York IE Hackathon 2025</h3>
           <p class="project-description">
@@ -630,18 +698,36 @@
 
         <div class="project-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon">🤝</div>
+            <div class="project-icon emoji-icon">🤝</div>
           </div>
           <h3 class="project-title">Mentor - DataThrone 2024</h3>
           <p class="project-description">
             Dedicated 40+ hours mentoring participants at the <strong>DataThrone 2024</strong> hackathon (organized
-            by WebOccult & Lucent Innovation). Guided 300+ students through a 36-hour sprint, assisting with
+            by WebOccult &amp; Lucent Innovation). Guided 300+ students through a 36-hour sprint, assisting with
             architecture, debugging, and product development.
           </p>
           <div class="project-tech">
             <span class="tech-tag">Mentorship</span>
             <span class="tech-tag">Team Guidance</span>
             <span class="tech-tag">Problem Solving</span>
+          </div>
+        </div>
+
+        <div class="project-card card scroll-reveal">
+          <div class="project-header">
+            <div class="project-icon emoji-icon">🎓</div>
+          </div>
+          <h3 class="project-title">Technical Mentorship &amp; Knowledge Sharing</h3>
+          <p class="project-description">
+            Actively mentor developers through code reviews, technical discussions, and knowledge-sharing sessions.
+            Created internal documentation and best practice guides that improved team efficiency and code quality
+            across the organization.
+          </p>
+          <div class="project-tech">
+            <span class="tech-tag">Leadership</span>
+            <span class="tech-tag">Mentorship</span>
+            <span class="tech-tag">Documentation</span>
+            <span class="tech-tag">Code Review</span>
           </div>
         </div>
       </div>
@@ -651,36 +737,18 @@
   <!-- Education Section -->
   <section class="section" id="education">
     <div class="container">
-      <div class="section-title">
-        <h2>🎓 Education & Certifications</h2>
+      <div class="section-header">
+        <h2 class="section-title">Education</h2>
       </div>
 
       <div class="education-grid">
         <div class="education-card card scroll-reveal">
           <div class="project-header">
-            <div class="project-icon">🏛️</div>
+            <div class="project-icon emoji-icon">🏛️</div>
           </div>
           <h3>RK University</h3>
           <p class="education-degree">Bachelor of Engineering in Information Technology</p>
           <p class="education-date">2009 - 2013</p>
-        </div>
-
-        <div class="education-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon">🚀</div>
-          </div>
-          <h3>Laravel Expertise</h3>
-          <p class="education-degree">Advanced Laravel Development & Architecture</p>
-          <p class="education-date">Professional Experience & Continuous Learning</p>
-        </div>
-
-        <div class="education-card card scroll-reveal">
-          <div class="project-header">
-            <div class="project-icon">🎤</div>
-          </div>
-          <h3>Community Speaker</h3>
-          <p class="education-degree">Laravel Ahmedabad Meetups</p>
-          <p class="education-date">2022 - 2024 · 4 Technical Talks</p>
         </div>
       </div>
     </div>
@@ -689,16 +757,11 @@
   <!-- Contact Section -->
   <section class="section" id="contact">
     <div class="container">
-      <div class="section-title">
-        <h2>📬 Let's Connect</h2>
-      </div>
-
-      <div class="contact-content">
-        <h3>Let's Collaborate</h3>
+      <div class="contact-wrapper">
+        <h2>Let's Talk</h2>
         <p>
-          Passionate about open source contributions and solving complex engineering problems. I enjoy building
-          scalable applications and helping the community grow. If you have a technical challenge to discuss,
-          let's talk.
+          Have a Laravel application that needs to go faster, an architecture decision to pressure-test, or a
+          meetup or conference slot to fill? Email is the quickest way to reach me.
         </p>
 
         <div class="contact-links">
@@ -737,6 +800,8 @@
             <span class="link-text">GitHub</span>
           </a>
         </div>
+
+        <button type="button" class="print-cv" id="print-cv">Save this page as a PDF résumé ↓</button>
       </div>
     </div>
   </section>
@@ -745,12 +810,152 @@
   <footer class="footer">
     <div class="container">
       <p>&copy; 2026 Nainesh Rabadiya. Built with passion for clean code and performance.</p>
+      <p class="perf-badge" id="perf-badge" hidden></p>
     </div>
+    <!-- Binary "Nainesh" — generated by JS below -->
+    <div class="footer-brand" id="footer-brand-el" aria-hidden="true"></div>
   </footer>
+
+  <!-- Fixed Side Social Strip -->
+  <div class="side-social" aria-label="Social links">
+    <a href="https://www.linkedin.com/in/naineshrabadiya/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+    </a>
+    <a href="https://github.com/nainesh-rabadiya" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+    </a>
+    <a href="https://x.com/nainesh_9x" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
+    <a href="mailto:nkrabadiya@gmail.com" aria-label="Email">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm6.623 7.929l-4.623 5.712v-9.458l4.623 3.746zm-4.141-5.929h19.035l-9.517 7.713-9.518-7.713zm5.694 7.188l3.824 3.099 3.83-3.104 5.612 6.817h-18.779l5.513-6.812zm9.208-1.264l4.616-3.741v9.348l-4.616-5.607z"/></svg>
+    </a>
+    <span class="side-social-line"></span>
+  </div>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <span class="rocket-icon">🚀</span>
+  </button>
+
+  <!-- Binary "Nainesh" footer — builds SVG via JS so binary rows fill the letter shapes -->
+  <script>
+    (function () {
+      var NS = 'http://www.w3.org/2000/svg';
+      var W = 1500, H = 230;
+      // "nainesh" ASCII → binary (no spaces)
+      var seed = '01101110011000010110100101101110011001010111001101101000';
+      var pool = seed + seed + seed + seed; // 224 chars, plenty for any row
+
+      function buildSVG(clipId) {
+        var svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.setAttribute('xmlns', NS);
+        svg.style.cssText = 'display:block;width:100%;height:auto;';
+
+        // clipPath — the big "Nainesh" letter shapes act as the mask
+        var defs = document.createElementNS(NS, 'defs');
+        var clip = document.createElementNS(NS, 'clipPath');
+        clip.setAttribute('id', clipId);
+        var ct = document.createElementNS(NS, 'text');
+        ct.setAttribute('x', '750');
+        ct.setAttribute('y', '200');
+        ct.setAttribute('text-anchor', 'middle');
+        ct.setAttribute('font-family', 'Nunito, sans-serif');
+        ct.setAttribute('font-weight', '800');
+        ct.setAttribute('font-size', '205');
+        ct.setAttribute('letter-spacing', '-8');
+        ct.textContent = 'Nainesh';
+        clip.appendChild(ct);
+        defs.appendChild(clip);
+        svg.appendChild(defs);
+
+        // Binary rows — only visible inside the letter shapes via clip-path
+        var g = document.createElementNS(NS, 'g');
+        g.setAttribute('clip-path', 'url(#' + clipId + ')');
+        g.setAttribute('font-family', 'Fira Code, monospace');
+        g.setAttribute('font-size', '16');
+        g.setAttribute('letter-spacing', '2');
+        g.setAttribute('fill', 'currentColor');
+
+        for (var r = 0; r < 10; r++) {
+          var y = 22 + r * 21;
+          var off = (r * 7) % seed.length;
+          var line = (pool + pool).slice(off, off + 180);
+          var t = document.createElementNS(NS, 'text');
+          t.setAttribute('x', '0');
+          t.setAttribute('y', String(y));
+          t.textContent = line;
+          g.appendChild(t);
+        }
+        svg.appendChild(g);
+        return svg;
+      }
+
+      function init() {
+        var el = document.getElementById('footer-brand-el');
+        if (!el) return;
+
+        var baseDiv = document.createElement('div');
+        baseDiv.className = 'footer-brand-base';
+        baseDiv.appendChild(buildSVG('nb-clip-base'));
+
+        var glowDiv = document.createElement('div');
+        glowDiv.className = 'footer-brand-glow';
+        glowDiv.id = 'footer-brand-glow';
+        glowDiv.appendChild(buildSVG('nb-clip-glow'));
+
+        el.appendChild(baseDiv);  // dim layer (behind)
+        el.appendChild(glowDiv);  // spotlight layer (on top)
+
+        // Set mask directly on the element (works on Safari/Mac, Chrome, Firefox)
+        function setMask(pct) {
+          var grad = 'radial-gradient(ellipse 28% 120% at ' + pct + '% 50%, black 5%, transparent 68%)';
+          glowDiv.style.webkitMaskImage = grad;
+          glowDiv.style.maskImage       = grad;
+        }
+
+        // Always-running sweep — spotlight bounces left↔right via rAF
+        var sweepX = -15, sweepDir = 1, hovering = false, onScreen = true;
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver(function (en) { onScreen = en[0].isIntersecting; }).observe(el);
+        }
+        function sweep() {
+          if (!hovering && onScreen) {
+            sweepX += sweepDir * 0.38;
+            if (sweepX >= 115) sweepDir = -1;
+            if (sweepX <= -15) sweepDir =  1;
+            setMask(sweepX.toFixed(1));
+          }
+          requestAnimationFrame(sweep);
+        }
+        sweep();
+
+        // On desktop hover, mouse position overrides the sweep
+        el.style.pointerEvents = 'auto';
+        el.addEventListener('mouseenter', function () { hovering = true; });
+        el.addEventListener('mousemove', function (e) {
+          var r = el.getBoundingClientRect();
+          setMask(((e.clientX - r.left) / r.width * 100).toFixed(1));
+        });
+        el.addEventListener('mouseleave', function () { hovering = false; });
+      }
+
+      // Wait for fonts then defer one more frame so Safari has painted them
+      function safeInit() { requestAnimationFrame(function() { requestAnimationFrame(init); }); }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(safeInit);
+      } else {
+        window.addEventListener('load', safeInit);
+      }
+    })();
+  </script>
 
   <!-- JavaScript -->
   <script src="script.js"></script>
 
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 
 </html>

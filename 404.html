@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Page Not Found | Nainesh Rabadiya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #09090B;
+      --surface: #111113;
+      --accent:  #FF2D20;
+      --text-1:  #F4F4F5;
+      --text-2:  #A1A1AA;
+      --border:  rgba(255,255,255,0.07);
+      --radius:  14px;
+    }
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    /* Animated background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,45,32,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,45,32,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: grid-drift 20s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes grid-drift {
+      from { background-position: 0 0; }
+      to   { background-position: 48px 48px; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+    }
+
+    .code {
+      font-family: 'Fira Code', monospace;
+      font-size: clamp(5rem, 18vw, 9rem);
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(135deg, #FF2D20 0%, #FF6B61 60%, #FF2D20 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-shift 3s ease infinite;
+      letter-spacing: -0.04em;
+      margin-bottom: 1rem;
+    }
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50%       { background-position: 100% 50%; }
+    }
+
+    .label {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      opacity: 0.8;
+    }
+
+    h1 {
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 800;
+      color: var(--text-1);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      font-size: 1rem;
+      color: var(--text-2);
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1.5rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(255,45,32,0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 8px 28px rgba(255,45,32,0.5); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-1);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: rgba(255,45,32,0.4); }
+
+    .terminal {
+      margin-top: 3rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.78rem;
+      color: var(--text-2);
+      text-align: left;
+    }
+    .terminal .prompt { color: var(--accent); }
+    .terminal .cursor {
+      display: inline-block;
+      width: 8px; height: 1em;
+      background: var(--accent);
+      vertical-align: text-bottom;
+      border-radius: 1px;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="label">Error</div>
+    <div class="code">404</div>
+    <h1>Page not found</h1>
+    <p>Looks like this route doesn't exist — probably a typo or a link that moved. Let's get you back on track.</p>
+    <div class="actions">
+      <a href="/" class="btn btn-primary">← Back to Portfolio</a>
+      <a href="/#contact" class="btn btn-secondary">Contact Me</a>
+    </div>
+    <div class="terminal">
+      <span class="prompt">~/nainesh $</span> cd ..<br>
+      <span class="prompt">~/nainesh $</span> <span class="cursor"></span>
+    </div>
+  </div>
+</body>
+</html>

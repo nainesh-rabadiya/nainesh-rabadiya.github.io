@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255,45,32,0.045)" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="redgrad" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#FF2D20"/>
+      <stop offset="55%"  stop-color="#FF6B61"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <linearGradient id="namegradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#F4F4F5"/>
+      <stop offset="100%" stop-color="#A1A1AA"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#09090B"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Left accent bar -->
+  <rect x="64" y="90" width="4" height="450" rx="2" fill="#FF2D20" opacity="0.7"/>
+
+  <!-- Large background NR watermark -->
+  <text x="820" y="480" font-family="Arial Black, Arial, sans-serif" font-size="340" font-weight="900"
+        fill="#FF2D20" opacity="0.03" letter-spacing="-10">NR</text>
+
+  <!-- Greeting line -->
+  <text x="90" y="165" font-family="'Courier New', monospace" font-size="17"
+        fill="#FF2D20" opacity="0.8" letter-spacing="2">~/nainesh $ whoami</text>
+
+  <!-- Main name -->
+  <text x="90" y="290" font-family="Arial Black, Arial, sans-serif" font-size="80"
+        font-weight="900" fill="url(#namegradient)" letter-spacing="-3">Nainesh Rabadiya</text>
+
+  <!-- Title -->
+  <text x="90" y="348" font-family="Arial, sans-serif" font-size="26"
+        font-weight="400" fill="#A1A1AA" letter-spacing="0.5">Technical Lead  ·  Senior Laravel Developer  ·  13+ Years</text>
+
+  <!-- Stat chips -->
+  <rect x="90"  y="385" width="136" height="34" rx="17" fill="rgba(255,45,32,0.12)" stroke="rgba(255,45,32,0.25)" stroke-width="1"/>
+  <text x="158" y="407" text-anchor="middle" font-family="'Courier New', monospace" font-size="13" fill="#FF6B61">50+ Projects</text>
+
+  <rect x="238" y="385" width="110" height="34" rx="17" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="293" y="407" text-anchor="middle" font-family="'Courier New', monospace" font-size="13" fill="#71717A">25+ Devs Led</text>
+
+  <rect x="360" y="385" width="88" height="34" rx="17" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="404" y="407" text-anchor="middle" font-family="'Courier New', monospace" font-size="13" fill="#71717A">Speaker</text>
+
+  <!-- Tech stack row -->
+  <text x="90" y="476" font-family="'Courier New', monospace" font-size="14" fill="rgba(255,45,32,0.5)">
+    Laravel · PHP · Redis · Vue.js · Docker · AWS · MySQL · RabbitMQ
+  </text>
+
+  <!-- URL -->
+  <text x="90" y="570" font-family="'Courier New', monospace" font-size="16" fill="#3F3F46">nainesh.dev</text>
+
+  <!-- Decorative code lines right side -->
+  <text x="730" y="220" font-family="'Courier New', monospace" font-size="13" fill="rgba(255,45,32,0.18)">Route::get('/about', [MeController::class, 'show']);</text>
+  <text x="730" y="258" font-family="'Courier New', monospace" font-size="13" fill="rgba(255,45,32,0.12)">Cache::remember('skills', 3600, fn() => $this->skills);</text>
+  <text x="730" y="296" font-family="'Courier New', monospace" font-size="13" fill="rgba(255,45,32,0.09)">Queue::push(new BuildGreatProductsJob($team));</text>
+  <text x="730" y="334" font-family="'Courier New', monospace" font-size="13" fill="rgba(255,45,32,0.07)">return response()->json(['status' => 'thriving']);</text>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="624" width="1200" height="6" fill="url(#redgrad)"/>
+</svg>
