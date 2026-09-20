@@ -37,6 +37,10 @@ jobs:
       - name: Regenerate AI-readable files
         run: python3 tools/build_ai_files.py
         continue-on-error: true
+      # Stamp CSS/JS URLs with a content hash so a deploy can never pair new HTML with stale cached code.
+      - name: Cache-bust CSS and JS
+        run: python3 tools/stamp_assets.py
+        continue-on-error: true
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
