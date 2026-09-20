@@ -1869,7 +1869,8 @@ body.theme-transitioning *::after {
 /* ============================================
    INTERACTIVE TERMINAL (hero)
    ============================================ */
-.hero-terminal { margin-bottom: 1.75rem; max-width: 560px; }
+.hero-terminal { margin-bottom: 1.75rem; max-width: 720px; }  /* wide enough for the chip row on one line */
+.term-output { max-width: 560px; }
 
 .term-line { position: relative; cursor: text; max-width: 100%; }
 .term-line:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
