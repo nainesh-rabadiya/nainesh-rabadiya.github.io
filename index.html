@@ -6,18 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- SEO Meta Tags -->
-  <title>Nainesh Rabadiya - Technical Lead & Senior Laravel Developer</title>
+  <title>Nainesh Rabadiya — Technical Lead &amp; Laravel Developer, Ahmedabad</title>
   <meta name="description"
-    content="Technical Lead and Senior Laravel Developer specializing in high-traffic application optimization, enterprise architecture, and team leadership. 4× speaker at LaravelLive and Laravel Ahmedabad meetups.">
-  <meta name="keywords"
-    content="Laravel Developer, Technical Lead, PHP Developer, Software Architect, WebOccult Technologies, High-Traffic Optimization">
+    content="Technical Lead and senior Laravel developer in Ahmedabad, India. 13+ years scaling high-traffic applications. 4× speaker at LaravelLive and Laravel Ahmedabad.">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
   <meta name="author" content="Nainesh Rabadiya">
 
   <!-- Open Graph Meta Tags -->
-  <meta property="og:title" content="Nainesh Rabadiya - Technical Lead & Senior Laravel Developer">
+  <meta property="og:title" content="Nainesh Rabadiya — Technical Lead &amp; Senior Laravel Developer">
   <meta property="og:description"
-    content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
-  <meta property="og:type" content="website">
+    content="Technical Lead and senior Laravel developer in Ahmedabad, India. 13+ years scaling high-traffic applications; 4× Laravel meetup and conference speaker.">
+  <meta property="og:type" content="profile">
+  <meta property="profile:first_name" content="Nainesh">
+  <meta property="profile:last_name" content="Rabadiya">
+  <meta property="profile:username" content="nainesh-rabadiya">
+  <meta property="og:locale" content="en_IN">
   <meta property="og:url" content="https://nainesh.dev/">
   <meta property="og:image" content="https://nainesh.dev/og-image.png">
   <meta property="og:image:type" content="image/png">
@@ -28,18 +31,22 @@
 
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Nainesh Rabadiya - Technical Lead & Senior Laravel Developer">
+  <meta name="twitter:title" content="Nainesh Rabadiya — Technical Lead &amp; Senior Laravel Developer">
   <meta name="twitter:description"
-    content="Technical Lead specializing in high-traffic Laravel applications and enterprise architecture.">
+    content="Technical Lead and senior Laravel developer in Ahmedabad, India. 13+ years scaling high-traffic applications; 4× Laravel speaker.">
   <meta name="twitter:image" content="https://nainesh.dev/og-image.png">
   <meta name="twitter:creator" content="@nainesh_9x">
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://nainesh.dev/">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
+  <!-- Favicon — real files so Google can show it in search results -->
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#FAFAFA" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#09090B" media="(prefers-color-scheme: dark)">
 
   <!-- Performance: DNS prefetch + preconnect -->
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
@@ -69,21 +76,58 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="theme-toggle.css">
 
-  <!-- Schema.org Structured Data -->
+  <!-- Schema.org Structured Data: WebSite + ProfilePage + Person (every value is also visible on the page) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Nainesh Rabadiya",
-    "jobTitle": "Technical Lead & Senior Laravel Developer",
-    "url": "https://nainesh.dev/",
-    "email": "nkrabadiya@gmail.com",
-    "sameAs": [
-      "https://www.linkedin.com/in/naineshrabadiya/",
-      "https://github.com/nainesh-rabadiya",
-      "https://x.com/nainesh_9x"
-    ],
-    "knowsAbout": ["Laravel", "PHP", "Software Architecture", "Technical Leadership", "High-Traffic Applications"]
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://nainesh.dev/#website",
+        "url": "https://nainesh.dev/",
+        "name": "Nainesh Rabadiya",
+        "description": "Portfolio of Nainesh Rabadiya, Technical Lead and senior Laravel developer.",
+        "inLanguage": "en",
+        "publisher": { "@id": "https://nainesh.dev/#person" }
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": "https://nainesh.dev/#profilepage",
+        "url": "https://nainesh.dev/",
+        "name": "Nainesh Rabadiya — Technical Lead & Senior Laravel Developer",
+        "isPartOf": { "@id": "https://nainesh.dev/#website" },
+        "inLanguage": "en",
+        "dateModified": "2026-09-20",
+        "primaryImageOfPage": { "@type": "ImageObject", "url": "https://nainesh.dev/og-image.png", "width": 1200, "height": 630 },
+        "mainEntity": { "@id": "https://nainesh.dev/#person" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://nainesh.dev/#person",
+        "name": "Nainesh Rabadiya",
+        "givenName": "Nainesh",
+        "familyName": "Rabadiya",
+        "url": "https://nainesh.dev/",
+        "image": "https://nainesh.dev/profile.jpg",
+        "email": "mailto:nkrabadiya@gmail.com",
+        "jobTitle": "Technical Lead",
+        "description": "Technical Lead and senior Laravel developer with 13+ years of experience building and scaling high-traffic PHP applications. Speaker at LaravelLive Ahmedabad and Laravel Ahmedabad Meetup.",
+        "worksFor": { "@type": "Organization", "name": "WebOccult Technologies Pvt. Ltd." },
+        "alumniOf": { "@type": "CollegeOrUniversity", "name": "RK University" },
+        "address": { "@type": "PostalAddress", "addressLocality": "Ahmedabad", "addressRegion": "Gujarat", "addressCountry": "IN" },
+        "hasOccupation": {
+          "@type": "Occupation",
+          "name": "Technical Lead / Senior Laravel Developer",
+          "skills": "Laravel, PHP, MySQL, PostgreSQL, Redis, REST APIs, system design, performance optimization, technical leadership"
+        },
+        "knowsAbout": ["Laravel", "PHP", "Laravel Queues", "MySQL", "PostgreSQL", "Redis", "Software Architecture", "Performance Optimization", "High-Traffic Applications", "Technical Leadership"],
+        "sameAs": [
+          "https://www.linkedin.com/in/naineshrabadiya/",
+          "https://github.com/nainesh-rabadiya",
+          "https://x.com/nainesh_9x"
+        ]
+      }
+    ]
   }
   </script>
 
@@ -183,8 +227,8 @@
           <span class="name">Nainesh Rabadiya</span>
         </h1>
         <p class="hero-description">
-          I build high-performance Laravel applications that handle millions of users. Leading teams, optimizing
-          systems, and sharing knowledge with the developer community.
+          Technical Lead and senior Laravel developer in Ahmedabad, India. I build high-performance Laravel
+          applications that handle millions of users, lead engineering teams, and speak at Laravel meetups.
         </p>
         <p class="print-contact">nkrabadiya@gmail.com · linkedin.com/in/naineshrabadiya · github.com/nainesh-rabadiya ·
           x.com/nainesh_9x · nainesh.dev</p>
@@ -489,7 +533,7 @@
   <section class="section" id="projects">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Featured Projects</h2>
+        <h2 class="section-title">Featured Laravel Projects</h2>
       </div>
 
       <div class="projects-grid grid-2">
@@ -575,7 +619,7 @@
   <section class="section" id="speaking">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">Speaking</h2>
+        <h2 class="section-title">Laravel Talks &amp; Speaking</h2>
       </div>
 
       <div class="projects-grid grid-2">
@@ -765,7 +809,7 @@
         </p>
 
         <div class="contact-links">
-          <a href="https://www.linkedin.com/in/naineshrabadiya/" target="_blank" rel="noopener noreferrer"
+          <a href="https://www.linkedin.com/in/naineshrabadiya/" target="_blank" rel="me noopener noreferrer"
             class="contact-link" id="linkedin-link">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path
@@ -774,7 +818,7 @@
             <span class="link-text">LinkedIn</span>
           </a>
 
-          <a href="https://x.com/nainesh_9x" target="_blank" rel="noopener noreferrer" class="contact-link"
+          <a href="https://x.com/nainesh_9x" target="_blank" rel="me noopener noreferrer" class="contact-link"
             id="twitter-link">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path
@@ -791,7 +835,7 @@
             <span class="link-text">Email</span>
           </a>
 
-          <a href="https://github.com/nainesh-rabadiya" target="_blank" rel="noopener noreferrer" class="contact-link"
+          <a href="https://github.com/nainesh-rabadiya" target="_blank" rel="me noopener noreferrer" class="contact-link"
             id="github-link">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path
@@ -818,13 +862,13 @@
 
   <!-- Fixed Side Social Strip -->
   <div class="side-social" aria-label="Social links">
-    <a href="https://www.linkedin.com/in/naineshrabadiya/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+    <a href="https://www.linkedin.com/in/naineshrabadiya/" target="_blank" rel="me noopener noreferrer" aria-label="LinkedIn">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
     </a>
-    <a href="https://github.com/nainesh-rabadiya" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+    <a href="https://github.com/nainesh-rabadiya" target="_blank" rel="me noopener noreferrer" aria-label="GitHub">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
     </a>
-    <a href="https://x.com/nainesh_9x" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X">
+    <a href="https://x.com/nainesh_9x" target="_blank" rel="me noopener noreferrer" aria-label="Twitter / X">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
     </a>
     <a href="mailto:nkrabadiya@gmail.com" aria-label="Email">
