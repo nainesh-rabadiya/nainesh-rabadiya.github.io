@@ -31,6 +31,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # llms.txt / about.md / resume.json are generated from index.html so they never drift from the page.
+      # continue-on-error: a markup change that confuses the generator must not block a deploy —
+      # the committed copies are published instead.
+      - name: Regenerate AI-readable files
+        run: python3 tools/build_ai_files.py
+        continue-on-error: true
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

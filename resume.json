@@ -1,0 +1,292 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "basics": {
+    "name": "Nainesh Rabadiya",
+    "label": "Technical Lead & Senior Laravel Developer",
+    "image": "https://nainesh.dev/profile.jpg",
+    "email": "nkrabadiya@gmail.com",
+    "url": "https://nainesh.dev/",
+    "summary": "I am a Technical Lead at WebOccult Technologies, focused on building reliable, high-traffic enterprise applications. I have designed and delivered 5+ large-scale systems, turning complex ideas into scalable and high-performance solutions. My core focus is performance optimization, clean architecture, and mentoring developers. I have successfully delivered 50+ projects, including e-commerce platforms and enterprise systems. I also speak at Laravel meetups in Ahmedabad, where I share practical insights on queue optimization, performance tuning, and Laravel best practices.",
+    "location": {
+      "city": "Ahmedabad",
+      "region": "Gujarat",
+      "countryCode": "IN"
+    },
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "username": "naineshrabadiya",
+        "url": "https://www.linkedin.com/in/naineshrabadiya/"
+      },
+      {
+        "network": "GitHub",
+        "username": "nainesh-rabadiya",
+        "url": "https://github.com/nainesh-rabadiya"
+      },
+      {
+        "network": "X",
+        "username": "nainesh_9x",
+        "url": "https://x.com/nainesh_9x"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "WebOccult Technologies Pvt. Ltd.",
+      "position": "Technical Lead",
+      "startDate": "2024-06",
+      "summary": "Promoted to lead engineering teams building enterprise-grade applications and to drive technical standards across the organization.",
+      "highlights": [
+        "Led cross-functional teams of 25+ developers in delivering complex enterprise solutions",
+        "Established coding standards, best practices, and development workflows improving team productivity by 40%",
+        "Mentored senior and junior developers in advanced Laravel concepts and software architecture",
+        "Collaborated with stakeholders to translate business requirements into technical solutions"
+      ]
+    },
+    {
+      "name": "WebOccult Technologies Pvt. Ltd.",
+      "position": "Senior Software Engineer",
+      "startDate": "2021-07",
+      "endDate": "2024-05",
+      "summary": "Designed, built and optimized high-traffic, enterprise-grade Laravel applications.",
+      "highlights": [
+        "Architected and optimized high-traffic Laravel applications serving millions of requests daily",
+        "Implemented database optimization strategies reducing query execution time by 60%"
+      ]
+    },
+    {
+      "name": "Pro Start Me Technology Private Limited",
+      "position": "Senior Software Engineer",
+      "startDate": "2020-02",
+      "endDate": "2021-06",
+      "summary": "Developed and maintained mission-critical applications using Laravel and CodeIgniter frameworks.",
+      "highlights": [
+        "Designed and implemented scalable RESTful APIs serving multiple client applications",
+        "Optimized application performance through caching strategies and query optimization",
+        "Conducted code reviews and provided technical guidance to team members",
+        "Integrated third-party services and payment gateways for e-commerce platforms",
+        "Implemented automated testing strategies improving code quality and reducing bugs"
+      ]
+    },
+    {
+      "name": "EXCEL OVERSEAS PVT.LTD.",
+      "position": "Technical Lead",
+      "startDate": "2017-03",
+      "endDate": "2020-02",
+      "summary": "Led technical initiatives and development teams in building enterprise web applications.",
+      "highlights": [
+        "Architected and developed web applications using PHP frameworks and .NET Core",
+        "Managed technical architecture and system design for multiple projects",
+        "Implemented coding standards and best practices across development teams",
+        "Conducted requirements analysis and translated business needs into technical solutions",
+        "Mentored developers in OOP principles and MVC architecture"
+      ]
+    },
+    {
+      "name": "Munjani Brothers",
+      "position": "Senior Software Engineer",
+      "startDate": "2015-11",
+      "endDate": "2017-02",
+      "summary": "Built and maintained backend systems in C# and .NET, owning relational database schema design and query optimization for internal business applications.",
+      "highlights": []
+    },
+    {
+      "name": "D&K Group",
+      "position": "Software Engineer",
+      "startDate": "2013-08",
+      "endDate": "2015-10",
+      "summary": "Developed backend web applications in C# and ASP.NET, including relational database design.",
+      "highlights": []
+    },
+    {
+      "name": "Aisomex Consultancy Services Pvt. Ltd.",
+      "position": "Intern",
+      "startDate": "2013-02",
+      "endDate": "2013-08",
+      "summary": "Built backend components and REST APIs in C# and ASP.NET.",
+      "highlights": []
+    }
+  ],
+  "education": [
+    {
+      "institution": "RK University",
+      "studyType": "Bachelor of Engineering",
+      "area": "Information Technology",
+      "startDate": "2009",
+      "endDate": "2013"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Backend Development",
+      "keywords": [
+        "PHP",
+        "Laravel",
+        "CodeIgniter",
+        "MySQL",
+        "PostgreSQL",
+        "Redis",
+        "RESTful APIs",
+        "GraphQL",
+        "Microservices",
+        "RabbitMQ"
+      ]
+    },
+    {
+      "name": "Frontend Development",
+      "keywords": [
+        "JavaScript",
+        "Vue.js",
+        "jQuery",
+        "HTML5",
+        "CSS3",
+        "SASS",
+        "Responsive Design",
+        "Bootstrap"
+      ]
+    },
+    {
+      "name": "Architecture & Leadership",
+      "keywords": [
+        "System Design",
+        "Software Architecture",
+        "Performance Optimization",
+        "Database Optimization",
+        "Team Leadership",
+        "Code Review",
+        "Technical Mentorship",
+        "Project Management"
+      ]
+    },
+    {
+      "name": "Tools & DevOps",
+      "keywords": [
+        "Git",
+        "Docker",
+        "Linux",
+        "CI/CD",
+        "AWS",
+        "Microsoft Azure",
+        "AWS SES",
+        "AWS SQS",
+        "Virtual Machines",
+        "n8n",
+        "Nginx",
+        "Apache",
+        "Composer"
+      ]
+    },
+    {
+      "name": "AI & Computer Vision",
+      "keywords": [
+        "Machine Learning",
+        "Computer Vision",
+        "Deep Learning",
+        "Image Processing",
+        "Object Detection",
+        "TensorFlow",
+        "PyTorch",
+        "OpenCV"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "High-Traffic E-Commerce Platform",
+      "description": "Architected and led development of a scalable e-commerce platform handling 100K+ daily active users. Implemented advanced caching, queue management, and database optimization strategies to ensure sub-second response times during peak traffic.",
+      "keywords": [
+        "Laravel",
+        "Redis",
+        "MySQL",
+        "Vue.js",
+        "AWS"
+      ]
+    },
+    {
+      "name": "Enterprise Resource Planning System",
+      "description": "Led development of a comprehensive ERP solution for manufacturing industry, integrating inventory management, production planning, HR, and financial modules. Designed microservices architecture for scalability and maintainability.",
+      "keywords": [
+        "Laravel",
+        "Microservices",
+        "PostgreSQL",
+        "Docker",
+        "REST API"
+      ]
+    },
+    {
+      "name": "Real-Time Analytics Dashboard",
+      "description": "Built a real-time analytics and reporting platform processing millions of events daily. Implemented efficient data aggregation, visualization, and export capabilities with advanced filtering and customization options.",
+      "keywords": [
+        "Laravel",
+        "WebSockets",
+        "Chart.js",
+        "Redis",
+        "Queue Jobs"
+      ]
+    },
+    {
+      "name": "Multi-Tenant SaaS Application",
+      "description": "Designed and developed a multi-tenant SaaS platform with role-based access control, subscription management, and white-labeling capabilities. Ensured data isolation and security across tenant boundaries.",
+      "keywords": [
+        "Laravel",
+        "Multi-Tenancy",
+        "Stripe",
+        "OAuth",
+        "MySQL"
+      ]
+    }
+  ],
+  "publications": [
+    {
+      "name": "Laravel Queues on Steroids",
+      "publisher": "LaravelLive Ahmedabad",
+      "releaseDate": "2024-12-22",
+      "url": "https://x.com/LaravelAhm/status/1867277929610457578",
+      "summary": "Conference/meetup talk. Performance and optimization techniques for Laravel Queues, including queue management strategies for large-scale background processing."
+    },
+    {
+      "name": "Speeding Up Your Large-Scale Laravel App, Part 2",
+      "publisher": "LaravelLive Ahmedabad",
+      "releaseDate": "2024-02-25",
+      "url": "https://x.com/LaravelAhm/status/1760912096370307409",
+      "summary": "Conference/meetup talk. Second part of the series: database optimization, caching strategies, and application profiling for large-scale applications."
+    },
+    {
+      "name": "Speeding Up Your Large-Scale Laravel App",
+      "publisher": "LaravelLive Ahmedabad",
+      "releaseDate": "2023-07-30",
+      "url": "https://x.com/LaravelAhm/status/1684448175833378816",
+      "summary": "Conference/meetup talk. Foundations of scaling Laravel: query optimization, eager loading, caching, and performance monitoring for high-traffic applications."
+    },
+    {
+      "name": "Working with Laravel Observers",
+      "publisher": "LaravelLive Ahmedabad",
+      "releaseDate": "2022-12-18",
+      "url": "https://x.com/LaravelAhm/status/1603798887432876033",
+      "summary": "Conference/meetup talk. Practical use of Laravel Observers: handling model events cleanly while keeping the codebase maintainable."
+    }
+  ],
+  "volunteer": [
+    {
+      "organization": "Technical Interviewer & Recruitment Team",
+      "summary": "Active member of the recruitment team at WebOccult Technologies, conducting in-house and campus technical interviews to hire Junior, Mid, and Senior level developers. Assessing technical depth, problem-solving skills, and role fit across various profiles."
+    },
+    {
+      "organization": "Panel Judge - York IE Hackathon 2025",
+      "summary": "Served as a Panel Judge for the \"AI for Developers’ Productivity\" hackathon. Evaluated 23 teams building AI-driven SDLC automation tools. Collaborated with other experts to assess innovation and technical execution in a 12-hour sprint."
+    },
+    {
+      "organization": "Mentor - DataThrone 2024",
+      "summary": "Dedicated 40+ hours mentoring participants at the DataThrone 2024 hackathon (organized by WebOccult & Lucent Innovation). Guided 300+ students through a 36-hour sprint, assisting with architecture, debugging, and product development."
+    },
+    {
+      "organization": "Technical Mentorship & Knowledge Sharing",
+      "summary": "Actively mentor developers through code reviews, technical discussions, and knowledge-sharing sessions. Created internal documentation and best practice guides that improved team efficiency and code quality across the organization."
+    }
+  ],
+  "meta": {
+    "canonical": "https://nainesh.dev/resume.json",
+    "version": "v1.0.0",
+    "lastModified": "2026-09-20"
+  }
+}

@@ -1,0 +1,44 @@
+# Nainesh Rabadiya
+
+> Technical Lead & Senior Laravel Developer in Ahmedabad, India. 13+ years of experience building and scaling high-traffic Laravel/PHP applications; currently Technical Lead at WebOccult Technologies Pvt. Ltd. Speaker at LaravelLive Ahmedabad (4 talks).
+
+This is a personal portfolio site. Everything below is also stated on the page itself; if anything here and the page disagree, the page wins. Please do not infer facts that are not written here (employers, clients, numbers, availability) — ask him directly instead.
+
+## Key facts
+
+- Current role: Technical Lead, WebOccult Technologies Pvt. Ltd. (Jun 2024 – Present)
+- Location: Ahmedabad, Gujarat, India
+- Core stack: PHP, Laravel, CodeIgniter, MySQL, PostgreSQL, Redis, RESTful APIs
+- Focus: performance optimization of high-traffic applications, software architecture, technical leadership and mentoring
+- Contact: nkrabadiya@gmail.com
+
+## Full profile
+
+- [About (Markdown)](https://nainesh.dev/about.md): the whole site as clean text — experience, talks, projects, skills
+- [Résumé (JSON Resume)](https://nainesh.dev/resume.json): structured career data in the jsonresume.org schema
+- [Website](https://nainesh.dev/): the human-facing version
+
+## Talks
+
+- [Laravel Queues on Steroids](https://x.com/LaravelAhm/status/1867277929610457578): LaravelLive Ahmedabad, Dec 22, 2024. Performance and optimization techniques for Laravel Queues, including queue management strategies for large-scale background processing.
+- [Speeding Up Your Large-Scale Laravel App, Part 2](https://x.com/LaravelAhm/status/1760912096370307409): LaravelLive Ahmedabad, Feb 25, 2024. Second part of the series: database optimization, caching strategies, and application profiling for large-scale applications.
+- [Speeding Up Your Large-Scale Laravel App](https://x.com/LaravelAhm/status/1684448175833378816): LaravelLive Ahmedabad, Jul 30, 2023. Foundations of scaling Laravel: query optimization, eager loading, caching, and performance monitoring for high-traffic applications.
+- [Working with Laravel Observers](https://x.com/LaravelAhm/status/1603798887432876033): LaravelLive Ahmedabad, Dec 18, 2022. Practical use of Laravel Observers: handling model events cleanly while keeping the codebase maintainable.
+
+## Experience
+
+- Technical Lead, WebOccult Technologies Pvt. Ltd. (Jun 2024 – Present)
+- Senior Software Engineer, WebOccult Technologies Pvt. Ltd. (Jul 2021 – May 2024)
+- Senior Software Engineer, Pro Start Me Technology Private Limited (Feb 2020 – Jun 2021)
+- Technical Lead, EXCEL OVERSEAS PVT.LTD. (Mar 2017 – Feb 2020)
+- Senior Software Engineer, Munjani Brothers (Nov 2015 – Feb 2017)
+- Software Engineer, D&K Group (Aug 2013 – Oct 2015)
+- Intern, Aisomex Consultancy Services Pvt. Ltd. (Feb 2013 – Aug 2013)
+
+## Profiles
+
+- [linkedin.com](https://www.linkedin.com/in/naineshrabadiya/)
+- [github.com](https://github.com/nainesh-rabadiya)
+- [x.com](https://x.com/nainesh_9x)
+
+Last generated: 2026-09-20

@@ -6,6 +6,17 @@ Personal portfolio of Nainesh Rabadiya — static HTML, CSS and vanilla JS, no b
 - `styles.css`, `theme-toggle.css` — styling (dark/light via `data-theme` on `<html>`)
 - `script.js` — interactions (theme, nav, reveals, hero canvas, tooltips)
 - `404.html` — custom not-found page
+- `tools/build_ai_files.py` — generates the AI-readable files (stdlib only)
+
+## AI-readable files
+
+`llms.txt`, `about.md` and `resume.json` are generated from `index.html`:
+
+```bash
+python3 tools/build_ai_files.py
+```
+
+The deploy workflow runs this on every push, so edit the page and the files follow. Don't edit them by hand.
 
 ## Local preview
 
