@@ -1144,7 +1144,16 @@ window.addEventListener('load', () => setTimeout(() => {
     // needle: 0s = far left (green), 3s+ = far right (red); it sweeps when the footer scrolls into view
     const seconds = nav.loadEventEnd / 1000;
     badge.style.setProperty('--needle', (-84 + Math.min(1, seconds / 3) * 168).toFixed(1) + 'deg');
-    new IntersectionObserver(([entry], io) => { if (entry.isIntersecting) { badge.classList.add('measured'); io.disconnect(); } }, { threshold: 0.6 }).observe(badge);
+    let sweep;
+    new IntersectionObserver(([entry]) => {
+        clearInterval(sweep);
+        badge.classList.toggle('measured', entry.isIntersecting);
+        if (!entry.isIntersecting || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        sweep = setInterval(() => {              // drop back to zero, then measure again
+            badge.classList.remove('measured');
+            setTimeout(() => badge.classList.add('measured'), 1500);
+        }, 7000);
+    }, { threshold: 0.6 }).observe(badge);
 }, 0));
 
 // ============================================
@@ -1210,7 +1219,8 @@ document.querySelectorAll('.projects-grid').forEach(grid => {
     const before = code.innerHTML;
     for (let i = 0; i < DOTS; i++) { const d = document.createElement('span'); if (i < 2) d.className = 'keep'; dotsEl.appendChild(d); }
     const dots = [...dotsEl.children];
-    let timers = [];
+    let timers = [], visible = false;
+    const stop = () => { timers.forEach(clearTimeout); timers = []; };
 
     const showFixed = () => {
         panel.classList.add('fixed');
@@ -1218,20 +1228,29 @@ document.querySelectorAll('.projects-grid').forEach(grid => {
         code.textContent = "$posts = Post::with('author')->get();";
         count.textContent = '2 queries';
     };
+    // One pass: queries pile up slowly (~3s), the problem sits there for a beat, the fix lands and is
+    // held long enough to read — then it starts again, for as long as the panel is on screen.
     function play() {
-        timers.forEach(clearTimeout); timers = [];
+        stop();
         panel.classList.remove('fixed');
         dots.forEach(d => d.classList.remove('on'));
         code.innerHTML = before;
         count.textContent = '0 queries';
         if (!motionOK()) { showFixed(); return; }
+        const STEP = 70, START = 600;
         dots.forEach((d, i) => timers.push(setTimeout(() => {
             d.classList.add('on');
             count.textContent = Math.round((i + 1) / DOTS * QUERIES) + ' queries';
-        }, 250 + i * 36)));
-        timers.push(setTimeout(showFixed, 250 + DOTS * 36 + 650));
+        }, START + i * STEP)));
+        const fixAt = START + DOTS * STEP + 1500;
+        timers.push(setTimeout(showFixed, fixAt));
+        timers.push(setTimeout(() => { if (visible) play(); }, fixAt + 4500));
     }
-    new IntersectionObserver(([entry], io) => { if (entry.isIntersecting) { play(); io.disconnect(); } }, { threshold: 0.6 }).observe(panel);
+    new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) play();
+        else { stop(); showFixed(); }          // off screen: no timers running, resting on the answer
+    }, { threshold: 0.5 }).observe(panel);
     document.getElementById('np-replay').addEventListener('click', play);
 })();
 
@@ -1252,14 +1271,26 @@ document.querySelectorAll('.projects-grid').forEach(grid => {
     const total = document.querySelectorAll('.skill-tag').length;
     rows.push(row(`<span class="ml-pre">Migrated:</span><span class="ml-name">${cards.length} tables, ${total} skills</span>`));
 
-    new IntersectionObserver(([entry], io) => {
-        if (!entry.isIntersecting) return;
-        io.disconnect();
-        const gap = motionOK() ? 240 : 0;
-        rows.forEach((r, i) => setTimeout(() => {
+    let timers = [], visible = false, revealed = false;
+    const stop = () => { timers.forEach(clearTimeout); timers = []; };
+    const finish = () => { rows.forEach(r => r.classList.add('in')); cards.forEach(c => c.classList.add('revealed')); revealed = true; };
+
+    function run() {
+        stop();
+        if (!motionOK()) { finish(); return; }
+        const GAP = 480;
+        rows.forEach(r => r.classList.remove('in'));
+        rows.forEach((r, i) => timers.push(setTimeout(() => {
             r.classList.add('in');
-            if (i >= 1 && i <= cards.length) cards[i - 1].classList.add('revealed');
-        }, i * gap));
+            if (!revealed && i >= 1 && i <= cards.length) cards[i - 1].classList.add('revealed');
+            if (i === rows.length - 1) revealed = true;
+        }, 500 + i * GAP)));
+        timers.push(setTimeout(() => { if (visible) run(); }, 500 + rows.length * GAP + 4500));   // hold, then migrate again
+    }
+    new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) run();
+        else { stop(); finish(); }
     }, { threshold: 0.4 }).observe(log);
 })();
 
