@@ -85,13 +85,62 @@ if (window.matchMedia('(hover: hover)').matches) {
 // ============================================
 const progressBar = document.getElementById('scroll-progress');
 
+// The elePHPant (PHP's mascot) walks the progress line: right as you scroll down, back as you scroll up.
+const elephpant = document.getElementById('elephpant');
+let lastProgressY = window.scrollY, walkTimer;
+
 function updateProgress() {
     const scrolled  = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = docHeight > 0 ? (scrolled / docHeight) * 100 : 0;
-    progressBar.style.width = pct + '%';
+    const p = docHeight > 0 ? Math.min(1, scrolled / docHeight) : 0;
+    if (!elephpant) { progressBar.style.width = (p * 100) + '%'; return; }
+
+    const x = p * (window.innerWidth - elephpant.offsetWidth);
+    elephpant.style.setProperty('--x', x.toFixed(1) + 'px');
+    const visible = scrolled > 40;                                        // nothing at the very top of the page
+    progressBar.style.width = visible ? (x + elephpant.offsetWidth * 0.3) + 'px' : '0px';   // the line ends under its back legs
+    elephpant.classList.toggle('show', visible);
+
+    if (scrolled !== lastProgressY) {
+        elephpant.classList.toggle('left', scrolled < lastProgressY);
+        lastProgressY = scrolled;
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            elephpant.classList.add('walking');
+            clearTimeout(walkTimer);
+            walkTimer = setTimeout(() => elephpant.classList.remove('walking'), 170);   // stands still when you stop
+        }
+    }
 }
 window.addEventListener('scroll', updateProgress, { passive: true });
+window.addEventListener('resize', updateProgress, { passive: true });
+updateProgress();   // a reload can restore a scroll position
+
+// Click it (or run `php -v` in the terminal) and it rears up and trumpets a little PHP
+function elephpantTrumpet() {
+    if (!elephpant || elephpant.classList.contains('trumpet')) return;
+    elephpant.classList.add('show', 'trumpet');
+    setTimeout(() => elephpant.classList.remove('trumpet'), 650);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !elephpant.animate) return;
+
+    const r = elephpant.getBoundingClientRect();
+    const dir = elephpant.classList.contains('left') ? -1 : 1;
+    const tipX = dir === 1 ? r.right - 2 : r.left + 2, tipY = r.top + 2;
+    ['<?php', '->', '::', '$this', '=>'].forEach((glyph, i) => {
+        const s = document.createElement('span');
+        s.className = 'ele-spray';
+        s.textContent = glyph;
+        s.style.left = tipX + 'px';
+        s.style.top  = tipY + 'px';
+        document.body.appendChild(s);
+        const dx = dir * (26 + i * 17 + Math.random() * 14), up = 16 + Math.random() * 22;
+        s.animate([
+            { transform: 'translate(-50%, -50%) scale(0.4)', opacity: 0 },
+            { transform: `translate(calc(-50% + ${dx * 0.5}px), calc(-50% - ${up}px)) scale(1)`, opacity: 1, offset: 0.35 },
+            { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${34 + i * 5}px)) scale(0.9)`, opacity: 0 },
+        ], { duration: 950, delay: 140 + i * 55, easing: 'cubic-bezier(0.3, 0.6, 0.4, 1)', fill: 'backwards' }).onfinish = () => s.remove();
+    });
+}
+if (elephpant) elephpant.addEventListener('click', elephpantTrumpet);
 
 // ============================================
 // NAVIGATION
@@ -859,7 +908,7 @@ function initSectionUnderlines() {
             kv('contact', 'how to reach me'),
             kv('theme', 'toggle dark / light'),
             kv('clear', 'clear the terminal'),
-            line(el('span', 't-dim', 'also: deploy · php artisan inspire · php artisan down')),
+            line(el('span', 't-dim', 'also: deploy · php -v · php artisan inspire · php artisan down')),
         ],
         whoami: () => [
             line(el('span', 't-cmd-name', 'Nainesh Rabadiya')),
@@ -903,6 +952,10 @@ function initSectionUnderlines() {
             }
             return [line(el('span', 't-dim', 'Building… running tests… ')), line(el('span', 't-key', '✓ '), 'Deployed to production. 0 downtime.')];
         },
+        elephant: () => {
+            elephpantTrumpet();
+            return [line('elePHPant 13.0 (cli) — 13+ years of uptime'), line(el('span', 't-dim', 'The mascot walks the red line under the nav as you scroll. Click it.'))];
+        },
         inspire: () => {
             const quotes = [
                 ['Simplicity is the ultimate sophistication.', 'Leonardo da Vinci'],
@@ -937,6 +990,7 @@ function initSectionUnderlines() {
         const artisan = text.match(/^(?:php )?artisan (inspire|down)$/i);
         if (artisan) { name = artisan[1]; arg = ''; }
         if (/^git push( .*)?$/i.test(text)) { name = 'deploy'; arg = ''; }
+        if (/^php (-v|--version)$/i.test(text) || /^elephpant$/i.test(text)) { name = 'elephant'; arg = ''; }
         name = name.toLowerCase();
 
         const block = el('div', 't-block');

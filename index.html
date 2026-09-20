@@ -160,6 +160,27 @@
   <!-- Scroll Progress -->
   <div class="scroll-progress-bar" id="scroll-progress"></div>
 
+  <!-- elePHPant (PHP's mascot) walks the progress line as you scroll; click it and it trumpets -->
+  <button type="button" class="elephpant" id="elephpant" tabindex="-1" aria-hidden="true">
+    <svg viewBox="0 0 64 44" xmlns="http://www.w3.org/2000/svg">
+      <g class="ele-bob">
+        <path class="ele-dark" d="M9 16c-4 1-6 5-5 10" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+        <rect class="ele-dark ele-leg leg-b" x="12" y="28" width="7" height="14" rx="3"/>
+        <rect class="ele-dark ele-leg leg-a" x="37" y="28" width="7" height="14" rx="3"/>
+        <rect class="ele-body" x="8" y="8" width="40" height="25" rx="12"/>
+        <rect class="ele-body ele-leg leg-a" x="19" y="28" width="7" height="14" rx="3"/>
+        <rect class="ele-body ele-leg leg-b" x="43" y="28" width="7" height="14" rx="3"/>
+        <circle class="ele-body" cx="49" cy="17" r="11.5"/>
+        <g class="ele-trunk">
+          <path class="ele-body-stroke" d="M57 20c4 5 4 11 1 16-1 2 1 4 3 3" fill="none" stroke-width="5.5" stroke-linecap="round"/>
+        </g>
+        <ellipse class="ele-dark" cx="43" cy="17" rx="6" ry="8.5"/>
+        <circle cx="53" cy="14" r="1.6" fill="#fff"/>
+        <text x="15" y="25" font-family="Arial, Helvetica, sans-serif" font-size="9.5" font-weight="700" font-style="italic" fill="#fff">PHP</text>
+      </g>
+    </svg>
+  </button>
+
   <!-- Custom Cursor -->
   <div id="cursor-glow" aria-hidden="true"></div>
   <div id="cursor-dot"  aria-hidden="true"></div>

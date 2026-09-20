@@ -114,7 +114,7 @@ button { cursor: pointer; font: inherit; border: none; background: none; }
    ============================================ */
 .scroll-progress-bar {
   position: fixed;
-  top: 0; left: 0;
+  top: calc(var(--nav-h) - 2px); left: 0;   /* the nav's bottom edge: the ground the elePHPant walks on */
   width: 0%;
   height: 2px;
   background: var(--accent);
@@ -2226,6 +2226,59 @@ body.theme-transitioning *::after {
 .is-tracking .timeline-item.reached > .timeline-content > .commit-meta .commit-hash { color: var(--text-2); }
 
 /* ============================================
+   ELEPHPANT — PHP's mascot is the scroll-progress indicator
+   ============================================ */
+.elephpant {
+  position: fixed;
+  left: 0;
+  top: calc(var(--nav-h) - 25px);      /* feet on the progress line, clear of the nav link text */
+  z-index: 9999;
+  width: 36px;
+  height: 25px;
+  padding: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(var(--x, 0px));
+  transition: transform 80ms linear, opacity 0.3s var(--ease);   /* same 80ms as the line it pulls */
+  display: none;
+}
+.js .elephpant { display: block; }
+.elephpant.show { opacity: 1; }
+.elephpant svg { display: block; width: 100%; height: 100%; overflow: visible; transition: transform 0.2s var(--ease); }
+.elephpant.left svg { transform: scaleX(-1); }      /* turns round when you scroll back up */
+.ele-body { fill: #8892BF; }                         /* PHP's own blue-violet, so it reads as the mascot */
+.ele-body-stroke { stroke: #8892BF; }
+.ele-dark { fill: #4F5B93; stroke: #4F5B93; }
+path.ele-dark { fill: none; }
+
+.ele-leg { transform-box: fill-box; transform-origin: 50% 8%; }
+.elephpant.walking .leg-a { animation: ele-step 0.36s ease-in-out infinite alternate; }
+.elephpant.walking .leg-b { animation: ele-step 0.36s ease-in-out infinite alternate-reverse; }
+.elephpant.walking .ele-bob { animation: ele-bob 0.36s ease-in-out infinite alternate; }
+@keyframes ele-step { from { transform: rotate(-20deg); } to { transform: rotate(20deg); } }
+@keyframes ele-bob  { from { transform: translateY(0); } to { transform: translateY(-1.2px); } }
+
+.ele-trunk { transform-box: fill-box; transform-origin: 10% 5%; transition: transform 0.22s var(--spring); }
+.elephpant.trumpet .ele-trunk { transform: rotate(-72deg); }
+.elephpant.trumpet .ele-bob { animation: ele-rear 0.6s var(--ease); transform-box: fill-box; transform-origin: 20% 100%; }
+@keyframes ele-rear { 30%, 70% { transform: rotate(-9deg); } }
+
+.ele-spray {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #8892BF;
+  white-space: nowrap;
+}
+
+@media (hover: hover) { .elephpant.show { pointer-events: auto; cursor: pointer; } }
+@media (max-width: 768px) { .elephpant { width: 27px; height: 19px; top: calc(var(--nav-h) - 19px); } }
+@media (prefers-reduced-motion: reduce) { .elephpant { transition: opacity 0.01s; } }
+
+/* ============================================
    PRINT — the page doubles as a résumé (Ctrl+P / "Save as PDF")
    ============================================ */
 @media print {
@@ -2243,7 +2296,7 @@ body.theme-transitioning *::after {
   .navbar, .page-loader, .scroll-progress-bar, #cursor-glow, #cursor-dot, #cursor-ring,
   #hero-canvas, .hero-spotlight, .hero-scroll, .hero-cta, .term-chips, .term-output, .term-input,
   .skills-tabs, .side-social, .back-to-top, .footer-brand, .perf-badge, .print-cv, .toast,
-  .carousel-dots, .git-cmd, .commit-meta, .skill-code-tip, .about-image-wrap, .paper-plane, .print-sheet, .maintenance-mode,
+  .carousel-dots, .git-cmd, .commit-meta, .skill-code-tip, .about-image-wrap, .paper-plane, .elephpant, .ele-spray, .print-sheet, .maintenance-mode,
   .hero::before, .hero::after { display: none !important; }
 
   .js .hero-terminal, .js .hero-title .greeting, .js .hero-title .name,
