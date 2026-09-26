@@ -104,13 +104,13 @@ const heroLamp = (function initHeroLamp() {
         sync();
         if (isOn() === wasOn) return;
         const now = performance.now();
-        while (flips.length && now - flips[0].t > 4000) flips.shift();
+        while (flips.length && now - flips[0].t > 6000) flips.shift();
         flips.push({ t: now, w: isOn() ? 1 : 0.4 });
         if (!played && !broken) offerPlay();                             // "you can play with this" — until they have
         if (broken || !isOn()) return;
         flicker();
         const heat = flips.reduce((h, f) => h + f.w, 0);
-        if (heat >= 3.4) { arm.classList.add('overheat'); setTimeout(pop, 300); }   // on-off-on-off-on within four seconds
+        if (heat >= 3.4) { arm.classList.add('overheat'); setTimeout(pop, 300); }   // on-off-on-off-on within six seconds
     }).observe(htmlElement, { attributes: true, attributeFilter: ['data-theme'] });
 
     function offerPlay() {
@@ -243,6 +243,7 @@ const heroLamp = (function initHeroLamp() {
         else { wake(); fxWake(); }
     });
     window.addEventListener('resize', measure, { passive: true });
+    if (window.ResizeObserver) { let queued = 0; new ResizeObserver(() => { if (!queued) queued = requestAnimationFrame(() => { queued = 0; measure(); }); }).observe(hero); }
 
     // --- the bulb blows ---
     function pop(vx = 0, vy = 0) {
@@ -287,7 +288,8 @@ const heroLamp = (function initHeroLamp() {
     let FW = 0, FH = 0, DPR = 1, flash = 0;
     let shards = [], sparks = [], pebbles = [];
     const sling = { x: 0, y: 0, u: null, s: 1, rest: { x: 0, y: 0 }, pouch: { x: 0, y: 0 }, vel: { x: 0, y: 0 }, loaded: true, reloadT: 0 };
-    let aim = null, aimPt = { x: 0, y: 0 }, fxRaf = 0, fxLast = 0, fxAcc = 0, switchBox = null, stageUntil = 0;
+    let aim = null, aimPt = { x: 0, y: 0 }, aimAt = 0, fxRaf = 0, fxLast = 0, fxAcc = 0, switchBox = null, stageUntil = 0;
+    let floor = 0;                                     // the playing field's floor: the bottom of the hero, or of the screen if that comes first
     const PEBBLE_R = 6, PG = 1500, LAUNCH = 16, MAX_PULL = 140, SG = 2600;   // a modest pull straight down reaches the bulb, even on a phone
 
     function fxResize() {
@@ -295,21 +297,32 @@ const heroLamp = (function initHeroLamp() {
         FW = hero.clientWidth; FH = hero.clientHeight;
         fx.width = Math.round(FW * DPR); fx.height = Math.round(FH * DPR);
         sling.s = FW <= 768 ? 0.7 : 1;                                    // smaller on phones
+        updateFloor();
         placeSling();
         if (fxBusy()) fxRender();
     }
+    // the hero can be taller than the screen (short phones, a tablet with the terminal open): the slingshot then
+    // stands on the visible bottom, never below the fold
+    function updateFloor() {
+        const top = hero.getBoundingClientRect().top;
+        const f = clampN(Math.round(window.innerHeight - top), 240, FH);
+        if (f === floor) return false;
+        floor = f;
+        return true;
+    }
     // the slingshot stands on the hero's floor: first right under the lamp (a straight pull down hits the bulb),
     // then somewhere new after every shot — that is the game
+    const slingX = u => { const min = FW > 768 ? 90 : 60; return min + u * (FW - min - 60); };   // clear of the side icons
     function placeSling(u = sling.u) {
         sling.u = u;
-        sling.x = u === null ? clampN(geo.px, 50, FW - 50) : 60 + u * (FW - 120);
-        sling.y = FH;
-        sling.rest = { x: sling.x, y: FH - 118 * sling.s };
+        sling.x = u === null ? clampN(geo.px, 50, FW - 50) : slingX(u);
+        sling.y = floor;
+        sling.rest = { x: sling.x, y: floor - 118 * sling.s };
         if (aim === null) { sling.pouch = { ...sling.rest }; sling.vel = { x: 0, y: 0 }; }
     }
     function moveSling() {
         let u = Math.random();
-        for (let i = 0; i < 20 && Math.abs(60 + u * (FW - 120) - sling.x) < FW * 0.25; i++) u = Math.random();   // well away from here
+        for (let i = 0; i < 20 && Math.abs(slingX(u) - sling.x) < FW * 0.25; i++) u = Math.random();   // well away from here
         placeSling(u);
     }
     const heroXY = e => { const r = hero.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
@@ -317,17 +330,22 @@ const heroLamp = (function initHeroLamp() {
     hero.addEventListener('pointerdown', e => {
         if (!shoot || !sling.loaded || aim !== null) return;
         const p = heroXY(e);
-        if (Math.hypot(p.x - sling.pouch.x, p.y - sling.pouch.y) > 30) return;
+        if (Math.hypot(p.x - sling.pouch.x, p.y - sling.pouch.y) > (e.pointerType === 'mouse' ? 30 : 44)) return;
         e.preventDefault(); e.stopPropagation();
-        aim = e.pointerId; aimPt = p;
-        hero.setPointerCapture(e.pointerId);
+        aim = e.pointerId; aimPt = p; aimAt = performance.now();
+        try { hero.setPointerCapture(e.pointerId); } catch (err) { /* the pointer is gone already; the release below still runs */ }
         hero.classList.add('is-aiming');                                     // the copy steps aside: it is a game now
         fxWake();
     }, true);
-    hero.addEventListener('pointermove', e => { if (aim === e.pointerId) aimPt = heroXY(e); });
-    const loose = e => { if (aim !== e.pointerId) return; aim = null; shootPebble(); };
+    hero.addEventListener('pointermove', e => { if (aim === e.pointerId) { aimPt = heroXY(e); aimAt = performance.now(); } });
+    // release: wherever the pointer ends up, the shot goes — a held pebble must never get stuck
+    const loose = e => { if (aim === null || aim !== e.pointerId) return; aim = null; shootPebble(); };
     hero.addEventListener('pointerup', loose);
     hero.addEventListener('pointercancel', loose);
+    hero.addEventListener('lostpointercapture', loose);
+    document.addEventListener('pointerup', loose, true);
+    document.addEventListener('pointercancel', loose, true);
+    window.addEventListener('blur', () => { if (aim !== null) { aim = null; sling.pouch = { ...sling.rest }; } });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && shoot) setShoot(false); });
 
     function shootPebble() {
@@ -335,7 +353,7 @@ const heroLamp = (function initHeroLamp() {
         const vx = (sling.rest.x - sling.pouch.x) * launch, vy = (sling.rest.y - sling.pouch.y) * launch;
         if (Math.hypot(vx, vy) / launch < 18) return;
         pebbles.push({ x: sling.pouch.x, y: sling.pouch.y, vx, vy, a: 0, hitT: 0, rest: 0, life: 1 });
-        sling.loaded = false; sling.reloadT = 0.45;
+        sling.loaded = false; sling.reloadT = 0.35;
         sling.vel = { x: vx * 0.4, y: vy * 0.4 };
         stats.shots++;
         stageUntil = performance.now() + 3000;                              // the copy stays back until the pebble lands
@@ -383,7 +401,7 @@ const heroLamp = (function initHeroLamp() {
     }
     function fxStep(dt) {
         if (aim !== null) {                                                  // pouch follows the pointer while held
-            let dx = aimPt.x - sling.rest.x, dy = Math.min(aimPt.y, FH - 12) - sling.rest.y;   // never below the floor
+            let dx = aimPt.x - sling.rest.x, dy = Math.min(aimPt.y, floor - 12) - sling.rest.y;   // never below the floor
             const d = Math.hypot(dx, dy);
             if (d > MAX_PULL) { dx *= MAX_PULL / d; dy *= MAX_PULL / d; }
             sling.pouch = { x: sling.rest.x + dx, y: sling.rest.y + dy };
@@ -398,15 +416,15 @@ const heroLamp = (function initHeroLamp() {
             if (p.rest > 0) continue;
             p.vy += PG * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.a += p.vx * dt * 0.05;
             collide(p);
-            if (p.y > FH - PEBBLE_R) {
-                p.y = FH - PEBBLE_R; p.vy *= -0.35; p.vx *= 0.75;
+            if (p.y > floor - PEBBLE_R) {
+                p.y = floor - PEBBLE_R; p.vy *= -0.35; p.vx *= 0.75;
                 if (Math.abs(p.vy) < 40 && Math.abs(p.vx) < 20) p.rest = 0.001;
             }
             if (p.x < PEBBLE_R || p.x > FW - PEBBLE_R) { p.x = clampN(p.x, PEBBLE_R, FW - PEBBLE_R); p.vx *= -0.5; }
         }
         for (const s of shards) {
             s.vy += SG * 0.75 * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.a += s.va * dt;
-            if (s.y > FH - 3) { s.y = FH - 3; s.vy *= -0.28; s.vx *= 0.6; s.va *= 0.5; if (Math.abs(s.vy) < 30) s.vy = 0; }
+            if (s.y > floor - 3) { s.y = floor - 3; s.vy *= -0.28; s.vx *= 0.6; s.va *= 0.5; if (Math.abs(s.vy) < 30) s.vy = 0; }
             if (s.x < 0 || s.x > FW) { s.vx *= -0.5; s.x = clampN(s.x, 0, FW); }
         }
         for (const k of sparks) { k.vy += SG * 0.4 * dt; k.vx *= 0.985; k.x += k.vx * dt; k.y += k.vy * dt; }
@@ -421,6 +439,7 @@ const heroLamp = (function initHeroLamp() {
         sparks = sparks.filter(k => k.life > 0);
         flash = Math.max(0, flash - dt * 3.5);
         const inFlight = pebbles.some(p => p.rest === 0);
+        if (aim !== null && performance.now() - aimAt > 12000) { aim = null; sling.pouch = { ...sling.rest }; }   // a pointer we never heard from again
         if (aim === null && (!inFlight || performance.now() > stageUntil)) hero.classList.remove('is-aiming');
     }
 
@@ -508,6 +527,7 @@ const heroLamp = (function initHeroLamp() {
     function fxFrame(now) {
         const dt = Math.min(0.05, (now - fxLast) / 1000);
         fxLast = now; fxAcc += dt;
+        if (shoot && updateFloor() && aim === null) placeSling();          // scrolled: the slingshot keeps to the visible floor
         if (shoot && pebbles.length) {
             const h = hero.getBoundingClientRect(), t = themeToggle.getBoundingClientRect();
             switchBox = { l: t.left - h.left, r: t.right - h.left, t: t.top - h.top, b: t.bottom - h.top };
@@ -524,6 +544,7 @@ const heroLamp = (function initHeroLamp() {
         fxRaf = requestAnimationFrame(fxFrame);
     }
     function setShoot(on) {
+        if (on && !root.offsetParent) return false;                        // no lamp on this screen (very short viewports)
         shoot = !!on;
         if (shoot) { played = true; if (pill === 'play') hidePill(); }
         hero.classList.toggle('is-shooting', shoot);
@@ -553,7 +574,7 @@ const heroLamp = (function initHeroLamp() {
         replace,
         shoot: setShoot,
         setOn(on) { if (broken || isOn() === !!on) return; setTheme(on ? 'dark' : 'light', centerOf(bulb)); if (!reduced.matches) nudge(0.45); },
-        status: () => ({ on: isOn(), broken, shots: stats.shots, bulbs: stats.bulbs, shoot, slingX: sling.x }),
+        status: () => ({ on: isOn(), broken, shots: stats.shots, bulbs: stats.bulbs, shoot, slingX: sling.x, slingY: sling.rest.y }),
     };
 })();
 

@@ -2017,6 +2017,15 @@ body.theme-transitioning *::after {
 @media (max-width: 1100px) { .hero-lamp { --lamp-w: 130px; --lamp-cord: 180px; right: 10%; } }
 @media (max-width: 768px)  { .hero-lamp { --lamp-w: 112px; --lamp-cord: 84px; right: 5rem; } }
 @media (max-width: 480px)  { .hero-lamp { --lamp-w: 88px;  --lamp-cord: 52px; right: 3.25rem; } }
+/* where the copy runs the full width (phones, portrait tablets) it starts below the lamp and its pill, whatever the
+   viewport height and however tall the terminal output gets */
+@media (max-width: 768px) { .hero { padding-top: 225px; } }   /* ≤480px: 200px, set with the phone rules further down */
+@media (min-width: 769px) and (max-width: 1100px) and (orientation: portrait) {
+  .hero-lamp { --lamp-cord: 110px; }
+  .hero { padding-top: 335px; }
+}
+/* very short screens (landscape phones): no room for a lamp */
+@media (max-height: 480px) { .hero-lamp, .lamp-fx { display: none !important; } }
 
 /* ============================================
    SECTION TITLE UNDERLINE — draws on scroll-in
@@ -2109,8 +2118,8 @@ body.theme-transitioning *::after {
 @media (max-width: 480px) {
   .section { padding: 3.25rem 0; }
   .section-header { margin-bottom: 2rem; }
-  /* short phones: keep the terminal bar clear of the fixed nav */
-  .hero { padding-top: calc(var(--nav-h) + 1.75rem); padding-bottom: 2.5rem; }
+  /* the copy starts below the lamp and its pill (see the hero lamp rules), whatever the viewport height */
+  .hero { padding-top: 200px; padding-bottom: 2.5rem; }
 }
 
 /* phone landscape: not enough height for a full-screen hero + scroll hint */
