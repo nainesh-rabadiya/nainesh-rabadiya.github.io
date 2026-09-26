@@ -231,6 +231,80 @@
   <section class="hero section" id="home">
     <canvas id="hero-canvas" aria-hidden="true"></canvas>
     <div class="hero-spotlight" id="hero-spotlight" aria-hidden="true"></div>
+    <!-- Hanging lamp: the hero's light switch. On = dark theme (it lights the room at night), off = light theme.
+         Click it or pull the chain to switch; drag the shade to swing it. Moths circle the bulb while it is on.
+         Flip it too many times too fast and the bulb blows: `php artisan lamp:replace` in the terminal fits a new one.
+         `lamp --shoot` in the terminal loads a slingshot. -->
+    <div class="hero-lamp" id="hero-lamp">
+      <span class="lamp-shadow" aria-hidden="true"></span>
+      <button class="lamp-arm" id="lamp-arm" type="button" role="switch" aria-checked="true"
+        aria-label="Lamp: switch the light off (light theme)">
+        <span class="lamp-cord" aria-hidden="true"></span>
+        <!-- the cone of light: its own svg so the fixture and the moths repaint without re-blurring it -->
+        <svg class="lamp-cone-svg" viewBox="-170 0 500 560" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="lamp-cone-g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ffb35c" stop-opacity="0.5"/>
+              <stop offset="0.5" stop-color="#ffb35c" stop-opacity="0.16"/>
+              <stop offset="1" stop-color="#ffb35c" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="lamp-cone-blur" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="11"/>
+            </filter>
+          </defs>
+          <polygon class="lamp-cone" points="34,66 126,66 330,560 -170,560" filter="url(#lamp-cone-blur)"/>
+        </svg>
+        <svg class="lamp-body" viewBox="0 0 160 124" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="lamp-shade-g" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" class="lamp-s1"/>
+              <stop offset="0.3" class="lamp-s2"/>
+              <stop offset="0.44" class="lamp-s3"/>
+              <stop offset="0.6" class="lamp-s2"/>
+              <stop offset="1" class="lamp-s1"/>
+            </linearGradient>
+            <radialGradient id="lamp-under-g" cx="0.5" cy="1" r="0.9">
+              <stop offset="0" class="lamp-u1"/>
+              <stop offset="1" class="lamp-u2"/>
+            </radialGradient>
+            <radialGradient id="lamp-bulb-g" cx="0.5" cy="0.6" r="0.55">
+              <stop offset="0" class="lamp-b1"/>
+              <stop offset="0.55" class="lamp-b2"/>
+              <stop offset="1" class="lamp-b3"/>
+            </radialGradient>
+            <radialGradient id="lamp-halo-g">
+              <stop offset="0" stop-color="#ffc98a" stop-opacity="0.55"/>
+              <stop offset="1" stop-color="#ffc98a" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect class="lamp-cap" x="72" y="0" width="16" height="17" rx="3"/>
+          <path class="lamp-shade" d="M67 15 C52 17 24 36 18 64 L142 64 C136 36 108 17 93 15 Z"/>
+          <ellipse class="lamp-under" cx="80" cy="64" rx="62" ry="7"/>
+          <g class="lamp-bulb-g">
+            <circle class="lamp-halo" cx="80" cy="76" r="36"/>
+            <circle class="lamp-bulb" id="lamp-bulb" cx="80" cy="76" r="16"/>
+            <path class="lamp-bulb-broken" d="M70 61 L69 68 L72 65 L74 72 L77 66 L80 71 L83 65 L86 72 L88 66 L91 68 L90 61 Z"/>
+            <path class="lamp-pins" d="M77 62 L74 78 M83 62 L86 78"/>
+            <path class="lamp-fil" d="M74 78 L76 74 L78 80 L80 74 L82 80 L84 74 L86 78"/>
+          </g>
+          <path class="lamp-rim" d="M18 64 A62 7 0 0 0 142 64"/>
+          <!-- pull chain -->
+          <g class="lamp-chain" id="lamp-chain">
+            <rect x="105" y="62" width="16" height="40" fill="transparent"/>
+            <line x1="113" y1="64" x2="113" y2="92"/>
+            <circle cx="113" cy="95" r="3.4"/>
+          </g>
+        </svg>
+        <!-- moths, drawn to the bulb while it is on -->
+        <svg class="lamp-moths" viewBox="-30 -30 60 60" aria-hidden="true" focusable="false">
+          <g class="moth m1" style="--sx:-46px;--sy:-34px"><g class="moth-orbit"><ellipse rx="2.3" ry="1.3"/></g></g>
+          <g class="moth m2" style="--sx:44px;--sy:-40px"><g class="moth-orbit"><ellipse rx="2" ry="1.2"/></g></g>
+          <g class="moth m3" style="--sx:12px;--sy:52px"><g class="moth-orbit"><ellipse rx="1.8" ry="1.1"/></g></g>
+        </svg>
+      </button>
+      <span class="lamp-hint" aria-hidden="true">click or pull the chain &middot; drag to swing</span>
+      <button type="button" class="lamp-play" id="lamp-play" hidden>&#127919; lamp --shoot &middot; play</button>
+    </div>
     <div class="container">
       <div class="hero-content">
         <div class="hero-terminal" id="hero-terminal">
@@ -243,7 +317,9 @@
           <div class="term-output" id="term-output" role="log" aria-live="polite" hidden></div>
           <div class="term-chips" id="term-chips" role="group" aria-label="Try a command">
             <span class="term-chips-label" aria-hidden="true">try:</span>
+            <button type="button" class="term-chip term-chip-alert" id="lamp-replace-chip" data-cmd="php artisan lamp:replace" hidden>replace bulb</button>
             <button type="button" class="term-chip" data-cmd="whoami">whoami</button>
+            <button type="button" class="term-chip" data-cmd="lamp --shoot">lamp --shoot</button>
             <button type="button" class="term-chip" data-cmd="php artisan down">artisan down</button>
             <button type="button" class="term-chip" data-cmd="php -v">php -v</button>
             <button type="button" class="term-chip" data-cmd="ls talks/">ls talks/</button>

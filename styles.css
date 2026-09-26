@@ -1768,6 +1768,257 @@ body.theme-transitioning *::after {
 }
 
 /* ============================================
+   HERO LAMP — hangs from the nav bar; it is the hero's light switch.
+   Click or pull the chain: on = dark theme (the lamp lights the room at night), off = light theme (daylight).
+   Drag: it swings (pendulum in script.js). Moths circle the bulb while it is on. Flip it too fast and the bulb blows.
+   Every colour keys off data-theme so the lamp shows the right state before JS runs.
+   ============================================ */
+.hero-lamp {
+  --lamp-w: 150px;                  /* shade width; the whole lamp scales with it */
+  --lamp-cord: 210px;               /* cord length */
+  /* fixture, dark theme */
+  --lamp-cord-1: #45484e; --lamp-cord-2: #26282b;
+  --lamp-cap: #3b3e43;
+  --lamp-s1: #0e0f11; --lamp-s2: #2a2d31; --lamp-s3: #5a5e65;
+  --lamp-rim: rgba(255,255,255,0.16);
+  --lamp-chain: #8d8779;
+  /* bulb: on */
+  --lamp-u1: #ffe4bd; --lamp-u2: #f1b96e;
+  --lamp-b1: #fff9ea; --lamp-b2: #ffd89c; --lamp-b3: #ffb45e;
+  --lamp-glass: rgba(255,255,255,0.6);
+  --lamp-fil: #fff3d4;
+  position: absolute;
+  top: var(--nav-h);
+  right: 17%;
+  width: 0;
+  height: 0;
+  z-index: 1;                       /* above the hero canvas and the accent glow; the content (also 1) comes later in the tree */
+  display: none;
+}
+.js .hero-lamp { display: block; }
+
+[data-theme="light"] .hero-lamp {
+  /* fixture, light theme: graphite so it reads on the pale background */
+  --lamp-cord-1: #a3a7ae; --lamp-cord-2: #6f737a;
+  --lamp-cap: #4a4e55;
+  --lamp-s1: #23262b; --lamp-s2: #4b5057; --lamp-s3: #868c95;
+  --lamp-rim: rgba(255,255,255,0.35);
+  --lamp-chain: #6b6f76;
+  /* bulb: off, in daylight */
+  --lamp-u1: #3b3e44; --lamp-u2: #24262a;
+  --lamp-b1: #f2f0ec; --lamp-b2: #d9d5ce; --lamp-b3: #b9b4ab;
+  --lamp-glass: rgba(0,0,0,0.18);
+  --lamp-fil: #8f7f6c;
+}
+/* blown: the shade is dark inside whatever the theme */
+.hero-lamp.is-broken { --lamp-u1: #1a1b1e; --lamp-u2: #0c0d0e; }
+[data-theme="light"] .hero-lamp.is-broken { --lamp-u1: #3b3e44; --lamp-u2: #24262a; }
+
+.lamp-arm {
+  position: absolute;
+  top: 0;
+  left: calc(var(--lamp-w) / -2);
+  width: var(--lamp-w);
+  display: block;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: grab;
+  touch-action: none;               /* dragging the lamp must not scroll the page */
+  transform-origin: 50% 0;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  pointer-events: none;             /* only the lamp itself is a target, not the empty box beside the cord */
+}
+.lamp-cord, .lamp-cap, .lamp-shade, .lamp-under, .lamp-rim, .lamp-bulb, .lamp-bulb-broken, .lamp-halo, .lamp-chain { pointer-events: auto; }
+.lamp-arm.is-grabbed { cursor: grabbing; }
+.lamp-arm:focus-visible .lamp-body { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 12px; }
+
+.lamp-cord {
+  display: block;
+  width: 2px;
+  height: var(--lamp-cord);
+  margin: 0 auto;
+  background: linear-gradient(to bottom, var(--lamp-cord-1), var(--lamp-cord-2));
+}
+
+/* the shade casts a soft shadow on the wall; script.js slides it with the swing */
+.lamp-shadow {
+  position: absolute;
+  left: calc(var(--lamp-w) * -0.5);
+  top: calc(var(--lamp-cord) + var(--lamp-w) * 0.36);
+  width: var(--lamp-w);
+  height: calc(var(--lamp-w) * 0.3);
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  filter: blur(14px);
+  opacity: 0.2;
+  pointer-events: none;
+  will-change: transform;
+}
+[data-theme="light"] .lamp-shadow { opacity: 0.3; }
+
+.lamp-body { display: block; width: 100%; height: auto; overflow: visible; position: relative; }
+.lamp-cone-svg {
+  position: absolute;
+  left: calc(var(--lamp-w) * -1.0625);     /* its viewBox starts 170 units left of the fixture's */
+  top: var(--lamp-cord);
+  width: calc(var(--lamp-w) * 3.125);
+  height: calc(var(--lamp-w) * 3.5);
+  overflow: visible;
+  pointer-events: none;
+}
+.lamp-cone { fill: url(#lamp-cone-g); opacity: 0; transition: opacity 0.35s var(--ease); }
+.lamp-cap   { fill: var(--lamp-cap); }
+.lamp-shade { fill: url(#lamp-shade-g); stroke: var(--lamp-rim); stroke-width: 1; }
+.lamp-under { fill: url(#lamp-under-g); }
+.lamp-rim   { fill: none; stroke: var(--lamp-rim); stroke-width: 1.2; }
+.lamp-halo  { fill: url(#lamp-halo-g); opacity: 0; transition: opacity 0.4s var(--ease), transform 0.25s var(--ease);
+              transform-box: fill-box; transform-origin: center; }
+.lamp-bulb  { fill: url(#lamp-bulb-g); stroke: var(--lamp-glass); stroke-width: 1; }
+.lamp-bulb-broken { display: none; fill: rgba(200,215,230,0.08); stroke: rgba(220,230,240,0.45); stroke-width: 1; stroke-linejoin: round; }
+[data-theme="light"] .lamp-bulb-broken { fill: rgba(40,45,55,0.06); stroke: rgba(40,45,55,0.5); }
+.lamp-pins  { fill: none; stroke: #8a8378; stroke-width: 1.1; stroke-linecap: round; }
+.lamp-fil   { fill: none; stroke: var(--lamp-fil); stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round;
+              transition: stroke 0.5s var(--ease), filter 0.5s var(--ease); }
+.lamp-s1 { stop-color: var(--lamp-s1); } .lamp-s2 { stop-color: var(--lamp-s2); } .lamp-s3 { stop-color: var(--lamp-s3); }
+.lamp-u1 { stop-color: var(--lamp-u1); } .lamp-u2 { stop-color: var(--lamp-u2); }
+.lamp-b1 { stop-color: var(--lamp-b1); } .lamp-b2 { stop-color: var(--lamp-b2); } .lamp-b3 { stop-color: var(--lamp-b3); }
+
+/* pull chain: snaps back on release */
+.lamp-chain { cursor: grab; transition: transform 0.35s var(--spring); }
+.lamp-chain.is-pulling { transition: none; cursor: grabbing; }
+.lamp-chain line { stroke: var(--lamp-chain); stroke-width: 1.3; stroke-dasharray: 2 1.4; }
+.lamp-chain circle { fill: var(--lamp-chain); }
+
+/* on (dark theme): the cone lights the hero */
+[data-theme="dark"] .lamp-cone { opacity: 1; }
+[data-theme="dark"] .lamp-halo { opacity: 1; }
+[data-theme="dark"] .lamp-fil  { filter: drop-shadow(0 0 3px rgba(255,190,110,0.95)); }
+
+/* off, hovered: the filament warms up a touch — a hint that it does something */
+[data-theme="light"] .lamp-arm:hover .lamp-fil { stroke: #b8824a; }
+
+/* switched on: the bulb warms up and flickers before it holds */
+.lamp-arm.just-on .lamp-cone,
+.lamp-arm.just-on .lamp-halo,
+.lamp-arm.just-on .lamp-fil { animation: lamp-warm 0.55s steps(1, end); }
+@keyframes lamp-warm {
+  0%   { opacity: 0.1; }
+  16%  { opacity: 1; }
+  30%  { opacity: 0.25; }
+  46%  { opacity: 1; }
+  60%  { opacity: 0.5; }
+  74%  { opacity: 1; }
+}
+/* flipped too many times too fast: a last bright flare, then it blows */
+.lamp-arm.overheat .lamp-halo { opacity: 1; transform: scale(1.6); animation: none; }
+.lamp-arm.overheat .lamp-bulb { filter: brightness(1.6); }
+
+/* blown */
+.is-broken .lamp-bulb, .is-broken .lamp-fil, .is-broken .lamp-halo { display: none; }
+.is-broken .lamp-bulb-broken { display: block; }
+.is-broken .lamp-cone { opacity: 0 !important; }
+
+/* moths circle the bulb while it is on; a hard swing scatters them for a moment */
+.lamp-moths {
+  position: absolute;
+  left: calc(var(--lamp-w) * 0.2);
+  top: calc(var(--lamp-cord) + var(--lamp-w) * 0.175);
+  width: calc(var(--lamp-w) * 0.6);
+  height: calc(var(--lamp-w) * 0.6);
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+}
+[data-theme="dark"] .hero-lamp:not(.is-broken) .lamp-moths { opacity: 1; }
+.moth ellipse { fill: #e2dacb; opacity: 0.85; transform-box: fill-box; transform-origin: center; animation: moth-wing 0.1s ease-in-out infinite alternate; }
+.moth-orbit { animation: moth-a 5.2s ease-in-out infinite; }
+.m2 .moth-orbit { animation: moth-b 6.1s ease-in-out infinite -2.2s; }
+.m3 .moth-orbit { animation: moth-c 4.4s ease-in-out infinite -1.3s; }
+.lamp-moths.scatter .moth { animation: moth-scatter 3s ease-out forwards; }
+@keyframes moth-wing { from { transform: scaleX(1); } to { transform: scaleX(0.35); } }
+@keyframes moth-a { 0% { transform: translate(-24px, -4px); } 22% { transform: translate(-6px, -24px); } 48% { transform: translate(22px, -10px); } 72% { transform: translate(10px, 14px); } 100% { transform: translate(-24px, -4px); } }
+@keyframes moth-b { 0% { transform: translate(20px, -18px); } 30% { transform: translate(-16px, -20px); } 55% { transform: translate(-26px, 6px); } 80% { transform: translate(8px, 20px); } 100% { transform: translate(20px, -18px); } }
+@keyframes moth-c { 0% { transform: translate(4px, 22px); } 25% { transform: translate(24px, 4px); } 50% { transform: translate(2px, -26px); } 75% { transform: translate(-22px, 2px); } 100% { transform: translate(4px, 22px); } }
+@keyframes moth-scatter {
+  0%   { transform: translate(0, 0); opacity: 1; }
+  22%  { transform: translate(var(--sx), var(--sy)); opacity: 0; }
+  70%  { transform: translate(var(--sx), var(--sy)); opacity: 0; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .lamp-moths { display: none; } }
+
+.lamp-hint {
+  position: absolute;
+  left: 0;
+  top: calc(var(--lamp-cord) + var(--lamp-w) * 0.86);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease) 0.4s;
+  pointer-events: none;
+}
+.hero-lamp:hover .lamp-hint,
+.lamp-arm:focus-visible + .lamp-hint,
+.hero-lamp.is-broken .lamp-hint { opacity: 1; }
+.hero-lamp.is-broken .lamp-hint { color: var(--accent); }
+@media (hover: none) { .lamp-hint { display: none; } }   /* touch: the pill under the lamp carries the instruction */
+
+/* after a flip: an invitation to play, until the slingshot has been loaded once */
+.lamp-play {
+  position: absolute;
+  left: 0;
+  top: calc(var(--lamp-cord) + var(--lamp-w) * 1.02);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: var(--bg-surface);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  cursor: pointer;
+  z-index: 2;
+  animation: play-in 0.35s var(--spring);
+}
+.lamp-play[hidden] { display: none; }
+.lamp-play.is-fix { background: var(--accent); color: #fff; animation: play-in 0.35s var(--spring), chip-pulse 1.4s ease-in-out infinite; }
+.lamp-play:hover { background: var(--accent); color: #fff; }
+@keyframes play-in { from { opacity: 0; transform: translate(-50%, 8px); } }
+@media (max-width: 768px) {   /* phones: beside the lamp, in the empty space above the terminal */
+  .lamp-play { top: calc(var(--lamp-cord) + var(--lamp-w) * 0.5); left: calc(var(--lamp-w) * -0.62); transform: translateX(-100%); }
+  @keyframes play-in { from { opacity: 0; transform: translate(-100%, 8px); } }
+}
+
+/* effects canvas over the hero: glass when the bulb blows, the slingshot and its pebbles */
+.lamp-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+.hero.is-shooting { touch-action: none; }
+/* pebble in hand: the copy fades right back so the hero is the playing field, and returns once the shot has landed */
+.hero-content { transition: opacity 0.35s var(--ease); }
+.hero.is-aiming .hero-content, .hero.is-aiming .hero-scroll { opacity: 0.05; pointer-events: none; }
+
+/* "replace bulb" chip: appears in the terminal's try row when the bulb is blown */
+.term-chip[hidden] { display: none; }
+.term-chip-alert { border-color: var(--accent); color: var(--accent); animation: chip-pulse 1.4s ease-in-out infinite; }
+@keyframes chip-pulse { 50% { box-shadow: 0 0 0 4px var(--accent-soft); } }
+
+@media (max-width: 1100px) { .hero-lamp { --lamp-w: 130px; --lamp-cord: 180px; right: 10%; } }
+@media (max-width: 768px)  { .hero-lamp { --lamp-w: 112px; --lamp-cord: 84px; right: 5rem; } }
+@media (max-width: 480px)  { .hero-lamp { --lamp-w: 88px;  --lamp-cord: 52px; right: 3.25rem; } }
+
+/* ============================================
    SECTION TITLE UNDERLINE — draws on scroll-in
    ============================================ */
 .section-title {
@@ -2142,6 +2393,7 @@ body.theme-transitioning *::after {
 .paper-plane svg { width: 100%; height: 100%; fill: var(--accent); }
 
 /* theme switch → the new theme spreads from the button (script.js animates the clip-path) */
+::view-transition { pointer-events: none; }   /* the reveal is decoration: clicks (a fast flip of the lamp) go through */
 .theme-reveal::view-transition-old(root),
 .theme-reveal::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 .theme-reveal::view-transition-old(root) { z-index: 1; }
@@ -2383,7 +2635,7 @@ path.ele-dark { fill: none; }
   .skills-tabs, .side-social, .back-to-top, .footer-brand, .perf-badge, .print-cv, .toast,
   .carousel-dots, .git-cmd, .commit-meta, .skill-code-tip, .about-image-wrap, .paper-plane, .elephpant, .ele-spray,
   .nplus1, .migrate-log, .talk-demo, .progress-ticks, .perf-gauge, .print-sheet, .maintenance-mode,
-  .hero::before, .hero::after { display: none !important; }
+  .hero::before, .hero::after, .hero-lamp, .lamp-fx { display: none !important; }
 
   .js .hero-terminal, .js .hero-title .greeting, .js .hero-title .name,
   .js .hero-description, .js .scroll-reveal { opacity: 1 !important; transform: none !important; }

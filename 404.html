@@ -166,6 +166,34 @@
     @keyframes lost-step   { from { transform: rotate(-14deg); } to { transform: rotate(14deg); } }
     @keyframes lost-wonder { 0%, 44%, 56%, 94%, 100% { opacity: 0; transform: translateY(4px); } 47%, 53%, 97% { opacity: 1; transform: translateY(-6px); } }
     @media (prefers-reduced-motion: reduce) { .lost-walker, .lost-walker svg, .lost-walker .leg, .lost-q { animation: none; } .lost-q { opacity: 1; } }
+    /* a lamp buzzes over the elePHPant; click it and the light goes out, the elePHPant runs home and so do you */
+    .lost { position: relative; padding-top: 128px; }
+    .lost-lamp {
+      position: absolute; top: 0; left: 50%; width: 96px; margin-left: -48px;
+      padding: 0; border: 0; background: none; cursor: pointer;
+      transform-origin: 50% 0; animation: lost-sway 4.6s ease-in-out infinite;
+    }
+    .lost-lamp:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 10px; }
+    .lost-cord { display: block; width: 2px; height: 52px; margin: 0 auto; background: linear-gradient(#45484e, #26282b); }
+    .lost-lamp svg { display: block; width: 96px; height: auto; overflow: visible; }
+    .lost-cone { fill: url(#lost-cone-g); animation: lost-buzz 2.9s steps(1, end) infinite; }
+    .lost-halo { fill: url(#lost-halo-g); animation: lost-buzz 2.9s steps(1, end) infinite; }
+    .lost-bulb { fill: url(#lost-bulb-g); stroke: rgba(255,255,255,0.55); stroke-width: 1; }
+    .lost-fil  { fill: none; stroke: #fff3d4; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 3px rgba(255,190,110,0.95)); }
+    .lost-pins { fill: none; stroke: #8a8378; stroke-width: 1.1; }
+    .lost-shade { fill: url(#lost-shade-g); stroke: rgba(255,255,255,0.14); }
+    .lost-tip { font: 500 0.68rem/1 'Fira Code', monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2); opacity: 0.55; margin: -0.5rem 0 1.5rem; }
+    .lost.dark .lost-cone, .lost.dark .lost-halo { opacity: 0; animation: none; }
+    .lost.dark .lost-fil { stroke: #4e4236; filter: none; }
+    .lost.dark .lost-lamp { animation: none; }
+    .lost.home .lost-walker { animation: lost-home 0.95s ease-in forwards; }
+    .lost.home .lost-walker svg { animation: none; }
+    .lost.home .lost-walker .leg { animation-duration: 0.3s; }
+    .lost.home .lost-q { animation: none; opacity: 0; }
+    @keyframes lost-sway { 0%, 100% { transform: rotate(-2.2deg); } 50% { transform: rotate(2.2deg); } }
+    @keyframes lost-buzz { 0%, 100% { opacity: 1; } 7% { opacity: 0.5; } 9% { opacity: 1; } 31% { opacity: 0.75; } 33% { opacity: 1; } 58% { opacity: 0.3; } 60% { opacity: 1; } 61% { opacity: 0.55; } 63% { opacity: 1; } }
+    @keyframes lost-home { to { transform: translateX(calc(min(420px, 100vw - 3rem) + 80px)); } }
+    @media (prefers-reduced-motion: reduce) { .lost-lamp, .lost-cone, .lost-halo { animation: none; } }
     .terminal .cursor {
       display: inline-block;
       width: 8px; height: 1em;
@@ -190,8 +218,37 @@
       <a href="/" class="btn btn-primary">← Back to Portfolio</a>
       <a href="/#contact" class="btn btn-secondary">Contact Me</a>
     </div>
-    <div class="lost" aria-hidden="true">
-      <div class="lost-walker">
+    <div class="lost" id="lost">
+      <button class="lost-lamp" id="lost-lamp" type="button" aria-label="Switch the lamp off and send the elePHPant home">
+        <span class="lost-cord"></span>
+        <svg viewBox="0 0 160 124" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="lost-shade-g" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#0e0f11"/><stop offset="0.3" stop-color="#2a2d31"/><stop offset="0.44" stop-color="#5a5e65"/><stop offset="0.6" stop-color="#2a2d31"/><stop offset="1" stop-color="#0e0f11"/>
+            </linearGradient>
+            <radialGradient id="lost-bulb-g" cx="0.5" cy="0.6" r="0.55">
+              <stop offset="0" stop-color="#fff9ea"/><stop offset="0.55" stop-color="#ffd89c"/><stop offset="1" stop-color="#ffb45e"/>
+            </radialGradient>
+            <radialGradient id="lost-halo-g">
+              <stop offset="0" stop-color="#ffc98a" stop-opacity="0.55"/><stop offset="1" stop-color="#ffc98a" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="lost-cone-g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ffb35c" stop-opacity="0.45"/><stop offset="0.6" stop-color="#ffb35c" stop-opacity="0.14"/><stop offset="1" stop-color="#ffb35c" stop-opacity="0.06"/>
+            </linearGradient>
+            <filter id="lost-cone-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="8"/></filter>
+          </defs>
+          <polygon class="lost-cone" points="34,66 126,66 250,330 -90,330" filter="url(#lost-cone-blur)"/>
+          <rect fill="#3b3e43" x="72" y="0" width="16" height="17" rx="3"/>
+          <path class="lost-shade" d="M67 15 C52 17 24 36 18 64 L142 64 C136 36 108 17 93 15 Z"/>
+          <ellipse fill="#f1b96e" cx="80" cy="64" rx="62" ry="7"/>
+          <circle class="lost-halo" cx="80" cy="76" r="36"/>
+          <circle class="lost-bulb" cx="80" cy="76" r="16"/>
+          <path class="lost-pins" d="M77 62 L74 78 M83 62 L86 78"/>
+          <path class="lost-fil" d="M74 78 L76 74 L78 80 L80 74 L82 80 L84 74 L86 78"/>
+          <path fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" d="M18 64 A62 7 0 0 0 142 64"/>
+        </svg>
+      </button>
+      <div class="lost-walker" aria-hidden="true">
         <svg viewBox="0 0 64 44" xmlns="http://www.w3.org/2000/svg">
           <path d="M9 16c-4 1-6 5-5 10" fill="none" stroke="#4F5B93" stroke-width="2.5" stroke-linecap="round"/>
           <rect class="leg b" fill="#4F5B93" x="12" y="28" width="7" height="14" rx="3"/><rect class="leg a" fill="#4F5B93" x="37" y="28" width="7" height="14" rx="3"/>
@@ -205,6 +262,7 @@
         <span class="lost-q">?</span>
       </div>
     </div>
+    <p class="lost-tip" aria-hidden="true">the lamp knows the way home &middot; click it</p>
     <div class="terminal">
       <span class="prompt">~/nainesh $</span> php artisan route:list | grep <span id="lost-path">/that-page</span><br>
       <span class="dim">Route [<span id="lost-path-2">/that-page</span>] not defined. The elePHPant is still looking.</span><br>
@@ -217,6 +275,17 @@
     (function () {
       var p = location.pathname.length > 38 ? location.pathname.slice(0, 35) + '…' : location.pathname;
       ['lost-path', 'lost-path-2'].forEach(function (id) { var n = document.getElementById(id); if (n && p && p !== '/404.html') n.textContent = p; });
+    })();
+    // the lamp: click it and the light goes out, the elePHPant runs home — and so does the visitor
+    (function () {
+      var lamp = document.getElementById('lost-lamp'), lost = document.getElementById('lost');
+      if (!lamp || !lost) return;
+      lamp.addEventListener('click', function () {
+        if (lost.classList.contains('home')) return;
+        lost.classList.add('dark', 'home');
+        var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        setTimeout(function () { location.href = '/'; }, still ? 0 : 1000);
+      });
     })();
   </script>
 </body>

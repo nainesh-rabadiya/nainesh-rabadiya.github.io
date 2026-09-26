@@ -9,9 +9,9 @@ try { savedTheme = localStorage.getItem('theme'); } catch (e) { savedTheme = nul
 const currentTheme = savedTheme ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 htmlElement.setAttribute('data-theme', currentTheme);
 
-themeToggle.addEventListener('click', () => {
-    const t = htmlElement.getAttribute('data-theme');
-    const next = t === 'dark' ? 'light' : 'dark';
+/* Switch the theme. `origin` is the viewport point the new theme spreads out from — a light being switched on. */
+function setTheme(next, origin) {
+    if (htmlElement.getAttribute('data-theme') === next) return;
     const apply = () => {
         htmlElement.setAttribute('data-theme', next);
         try { localStorage.setItem('theme', next); } catch (e) { /* unavailable */ }
@@ -25,20 +25,537 @@ themeToggle.addEventListener('click', () => {
         return;
     }
 
-    // The new theme spreads out from the button like a light being switched on
-    const r = themeToggle.getBoundingClientRect();
-    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const { x, y } = origin;
     const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
     htmlElement.classList.add('theme-reveal');
     const vt = document.startViewTransition(apply);
     vt.ready.then(() => {
         htmlElement.animate(
             { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
-            { duration: 520, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' }
+            { duration: 380, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' }   // short: the page takes no clicks while it runs
         );
     }).catch(() => {});
     vt.finished.finally(() => htmlElement.classList.remove('theme-reveal'));
-});
+}
+const centerOf = el => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
+const otherTheme = () => (htmlElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+
+themeToggle.addEventListener('click', () => setTheme(otherTheme(), centerOf(themeToggle)));
+
+// ============================================
+// HERO LAMP — hangs from the nav bar and is the hero's light switch.
+// Click it, or pull the chain: light on = dark theme (the lamp lights the room at night), off = light theme.
+// Drag the shade: it swings as a damped pendulum (fixed 120 Hz steps, so it feels the same at any frame rate);
+// the loop stops once it settles. Moths circle the bulb while it is on and scatter when it swings hard.
+// Flip it too many times too fast and the bulb blows — `php artisan lamp:replace` in the terminal fits a new one.
+// `lamp --shoot` loads a slingshot under the lamp that hops to a random spot after every shot: pebbles knock the shade,
+// pop the bulb, or hit the nav's theme switch.
+// ============================================
+const heroLamp = (function initHeroLamp() {
+    const none = { nudge() {}, setOn() {}, replace() { return false; }, shoot() { return false; }, lightAt() { return 0; },
+                   status() { return { on: false, broken: false, shots: 0, bulbs: 0, shoot: false }; } };
+    const root = document.getElementById('hero-lamp');
+    const arm  = document.getElementById('lamp-arm');
+    const bulb = document.getElementById('lamp-bulb');
+    const hero = document.querySelector('.hero');
+    if (!root || !arm || !bulb || !hero) return none;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
+    const cord   = arm.querySelector('.lamp-cord');
+    const chain  = arm.querySelector('.lamp-chain');
+    const moths  = arm.querySelector('.lamp-moths');
+    const shadow = root.querySelector('.lamp-shadow');
+    const hint   = root.querySelector('.lamp-hint');
+    const hintText = hint ? hint.textContent : '';
+    const replaceChip = document.getElementById('lamp-replace-chip');
+    const playBtn = document.getElementById('lamp-play');
+    let played = false, playTimer = 0, pill = '';          // what the pill under the lamp offers: 'play' or 'fix'
+    const PILL = { play: '\u{1F3AF} lamp --shoot \u00b7 play', fix: '\u{1F527} lamp:replace \u00b7 fix the bulb' };
+
+    const isOn = () => htmlElement.getAttribute('data-theme') !== 'light';
+    let broken = false, shoot = false;
+    const stats = { shots: 0, bulbs: 0 };
+    const flips = [];                 // recent switch flips {t, w}: too much heat in a few seconds and the bulb blows
+
+    function sync() {
+        const on = isOn();
+        arm.setAttribute('aria-checked', String(on));
+        arm.setAttribute('aria-label', broken ? 'Lamp: the bulb is blown. Run php artisan lamp:replace in the terminal'
+            : on ? 'Lamp: switch the light off (light theme)' : 'Lamp: switch the light on (dark theme)');
+        if (hint) hint.textContent = broken ? 'bulb blown · php artisan lamp:replace' : hintText;
+        if (replaceChip) replaceChip.hidden = !broken;
+        if (broken) showPill('fix');                                         // the fix is one tap away, right under the lamp
+        else if (pill === 'fix') hidePill();
+    }
+    function showPill(kind) {
+        if (!playBtn) return;
+        clearTimeout(playTimer);
+        pill = kind;
+        playBtn.textContent = PILL[kind];
+        playBtn.classList.toggle('is-fix', kind === 'fix');
+        playBtn.hidden = false;
+    }
+    function hidePill() { if (!playBtn) return; clearTimeout(playTimer); playBtn.hidden = true; pill = ''; }
+    sync();
+    const flicker = () => { if (reduced.matches) return; arm.classList.remove('just-on'); void arm.offsetWidth; arm.classList.add('just-on'); };
+    new MutationObserver(() => {
+        const wasOn = arm.getAttribute('aria-checked') === 'true';
+        sync();
+        if (isOn() === wasOn) return;
+        const now = performance.now();
+        while (flips.length && now - flips[0].t > 4000) flips.shift();
+        flips.push({ t: now, w: isOn() ? 1 : 0.4 });
+        if (!played && !broken) offerPlay();                             // "you can play with this" — until they have
+        if (broken || !isOn()) return;
+        flicker();
+        const heat = flips.reduce((h, f) => h + f.w, 0);
+        if (heat >= 3.4) { arm.classList.add('overheat'); setTimeout(pop, 300); }   // on-off-on-off-on within four seconds
+    }).observe(htmlElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    function offerPlay() {
+        showPill('play');
+        playTimer = setTimeout(hidePill, 6000);
+    }
+    if (playBtn) playBtn.addEventListener('click', () => {
+        const kind = pill;
+        hidePill();
+        if (kind === 'fix') { if (typeof runTerminal === 'function') runTerminal('php artisan lamp:replace'); else replace(); return; }
+        played = true;
+        if (typeof runTerminal === 'function') runTerminal('lamp --shoot'); else setShoot(true);
+    });
+
+    // --- pendulum ---
+    const G = 2600, STEP = 1 / 120, DAMP = 0.6;
+    let theta = 0, omega = 0, L = 260;
+    let grab = null, pull = null, raf = 0, last = 0, acc = 0, visible = true, scatterT = 0;
+    const pointer = { x: 0, y: 0 };
+    let downX = 0, downY = 0, dragged = false;
+    const geo = { px: 0, py: 0, k: 1, cord: 0 };          // pivot in hero coordinates, px per svg unit, cord length
+
+    function measure() {
+        geo.px = root.offsetLeft; geo.py = root.offsetTop;
+        geo.k = arm.offsetWidth / 160; geo.cord = cord.offsetHeight;
+        L = geo.cord + 76 * geo.k;                          // pivot → bulb centre
+        fxResize();
+    }
+    const pivotClient = () => { const r = root.getBoundingClientRect(); return { x: r.left, y: r.top }; };
+    // hero coordinates ↔ the lamp's own (x across the shade, y down the cord; the arm is rotated by -theta)
+    const toLocal = (x, y) => { const dx = x - geo.px, dy = y - geo.py, c = Math.cos(theta), s = Math.sin(theta); return { x: dx * c - dy * s, y: dx * s + dy * c }; };
+    const toWorld = (lx, ly) => { const c = Math.cos(theta), s = Math.sin(theta); return { x: geo.px + lx * c + ly * s, y: geo.py - lx * s + ly * c }; };
+    const dirToWorld = (nx, ny) => { const c = Math.cos(theta), s = Math.sin(theta); return { x: nx * c + ny * s, y: -nx * s + ny * c }; };
+
+    function render() {
+        arm.style.transform = `rotate(${(-theta).toFixed(4)}rad)`;
+        if (shadow) shadow.style.transform = `translate(${(theta * L * 0.55).toFixed(1)}px, ${(Math.abs(theta) * 14).toFixed(1)}px)`;
+    }
+    function step(dt) {
+        let a = -(G / L) * Math.sin(theta) - omega * DAMP;
+        if (grab) {                                          // spring towards the pointer while held
+            const p = pivotClient();
+            const tgt = clampN(Math.atan2(pointer.x - p.x, pointer.y - p.y) - grab.offset, -1.1, 1.1);
+            a += (tgt - theta) * 170 - omega * 16;
+        }
+        omega += a * dt;
+        theta = clampN(theta + omega * dt, -1.3, 1.3);
+    }
+    const moving = () => Math.abs(omega) > 0.02 || Math.abs(theta) > 0.004;
+    function frame(now) {
+        const dt = Math.min(0.05, (now - last) / 1000);
+        last = now; acc += dt;
+        while (acc >= STEP) { step(STEP); acc -= STEP; }
+        render();
+        if (moths && Math.abs(omega) > 0.9 && now > scatterT) {   // a hard swing scatters the moths
+            scatterT = now + 3400;
+            moths.classList.add('scatter');
+            setTimeout(() => moths.classList.remove('scatter'), 3100);
+        }
+        if (grab || moving()) { raf = requestAnimationFrame(frame); return; }
+        raf = 0; theta = 0; omega = 0; render();            // settled: stop the loop
+    }
+    function wake() {
+        if (raf || reduced.matches || !visible) return;
+        last = performance.now(); acc = 0;
+        raf = requestAnimationFrame(frame);
+    }
+    const nudge = v => { omega += v; wake(); };
+    const kick = (x, y, fx, fy) => nudge(((y - geo.py) * fx - (x - geo.px) * fy) / (L * L));   // an impulse at a point
+
+    function flip() {
+        if (broken) { nudge(0.25); return; }                 // nothing happens; the hint says what to do
+        setTheme(otherTheme(), centerOf(bulb));
+        if (!reduced.matches) nudge(0.45);                   // the tug on the switch
+    }
+    arm.addEventListener('pointerdown', e => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        const onChain = chain && e.target.closest('.lamp-chain');
+        if (reduced.matches && !onChain) return;
+        pointer.x = downX = e.clientX; pointer.y = downY = e.clientY;
+        dragged = false;
+        arm.setPointerCapture(e.pointerId);
+        if (onChain) { pull = { y0: e.clientY, ext: 0 }; chain.classList.add('is-pulling'); return; }
+        const p = pivotClient();
+        grab = { offset: Math.atan2(e.clientX - p.x, e.clientY - p.y) - theta };
+        arm.classList.add('is-grabbed');
+        wake();
+    });
+    arm.addEventListener('pointermove', e => {
+        pointer.x = e.clientX; pointer.y = e.clientY;
+        if (pull) {
+            pull.ext = clampN((e.clientY - pull.y0) / geo.k, 0, 26);
+            chain.style.transform = `translateY(${pull.ext.toFixed(1)}px)`;
+            if (pull.ext > 4) dragged = true;
+            return;
+        }
+        if (grab && !dragged && Math.hypot(e.clientX - downX, e.clientY - downY) > 6) dragged = true;
+    });
+    function release() {
+        if (pull) {
+            const tug = pull.ext >= 12;
+            chain.classList.remove('is-pulling');
+            chain.style.transform = '';
+            pull = null;
+            if (tug) { dragged = true; flip(); }             // a real tug switches; the click that follows is swallowed
+        }
+        grab = null;
+        arm.classList.remove('is-grabbed');
+    }
+    arm.addEventListener('pointerup', release);
+    arm.addEventListener('pointercancel', release);
+    arm.addEventListener('click', () => {
+        if (dragged) { dragged = false; return; }            // that was a swing (or a tug), not a click
+        flip();
+    });
+
+    // idle off screen / in a background tab; pick up again when back — with a sway, as if a door just opened
+    let seen = false;
+    new IntersectionObserver(([entry]) => {
+        const was = visible;
+        visible = entry.isIntersecting;
+        if (!visible) { if (raf) { cancelAnimationFrame(raf); raf = 0; } if (fxRaf) { cancelAnimationFrame(fxRaf); fxRaf = 0; } return; }
+        if (seen && !was && !reduced.matches) nudge(0.5);
+        seen = true;
+        if (moving()) wake();
+        fxWake();
+    }).observe(root);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) { if (raf) { cancelAnimationFrame(raf); raf = 0; } if (fxRaf) { cancelAnimationFrame(fxRaf); fxRaf = 0; } }
+        else { wake(); fxWake(); }
+    });
+    window.addEventListener('resize', measure, { passive: true });
+
+    // --- the bulb blows ---
+    function pop(vx = 0, vy = 0) {
+        if (broken) return;
+        broken = true;
+        stats.bulbs++;
+        flips.length = 0;
+        arm.classList.remove('overheat', 'just-on');
+        root.classList.add('is-broken');
+        sync();
+        if (reduced.matches) return;
+        const b = toWorld(0, geo.cord + 76 * geo.k);
+        for (let i = 0; i < 34; i++) {
+            const ang = Math.random() * Math.PI * 2, sp = 120 + Math.random() * 460, n = 3 + Math.floor(Math.random() * 2), r = 2 + Math.random() * 5;
+            const poly = [];
+            for (let k = 0; k < n; k++) { const a = (k / n) * Math.PI * 2 + Math.random() * 0.8; poly.push([Math.cos(a) * r * (0.5 + Math.random()), Math.sin(a) * r * (0.5 + Math.random())]); }
+            shards.push({ x: b.x + Math.cos(ang) * 8, y: b.y + Math.sin(ang) * 8, vx: Math.cos(ang) * sp + vx * 0.35, vy: Math.sin(ang) * sp * 0.7 + 80 + vy * 0.35,
+                          a: Math.random() * 6.28, va: (Math.random() - 0.5) * 24, poly, life: 7 });
+        }
+        for (let i = 0; i < 36; i++) {
+            const ang = Math.random() * Math.PI * 2, sp = 200 + Math.random() * 650;
+            sparks.push({ x: b.x, y: b.y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, life: 0.3 + Math.random() * 0.6, max: 0.9 });
+        }
+        flash = 1;
+        fxWake();
+    }
+    function replace() {
+        if (!broken) return false;
+        broken = false;
+        root.classList.remove('is-broken');
+        sync();
+        if (isOn()) flicker();
+        return true;
+    }
+
+    // --- effects canvas: glass and sparks when the bulb blows, the slingshot and its pebbles ---
+    const fx = document.createElement('canvas');
+    fx.className = 'lamp-fx';
+    fx.setAttribute('aria-hidden', 'true');
+    hero.appendChild(fx);
+    const ctx = fx.getContext('2d');
+    let FW = 0, FH = 0, DPR = 1, flash = 0;
+    let shards = [], sparks = [], pebbles = [];
+    const sling = { x: 0, y: 0, u: null, s: 1, rest: { x: 0, y: 0 }, pouch: { x: 0, y: 0 }, vel: { x: 0, y: 0 }, loaded: true, reloadT: 0 };
+    let aim = null, aimPt = { x: 0, y: 0 }, fxRaf = 0, fxLast = 0, fxAcc = 0, switchBox = null, stageUntil = 0;
+    const PEBBLE_R = 6, PG = 1500, LAUNCH = 16, MAX_PULL = 140, SG = 2600;   // a modest pull straight down reaches the bulb, even on a phone
+
+    function fxResize() {
+        DPR = Math.min(window.devicePixelRatio || 1, 2);
+        FW = hero.clientWidth; FH = hero.clientHeight;
+        fx.width = Math.round(FW * DPR); fx.height = Math.round(FH * DPR);
+        sling.s = FW <= 768 ? 0.7 : 1;                                    // smaller on phones
+        placeSling();
+        if (fxBusy()) fxRender();
+    }
+    // the slingshot stands on the hero's floor: first right under the lamp (a straight pull down hits the bulb),
+    // then somewhere new after every shot — that is the game
+    function placeSling(u = sling.u) {
+        sling.u = u;
+        sling.x = u === null ? clampN(geo.px, 50, FW - 50) : 60 + u * (FW - 120);
+        sling.y = FH;
+        sling.rest = { x: sling.x, y: FH - 118 * sling.s };
+        if (aim === null) { sling.pouch = { ...sling.rest }; sling.vel = { x: 0, y: 0 }; }
+    }
+    function moveSling() {
+        let u = Math.random();
+        for (let i = 0; i < 20 && Math.abs(60 + u * (FW - 120) - sling.x) < FW * 0.25; i++) u = Math.random();   // well away from here
+        placeSling(u);
+    }
+    const heroXY = e => { const r = hero.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    // the canvas takes no pointer events (the hero's buttons stay clickable); the pouch is picked up here instead
+    hero.addEventListener('pointerdown', e => {
+        if (!shoot || !sling.loaded || aim !== null) return;
+        const p = heroXY(e);
+        if (Math.hypot(p.x - sling.pouch.x, p.y - sling.pouch.y) > 30) return;
+        e.preventDefault(); e.stopPropagation();
+        aim = e.pointerId; aimPt = p;
+        hero.setPointerCapture(e.pointerId);
+        hero.classList.add('is-aiming');                                     // the copy steps aside: it is a game now
+        fxWake();
+    }, true);
+    hero.addEventListener('pointermove', e => { if (aim === e.pointerId) aimPt = heroXY(e); });
+    const loose = e => { if (aim !== e.pointerId) return; aim = null; shootPebble(); };
+    hero.addEventListener('pointerup', loose);
+    hero.addEventListener('pointercancel', loose);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && shoot) setShoot(false); });
+
+    function shootPebble() {
+        const launch = LAUNCH / sling.s;                                     // the small phone slingshot pulls shorter, so it hits harder
+        const vx = (sling.rest.x - sling.pouch.x) * launch, vy = (sling.rest.y - sling.pouch.y) * launch;
+        if (Math.hypot(vx, vy) / launch < 18) return;
+        pebbles.push({ x: sling.pouch.x, y: sling.pouch.y, vx, vy, a: 0, hitT: 0, rest: 0, life: 1 });
+        sling.loaded = false; sling.reloadT = 0.45;
+        sling.vel = { x: vx * 0.4, y: vy * 0.4 };
+        stats.shots++;
+        stageUntil = performance.now() + 3000;                              // the copy stays back until the pebble lands
+    }
+    function collide(p) {
+        if (p.hitT > 0) return;
+        if (switchBox) {                                                     // the nav's theme button flips the light
+            const cx = clampN(p.x, switchBox.l, switchBox.r), cy = clampN(p.y, switchBox.t, switchBox.b);
+            let nx = p.x - cx, ny = p.y - cy;
+            const d = Math.hypot(nx, ny);
+            if (d <= PEBBLE_R) {
+                if (d === 0) { const sp = Math.hypot(p.vx, p.vy) || 1; nx = -p.vx / sp; ny = -p.vy / sp; } else { nx /= d; ny /= d; }
+                const vn = p.vx * nx + p.vy * ny;
+                if (vn < 0) {
+                    p.vx -= 1.4 * vn * nx; p.vy -= 1.4 * vn * ny;
+                    p.x = cx + nx * (PEBBLE_R + 1); p.y = cy + ny * (PEBBLE_R + 1);
+                    p.hitT = 0.1;
+                    themeToggle.click();
+                    return;
+                }
+            }
+        }
+        const l = toLocal(p.x, p.y);
+        const r = PEBBLE_R / geo.k, lx = l.x / geo.k, ly = (l.y - geo.cord) / geo.k;   // in the fixture's svg units
+        if (!broken && Math.hypot(lx, ly - 76) < 24 + r) {                            // the bulb (generous: its glow counts)
+            pop(p.vx, p.vy);
+            kick(p.x, p.y, p.vx * 0.08, p.vy * 0.08);
+            p.vx *= 0.75; p.vy *= 0.75; p.hitT = 0.08;
+            return;
+        }
+        if (ly < 13 - r || ly > 64 + r) return;                                        // the shade
+        const hw = 13 + 49 * Math.pow(clampN((ly - 15) / 49, 0, 1), 0.7);
+        if (Math.abs(lx) > hw + r) return;
+        let nx = lx, ny = ly - 30;
+        const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
+        const n = dirToWorld(nx, ny);
+        const vn = p.vx * n.x + p.vy * n.y;
+        if (vn >= 0) return;
+        const e = 0.45;
+        p.vx -= (1 + e) * vn * n.x; p.vy -= (1 + e) * vn * n.y;
+        p.x += n.x * 6; p.y += n.y * 6;
+        const J = -(1 + e) * vn * 0.22;
+        kick(p.x, p.y, -n.x * J, -n.y * J);
+        p.hitT = 0.06;
+    }
+    function fxStep(dt) {
+        if (aim !== null) {                                                  // pouch follows the pointer while held
+            let dx = aimPt.x - sling.rest.x, dy = Math.min(aimPt.y, FH - 12) - sling.rest.y;   // never below the floor
+            const d = Math.hypot(dx, dy);
+            if (d > MAX_PULL) { dx *= MAX_PULL / d; dy *= MAX_PULL / d; }
+            sling.pouch = { x: sling.rest.x + dx, y: sling.rest.y + dy };
+            sling.vel = { x: 0, y: 0 };
+        } else {                                                             // and springs back after
+            sling.vel.x += ((sling.rest.x - sling.pouch.x) * 900 - sling.vel.x * 12) * dt;
+            sling.vel.y += ((sling.rest.y - sling.pouch.y) * 900 - sling.vel.y * 12) * dt;
+            sling.pouch.x += sling.vel.x * dt; sling.pouch.y += sling.vel.y * dt;
+        }
+        for (const p of pebbles) {
+            p.hitT = Math.max(0, p.hitT - dt);
+            if (p.rest > 0) continue;
+            p.vy += PG * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.a += p.vx * dt * 0.05;
+            collide(p);
+            if (p.y > FH - PEBBLE_R) {
+                p.y = FH - PEBBLE_R; p.vy *= -0.35; p.vx *= 0.75;
+                if (Math.abs(p.vy) < 40 && Math.abs(p.vx) < 20) p.rest = 0.001;
+            }
+            if (p.x < PEBBLE_R || p.x > FW - PEBBLE_R) { p.x = clampN(p.x, PEBBLE_R, FW - PEBBLE_R); p.vx *= -0.5; }
+        }
+        for (const s of shards) {
+            s.vy += SG * 0.75 * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.a += s.va * dt;
+            if (s.y > FH - 3) { s.y = FH - 3; s.vy *= -0.28; s.vx *= 0.6; s.va *= 0.5; if (Math.abs(s.vy) < 30) s.vy = 0; }
+            if (s.x < 0 || s.x > FW) { s.vx *= -0.5; s.x = clampN(s.x, 0, FW); }
+        }
+        for (const k of sparks) { k.vy += SG * 0.4 * dt; k.vx *= 0.985; k.x += k.vx * dt; k.y += k.vy * dt; }
+    }
+    function fxTick(dt) {                                                    // the slow bookkeeping, once a frame
+        if (!sling.loaded) { sling.reloadT -= dt; if (sling.reloadT <= 0) { sling.loaded = true; moveSling(); } }
+        for (const p of pebbles) if (p.rest > 0) { p.rest += dt; if (p.rest > 4) p.life -= dt * 1.5; }
+        pebbles = pebbles.filter(p => p.life > 0 && p.y < FH + 200).slice(-10);
+        for (const s of shards) s.life -= dt;
+        shards = shards.filter(s => s.life > 0);
+        for (const k of sparks) k.life -= dt;
+        sparks = sparks.filter(k => k.life > 0);
+        flash = Math.max(0, flash - dt * 3.5);
+        const inFlight = pebbles.some(p => p.rest === 0);
+        if (aim === null && (!inFlight || performance.now() > stageUntil)) hero.classList.remove('is-aiming');
+    }
+
+    function drawPebble(x, y, a, alpha) {
+        ctx.save();
+        ctx.globalAlpha = alpha; ctx.translate(x, y); ctx.rotate(a);
+        const g = ctx.createRadialGradient(-2, -2, 0, 0, 0, PEBBLE_R + 1);
+        g.addColorStop(0, '#b3ada3'); g.addColorStop(0.6, '#6e6961'); g.addColorStop(1, '#37332e');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.ellipse(0, 0, PEBBLE_R + 0.8, PEBBLE_R - 0.8, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+    }
+    function drawSlingshot() {
+        const { x, y, s: S } = sling, p = sling.pouch;
+        const tipL = { x: x - 26 * S, y: y - 128 * S }, tipR = { x: x + 26 * S, y: y - 128 * S };
+        const stretch = clampN(Math.hypot(p.x - sling.rest.x, p.y - sling.rest.y) / MAX_PULL, 0, 1);
+        const bandW = (4 - stretch * 2) * S;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#7a2e22'; ctx.lineWidth = bandW;
+        ctx.beginPath(); ctx.moveTo(tipL.x, tipL.y); ctx.lineTo(p.x - 6 * S, p.y); ctx.stroke();
+        const wood = ctx.createLinearGradient(x - 28 * S, 0, x + 28 * S, 0);
+        wood.addColorStop(0, '#3b2616'); wood.addColorStop(0.45, '#8a5a34'); wood.addColorStop(1, '#3a2515');
+        ctx.strokeStyle = wood; ctx.lineWidth = 10 * S;
+        ctx.beginPath();
+        ctx.moveTo(x, y + 4); ctx.lineTo(x, y - 66 * S);
+        ctx.quadraticCurveTo(x - 4 * S, y - 88 * S, tipL.x, tipL.y);
+        ctx.moveTo(x, y - 66 * S);
+        ctx.quadraticCurveTo(x + 4 * S, y - 88 * S, tipR.x, tipR.y);
+        ctx.stroke();
+        ctx.fillStyle = '#2a1a0f';
+        for (const t of [tipL, tipR]) { ctx.beginPath(); ctx.ellipse(t.x, t.y, 6 * S, 3 * S, 0, 0, Math.PI * 2); ctx.fill(); }
+        if (aim !== null) {                                                  // where it will go
+            const launch = LAUNCH / S;
+            const vx = (sling.rest.x - p.x) * launch, vy = (sling.rest.y - p.y) * launch;
+            ctx.fillStyle = '#FF2D20'; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 1.2;
+            for (let i = 1; i <= 12; i++) {
+                const t = i * 0.04;
+                ctx.globalAlpha = 0.95 - 0.6 * (i / 12);
+                ctx.beginPath(); ctx.arc(p.x + vx * t, p.y + vy * t + 0.5 * PG * t * t, 3.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+        }
+        ctx.fillStyle = '#4a2c1c';
+        ctx.beginPath(); ctx.ellipse(p.x, p.y, 11 * S, 7 * S, Math.atan2(p.y - sling.rest.y, p.x - sling.rest.x), 0, Math.PI * 2); ctx.fill();
+        if (sling.loaded) drawPebble(p.x, p.y, 0, 1);
+        ctx.strokeStyle = '#8e3627'; ctx.lineWidth = bandW;
+        ctx.beginPath(); ctx.moveTo(tipR.x, tipR.y); ctx.lineTo(p.x + 6 * S, p.y); ctx.stroke();
+        // the score
+        ctx.font = `${Math.round(11 * S)}px "Fira Code", monospace`;
+        ctx.textAlign = x > FW * 0.75 ? 'right' : 'left';                   // beside the handle, on the floor, away from the hero's buttons
+        ctx.fillStyle = isOn() ? 'rgba(236,230,218,0.6)' : 'rgba(63,63,70,0.75)';
+        ctx.fillText(`${stats.shots} shot${stats.shots === 1 ? '' : 's'} · ${stats.bulbs} bulb${stats.bulbs === 1 ? '' : 's'}`, x + (x > FW * 0.75 ? -14 : 14) * S, y - 12);
+        ctx.textAlign = 'start';
+    }
+    function drawParticles() {
+        for (const p of pebbles) drawPebble(p.x, p.y, p.a, clampN(p.life, 0, 1));
+        const glassFill = isOn() ? 'rgba(210,225,240,0.16)' : 'rgba(40,45,55,0.12)';
+        const glassLine = isOn() ? 'rgba(230,238,248,0.55)' : 'rgba(40,45,55,0.6)';
+        for (const s of shards) {
+            ctx.save();
+            ctx.globalAlpha = clampN(s.life, 0, 1);
+            ctx.translate(s.x, s.y); ctx.rotate(s.a);
+            ctx.fillStyle = glassFill; ctx.strokeStyle = glassLine; ctx.lineWidth = 0.8;
+            ctx.beginPath(); s.poly.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            ctx.restore();
+        }
+        if (!sparks.length) return;
+        ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round'; ctx.lineWidth = 1.4;
+        for (const k of sparks) {
+            const t = clampN(k.life / k.max, 0, 1);
+            ctx.strokeStyle = `rgba(255,${Math.round(150 + 90 * t)},${Math.round(80 * t)},${t.toFixed(3)})`;
+            ctx.beginPath(); ctx.moveTo(k.x, k.y); ctx.lineTo(k.x - k.vx * 0.012, k.y - k.vy * 0.012); ctx.stroke();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+    }
+    function fxRender() {
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        ctx.clearRect(0, 0, FW, FH);
+        if (shoot) drawSlingshot();
+        drawParticles();
+        if (flash > 0) { ctx.fillStyle = `rgba(255,236,200,${(flash * 0.35).toFixed(3)})`; ctx.fillRect(0, 0, FW, FH); }
+    }
+    const fxBusy = () => shoot || shards.length > 0 || sparks.length > 0 || pebbles.length > 0 || flash > 0;
+    function fxFrame(now) {
+        const dt = Math.min(0.05, (now - fxLast) / 1000);
+        fxLast = now; fxAcc += dt;
+        if (shoot && pebbles.length) {
+            const h = hero.getBoundingClientRect(), t = themeToggle.getBoundingClientRect();
+            switchBox = { l: t.left - h.left, r: t.right - h.left, t: t.top - h.top, b: t.bottom - h.top };
+        } else switchBox = null;
+        while (fxAcc >= STEP) { fxStep(STEP); fxAcc -= STEP; }
+        fxTick(dt);
+        fxRender();
+        if (fxBusy() && visible) { fxRaf = requestAnimationFrame(fxFrame); return; }
+        fxRaf = 0;
+    }
+    function fxWake() {
+        if (fxRaf || !visible || !fxBusy()) return;
+        fxLast = performance.now(); fxAcc = 0;
+        fxRaf = requestAnimationFrame(fxFrame);
+    }
+    function setShoot(on) {
+        shoot = !!on;
+        if (shoot) { played = true; if (pill === 'play') hidePill(); }
+        hero.classList.toggle('is-shooting', shoot);
+        aim = null;
+        hero.classList.remove('is-aiming');
+        placeSling(null);                                                    // back under the lamp for the first shot
+        if (shoot) fxWake(); else if (!fxRaf) fxRender();
+        return shoot;
+    }
+
+    // how much the lamp lights a point of the hero (0..1): inside the cone, fading towards its edge and its end
+    function lightAt(x, y) {
+        if (broken || !isOn()) return 0;
+        const l = toLocal(x, y);
+        const ly = l.y - geo.cord - 64 * geo.k;               // distance below the rim
+        const reach = 494 * geo.k;
+        if (ly < 0 || ly > reach) return 0;
+        const hw = 46 * geo.k + 0.41 * ly;                    // the cone's half width there
+        const edge = clampN((hw - Math.abs(l.x)) / (hw * 0.35), 0, 1);
+        return edge * (1 - ly / reach);
+    }
+
+    measure();
+    return {
+        nudge,
+        lightAt,
+        replace,
+        shoot: setShoot,
+        setOn(on) { if (broken || isOn() === !!on) return; setTheme(on ? 'dark' : 'light', centerOf(bulb)); if (!reduced.matches) nudge(0.45); },
+        status: () => ({ on: isOn(), broken, shots: stats.shots, bulbs: stats.bulbs, shoot, slingX: sling.x }),
+    };
+})();
 
 // ============================================
 // CUSTOM CURSOR
@@ -632,10 +1149,11 @@ function initHeroCanvas() {
         }
         draw() {
             const dark = isDark();
+            const lit = dark ? heroLamp.lightAt(this.x + this.size * 2, this.y - this.size * 0.4) : 0;   // under the lamp?
             ctx.save();
             // phones have no empty margin: the words drift across the copy, so keep them as faint texture only
-            ctx.globalAlpha = (dark ? this.opa : this.opa * 1.5) * (W <= 768 ? 0.3 : 1); // dark 0.22–0.40, light 0.33–0.60
-            ctx.fillStyle   = dark ? '#FF2D20' : '#8B1A0E';
+            ctx.globalAlpha = Math.min(1, (dark ? this.opa : this.opa * 1.5) * (W <= 768 ? 0.3 : 1) + lit * 0.6); // dark 0.22–0.40, light 0.33–0.60
+            ctx.fillStyle   = lit > 0.02 ? `rgb(255, ${Math.round(45 + 150 * lit)}, ${Math.round(32 + 80 * lit)})` : dark ? '#FF2D20' : '#8B1A0E';
             ctx.font        = `${this.size}px "Fira Code", monospace`;
             ctx.fillText(this.text, this.x, this.y);
             ctx.restore();
@@ -739,6 +1257,7 @@ function startPage() {
     initHeroCanvas();
     initHeroTyping();
     initHeroSpotlight();
+    if (!reducedMotion) setTimeout(() => heroLamp.nudge(0.7), 500);   // the lamp settles as the hero comes in
     initSectionUnderlines();
     if (!reducedMotion) {
         initCardTouchShimmer();
@@ -978,6 +1497,7 @@ function initSectionUnderlines() {
 // ============================================
 // INTERACTIVE TERMINAL (hero)
 // ============================================
+let runTerminal = null;   // set below; the lamp's "play" pill uses it
 (function initTerminal() {
     const form   = document.getElementById('term-form');
     const input  = document.getElementById('term-input');
@@ -1015,6 +1535,7 @@ function initSectionUnderlines() {
             kv('cd <name>', 'jump to a section, e.g. cd projects'),
             kv('contact', 'how to reach me'),
             kv('theme', 'toggle dark / light'),
+            kv('lamp', 'the hero lamp — lamp:on · lamp:off · lamp --shoot'),
             kv('clear', 'clear the terminal'),
             line(el('span', 't-dim', 'also: deploy · php -v · php artisan inspire · php artisan down')),
         ],
@@ -1084,6 +1605,32 @@ function initSectionUnderlines() {
             return [line(el('span', 't-dim', 'Application is now in maintenance mode.')), line(el('span', 't-key', '✓ '), 'Application is now live.')];
         },
         theme: () => { themeToggle.click(); return [line(el('span', 't-dim', 'APP_THEME=' + htmlElement.getAttribute('data-theme')))]; },
+        lamp: arg => {
+            const a = (arg || '').replace(/^--/, '').toLowerCase().trim();
+            const s = heroLamp.status();
+            const tip = t => line(el('span', 't-dim', t));
+            const ok = t => line(el('span', 't-key', '✓ '), t);
+            if (a === 'shoot' || a === 'shoot on') {
+                if (!heroLamp.shoot(true)) return [line('No lamp here to shoot at.')];
+                return [ok('Slingshot loaded, under the lamp. Pull the pebble straight down and let go.'),
+                        tip('It moves somewhere new after every shot. Aim for the bulb, the shade… or the theme switch. Esc or lamp --shoot off puts it away.')];
+            }
+            if (a === 'shoot off') { heroLamp.shoot(false); return [tip('Slingshot put away.')]; }
+            if (a === 'on' || a === 'off') {
+                if (s.broken) return [line('The bulb is blown.'), tip('→ php artisan lamp:replace')];
+                if (s.on === (a === 'on')) return [tip(`Lamp is already ${a}.`)];
+                heroLamp.setOn(a === 'on');
+                return [ok(`Lamp ${a}. APP_THEME=${a === 'on' ? 'dark' : 'light'}`)];
+            }
+            if (a === 'replace') {
+                if (!heroLamp.replace()) return [tip('Nothing to replace — the bulb is fine.')];
+                return [ok('Bulb replaced.' + (s.on ? ' Lamp on.' : ' Flip the switch.'))];
+            }
+            if (a && a !== 'status') return [line(`lamp: unknown option: ${a}`), tip('lamp:on · lamp:off · lamp:replace · lamp --shoot')];
+            return [kv('lamp', s.broken ? 'blown' + (s.on ? ' (switch on)' : '') : s.on ? 'on' : 'off'),
+                    kv('shots', String(s.shots)), kv('bulbs', s.bulbs + ' replaced'),
+                    tip('php artisan lamp:on · lamp:off · lamp:replace · lamp --shoot')];
+        },
         sudo: () => [line('Permission denied. (contact works without sudo.)')],
     };
 
@@ -1098,6 +1645,8 @@ function initSectionUnderlines() {
         const artisan = text.match(/^(?:php )?artisan (inspire|down)$/i);
         if (artisan) { name = artisan[1]; arg = ''; }
         if (/^git push( .*)?$/i.test(text)) { name = 'deploy'; arg = ''; }
+        const lampCmd = text.match(/^(?:(?:php )?artisan )?lamp(?::|\s|$)(.*)$/i);
+        if (lampCmd) { name = 'lamp'; arg = lampCmd[1].trim(); }
         if (/^php (-v|--version)$/i.test(text) || /^elephpant$/i.test(text)) { name = 'elephant'; arg = ''; }
         name = name.toLowerCase();
 
@@ -1115,6 +1664,7 @@ function initSectionUnderlines() {
         if (typeof gtag === 'function') gtag('event', 'terminal_command', { event_category: 'engagement', event_label: handler ? name : 'unknown' });
     }
 
+    runTerminal = run;
     form.addEventListener('submit', e => { e.preventDefault(); run(input.value); input.value = ''; form.classList.remove('has-value'); });
     input.addEventListener('input', () => form.classList.toggle('has-value', input.value !== ''));
     input.addEventListener('keydown', e => { if (e.key === 'Escape') { input.value = ''; form.classList.remove('has-value'); input.blur(); } });

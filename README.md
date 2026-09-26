@@ -4,7 +4,7 @@ Personal portfolio of Nainesh Rabadiya — static HTML, CSS and vanilla JS, no b
 
 - `index.html` — all content
 - `styles.css`, `theme-toggle.css` — styling (dark/light via `data-theme` on `<html>`)
-- `script.js` — interactions (theme, nav, reveals, hero canvas, tooltips)
+- `script.js` — interactions (theme, hero lamp, nav, reveals, hero canvas, tooltips)
 - `404.html` — custom not-found page
 - `tools/build_ai_files.py` — generates the AI-readable files (stdlib only)
 - `tools/stamp_assets.py` — run by the deploy: adds `?v=<content hash>` to the CSS/JS links so browsers never mix new HTML with old cached code
