@@ -319,6 +319,7 @@ const heroLamp = (function initHeroLamp() {
         sling.y = floor;
         sling.rest = { x: sling.x, y: floor - 118 * sling.s };
         if (aim === null) { sling.pouch = { ...sling.rest }; sling.vel = { x: 0, y: 0 }; }
+        syncHandle();
     }
     function moveSling() {
         let u = Math.random();
@@ -326,26 +327,35 @@ const heroLamp = (function initHeroLamp() {
         placeSling(u);
     }
     const heroXY = e => { const r = hero.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
-    // the canvas takes no pointer events (the hero's buttons stay clickable); the pouch is picked up here instead
-    hero.addEventListener('pointerdown', e => {
-        if (!shoot || !sling.loaded || aim !== null) return;
-        const p = heroXY(e);
-        if (Math.hypot(p.x - sling.pouch.x, p.y - sling.pouch.y) > (e.pointerType === 'mouse' ? 30 : 44)) return;
+    // the canvas takes no pointer events (the hero's buttons stay clickable). The pebble is picked up through a small
+    // invisible handle over the pouch — the only spot where a finger drag is not a page scroll.
+    const handle = document.createElement('div');
+    handle.className = 'lamp-pouch';
+    handle.hidden = true;
+    handle.setAttribute('aria-hidden', 'true');
+    hero.appendChild(handle);
+    function syncHandle() {
+        const show = shoot && sling.loaded && aim === null;
+        handle.hidden = !show;
+        if (show) handle.style.transform = `translate(${(sling.rest.x - 44).toFixed(0)}px, ${(sling.rest.y - 44).toFixed(0)}px)`;
+    }
+    handle.addEventListener('pointerdown', e => {
+        if (!shoot || !sling.loaded || aim !== null || (e.pointerType === 'mouse' && e.button !== 0)) return;
         e.preventDefault(); e.stopPropagation();
-        aim = e.pointerId; aimPt = p; aimAt = performance.now();
-        try { hero.setPointerCapture(e.pointerId); } catch (err) { /* the pointer is gone already; the release below still runs */ }
+        aim = e.pointerId; aimPt = heroXY(e); aimAt = performance.now();
+        try { handle.setPointerCapture(e.pointerId); } catch (err) { /* the pointer is gone already; the release below still runs */ }
         hero.classList.add('is-aiming');                                     // the copy steps aside: it is a game now
         fxWake();
-    }, true);
-    hero.addEventListener('pointermove', e => { if (aim === e.pointerId) { aimPt = heroXY(e); aimAt = performance.now(); } });
+    });
+    document.addEventListener('pointermove', e => { if (aim === e.pointerId) { aimPt = heroXY(e); aimAt = performance.now(); } }, true);
     // release: wherever the pointer ends up, the shot goes — a held pebble must never get stuck
-    const loose = e => { if (aim === null || aim !== e.pointerId) return; aim = null; shootPebble(); };
-    hero.addEventListener('pointerup', loose);
-    hero.addEventListener('pointercancel', loose);
-    hero.addEventListener('lostpointercapture', loose);
+    const loose = e => { if (aim === null || aim !== e.pointerId) return; aim = null; shootPebble(); syncHandle(); };
+    handle.addEventListener('lostpointercapture', loose);
     document.addEventListener('pointerup', loose, true);
     document.addEventListener('pointercancel', loose, true);
-    window.addEventListener('blur', () => { if (aim !== null) { aim = null; sling.pouch = { ...sling.rest }; } });
+    window.addEventListener('blur', () => { if (aim !== null) { aim = null; sling.pouch = { ...sling.rest }; syncHandle(); } });
+    // scrolled away from the hero: the game is over (on a phone there is no Esc)
+    new IntersectionObserver(([entry]) => { if (!entry.isIntersecting && shoot) setShoot(false); }).observe(hero);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && shoot) setShoot(false); });
 
     function shootPebble() {
@@ -430,7 +440,7 @@ const heroLamp = (function initHeroLamp() {
         for (const k of sparks) { k.vy += SG * 0.4 * dt; k.vx *= 0.985; k.x += k.vx * dt; k.y += k.vy * dt; }
     }
     function fxTick(dt) {                                                    // the slow bookkeeping, once a frame
-        if (!sling.loaded) { sling.reloadT -= dt; if (sling.reloadT <= 0) { sling.loaded = true; moveSling(); } }
+        if (!sling.loaded) { sling.reloadT -= dt; if (sling.reloadT <= 0) { sling.loaded = true; moveSling(); } }   // moveSling shows the handle again
         for (const p of pebbles) if (p.rest > 0) { p.rest += dt; if (p.rest > 4) p.life -= dt * 1.5; }
         pebbles = pebbles.filter(p => p.life > 0 && p.y < FH + 200).slice(-10);
         for (const s of shards) s.life -= dt;
@@ -439,7 +449,7 @@ const heroLamp = (function initHeroLamp() {
         sparks = sparks.filter(k => k.life > 0);
         flash = Math.max(0, flash - dt * 3.5);
         const inFlight = pebbles.some(p => p.rest === 0);
-        if (aim !== null && performance.now() - aimAt > 12000) { aim = null; sling.pouch = { ...sling.rest }; }   // a pointer we never heard from again
+        if (aim !== null && performance.now() - aimAt > 12000) { aim = null; sling.pouch = { ...sling.rest }; syncHandle(); }   // a pointer we never heard from again
         if (aim === null && (!inFlight || performance.now() > stageUntil)) hero.classList.remove('is-aiming');
     }
 
@@ -550,7 +560,7 @@ const heroLamp = (function initHeroLamp() {
         hero.classList.toggle('is-shooting', shoot);
         aim = null;
         hero.classList.remove('is-aiming');
-        placeSling(null);                                                    // back under the lamp for the first shot
+        placeSling(null);                                                    // back under the lamp for the first shot (and shows or hides the handle)
         if (shoot) fxWake(); else if (!fxRaf) fxRender();
         return shoot;
     }

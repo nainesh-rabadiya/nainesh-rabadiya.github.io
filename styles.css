@@ -2004,7 +2004,9 @@ body.theme-transitioning *::after {
 
 /* effects canvas over the hero: glass when the bulb blows, the slingshot and its pebbles */
 .lamp-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
-.hero.is-shooting { touch-action: none; }
+/* the invisible handle over the pouch: the one place a finger drag aims instead of scrolling the page */
+.lamp-pouch { position: absolute; left: 0; top: 0; width: 88px; height: 88px; border-radius: 50%; touch-action: none; cursor: grab; z-index: 3; -webkit-tap-highlight-color: transparent; }
+.lamp-pouch[hidden] { display: none; }
 /* pebble in hand: the copy fades right back so the hero is the playing field, and returns once the shot has landed */
 .hero-content { transition: opacity 0.35s var(--ease); }
 .hero.is-aiming .hero-content, .hero.is-aiming .hero-scroll { opacity: 0.05; pointer-events: none; }
